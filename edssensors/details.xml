@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PollCount>8103933</PollCount>
+<DevicesConnected>4</DevicesConnected>
+<LoopTime>3.078</LoopTime>
+<DevicesConnectedChannel1>4</DevicesConnectedChannel1>
+<DevicesConnectedChannel2>0</DevicesConnectedChannel2>
+<DevicesConnectedChannel3>0</DevicesConnectedChannel3>
+<DataErrorsChannel1>93</DataErrorsChannel1>
+<DataErrorsChannel2>0</DataErrorsChannel2>
+<DataErrorsChannel3>0</DataErrorsChannel3>
+<VoltageChannel1>4.63</VoltageChannel1>
+<VoltageChannel2>4.65</VoltageChannel2>
+<VoltageChannel3>4.66</VoltageChannel3>
+<VoltagePower>4.89</VoltagePower>
+<DeviceName>OWServer_v2-Enet</DeviceName>
+<HostName>EDS2</HostName>
+<MACAddress>00:04:A3:B1:E0:30</MACAddress>
+<owd_DS18B20 Description="Programmable resolution thermometer">
+<Name>DS18B20</Name>
+<Family>28</Family>
+<ROMId>C9000002D6613828</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>C5FF4B467FFF0B102D00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>-3.6875 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">-3.6875</Temperature>
+<UserByte1 Writable="True">75</UserByte1>
+<UserByte2 Writable="True">70</UserByte2>
+<Resolution>12</Resolution>
+<PowerSource>0</PowerSource>
+</owd_DS18B20>
+<owd_DS18B20 Description="Programmable resolution thermometer">
+<Name>DS18B20</Name>
+<Family>28</Family>
+<ROMId>FE0000042FCBC328</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>41014B467FFF0F10AA00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>20.0625 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">20.0625</Temperature>
+<UserByte1 Writable="True">75</UserByte1>
+<UserByte2 Writable="True">70</UserByte2>
+<Resolution>12</Resolution>
+<PowerSource>0</PowerSource>
+</owd_DS18B20>
+<owd_DS2423 Description="RAM with counters">
+<Name>DS2423</Name>
+<Family>1D</Family>
+<ROMId>C90000000DB76D1D</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>90D9480500000000EB14000000000000000025420000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>88660368, 0</PrimaryValue>
+<Counter_A>88660368</Counter_A>
+<Counter_B>0</Counter_B>
+</owd_DS2423>
+<owd_DS18B20 Description="Programmable resolution thermometer">
+<Name>DS18B20</Name>
+<Family>28</Family>
+<ROMId>F7000007E4F2C228</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>79FE4B467FFF07100CFF000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>-24.4375 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">-24.4375</Temperature>
+<UserByte1 Writable="True">75</UserByte1>
+<UserByte2 Writable="True">70</UserByte2>
+<Resolution>12</Resolution>
+<PowerSource>255</PowerSource>
+</owd_DS18B20>
+</Devices-Detail-Response>

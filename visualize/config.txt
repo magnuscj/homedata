@@ -1,0 +1,5 @@
+DBIP:127.0.0.1
+DBNAME:mydb
+DBPSW:dbuser
+DBUSN:dbuser
+SLEEP:300
