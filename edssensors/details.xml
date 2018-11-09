@@ -1,72 +1,903 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-<PollCount>8103933</PollCount>
-<DevicesConnected>4</DevicesConnected>
-<LoopTime>3.078</LoopTime>
-<DevicesConnectedChannel1>4</DevicesConnectedChannel1>
-<DevicesConnectedChannel2>0</DevicesConnectedChannel2>
-<DevicesConnectedChannel3>0</DevicesConnectedChannel3>
-<DataErrorsChannel1>93</DataErrorsChannel1>
-<DataErrorsChannel2>0</DataErrorsChannel2>
-<DataErrorsChannel3>0</DataErrorsChannel3>
-<VoltageChannel1>4.63</VoltageChannel1>
-<VoltageChannel2>4.65</VoltageChannel2>
-<VoltageChannel3>4.66</VoltageChannel3>
-<VoltagePower>4.89</VoltagePower>
-<DeviceName>OWServer_v2-Enet</DeviceName>
-<HostName>EDS2</HostName>
-<MACAddress>00:04:A3:B1:E0:30</MACAddress>
+<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PollCount>307732</PollCount>
+<DevicesConnected>5</DevicesConnected>
+<LoopTime>3.594</LoopTime>
+<DataErrors>16923</DataErrors>
+<DeviceName>OW_SERVER-Enet</DeviceName>
+<HostName>EDSOWSERVER</HostName>
+<MACAddress>xx:xx:xx:xx:xx:xx</MACAddress>
+
+<!-- DS18B20 -->
 <owd_DS18B20 Description="Programmable resolution thermometer">
 <Name>DS18B20</Name>
 <Family>28</Family>
-<ROMId>C9000002D6613828</ROMId>
+<ROMId>[romId]</ROMId>
 <Health>7</Health>
-<Channel>1</Channel>
-<RawData>C5FF4B467FFF0B102D00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
-<PrimaryValue>-3.6875 Deg C</PrimaryValue>
-<Temperature Units="Centigrade">-3.6875</Temperature>
-<UserByte1 Writable="True">75</UserByte1>
-<UserByte2 Writable="True">70</UserByte2>
-<Resolution>12</Resolution>
-<PowerSource>0</PowerSource>
+<RawData>[trimed]</RawData>
+<PrimaryValue>27.0000 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">27.0000</Temperature>
+<UserByte1 Writable="True">100</UserByte1>
+<UserByte2 Writable="True">201</UserByte2>
+<Resolution>10</Resolution>
+<PowerSource>255</PowerSource>
 </owd_DS18B20>
-<owd_DS18B20 Description="Programmable resolution thermometer">
-<Name>DS18B20</Name>
-<Family>28</Family>
-<ROMId>FE0000042FCBC328</ROMId>
+
+<!-- DS18S20 -->
+<owd_DS18S20 Description="Parasite power thermometer">
+<Name>DS18S20</Name>
+<Family>10</Family>
+<ROMId>[romId]</ROMId>
 <Health>7</Health>
-<Channel>1</Channel>
-<RawData>41014B467FFF0F10AA00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
-<PrimaryValue>20.0625 Deg C</PrimaryValue>
-<Temperature Units="Centigrade">20.0625</Temperature>
-<UserByte1 Writable="True">75</UserByte1>
-<UserByte2 Writable="True">70</UserByte2>
-<Resolution>12</Resolution>
+<RawData>[trimed]</RawData>
+<PrimaryValue>29.5000 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">29.5000</Temperature>
+<UserByte1 Writable="True">100</UserByte1>
+<UserByte2 Writable="True">201</UserByte2>
+</owd_DS18S20>
+
+<!-- DS2406 -->
+<owd_DS2406 Description="Dual addressable switch plus memory">
+<Name>DS2406</Name>
+<Family>12</Family>
+<ROMId>BE0000007D5CF412</ROMId>
+<Health>7</Health>
+<Channel>2</Channel>
+<RawData>33000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>A=0, B=0</PrimaryValue>
+<InputLevel_A>0</InputLevel_A>
+<InputLevel_B>0</InputLevel_B>
+<FlipFlop_A Writable="True">1</FlipFlop_A>
+<FlipFlop_B Writable="True">1</FlipFlop_B>
+<ActivityLatch_A>1</ActivityLatch_A>
+<ActivityLatch_B>1</ActivityLatch_B>
+<NumberOfChannels>1</NumberOfChannels>
 <PowerSource>0</PowerSource>
-</owd_DS18B20>
+<ActivityLatchReset Writable="True">-</ActivityLatchReset>
+</owd_DS2406>
+
+<!-- DS2408 -->
+<owd_DS2408 Description="8-Channel Addressable Switch">
+<Name>DS2408</Name>
+<Family>29</Family>
+<ROMId>AA0000000C56E529</ROMId>
+<Health>7</Health>
+<RawData>CFFFFF00008800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>207</PrimaryValue>
+<PIOLogicState>207</PIOLogicState>
+<PIOOutputLatchState Writable="True">255</PIOOutputLatchState>
+<PIOActivityLatchState Writable="True">255</PIOActivityLatchState>
+<RSTZconfiguration Writable="True">0</RSTZconfiguration>
+<PowerOnResetLatch Writable="True">1</PowerOnResetLatch>
+<VccPowerStatus>1</VccPowerStatus>
+</owd_DS2408>
+
+<!-- DS2423 -->
 <owd_DS2423 Description="RAM with counters">
 <Name>DS2423</Name>
 <Family>1D</Family>
-<ROMId>C90000000DB76D1D</ROMId>
+<ROMId>A600000009EC941D</ROMId>
 <Health>7</Health>
-<Channel>1</Channel>
-<RawData>90D9480500000000EB14000000000000000025420000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
-<PrimaryValue>88660368, 0</PrimaryValue>
-<Counter_A>88660368</Counter_A>
+<Channel>3</Channel> 
+<RawData>FB2665000000000069FD0000000000000000E8820000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>6629115, 0</PrimaryValue>
+<Counter_A>6629115</Counter_A>
 <Counter_B>0</Counter_B>
 </owd_DS2423>
-<owd_DS18B20 Description="Programmable resolution thermometer">
-<Name>DS18B20</Name>
-<Family>28</Family>
-<ROMId>F7000007E4F2C228</ROMId>
+
+<!-- DS2438 -->
+<owd_DS2438 Description="Smart battery monitor">
+<Name>DS2438</Name>
+<Family>26</Family>
+<ROMId>A9000000BC94C426</ROMId>
 <Health>7</Health>
-<Channel>1</Channel>
-<RawData>79FE4B467FFF07100CFF000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
-<PrimaryValue>-24.4375 Deg C</PrimaryValue>
-<Temperature Units="Centigrade">-24.4375</Temperature>
-<UserByte1 Writable="True">75</UserByte1>
-<UserByte2 Writable="True">70</UserByte2>
+<RawData>096820EF0105000009016820ED01050000A000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>32.375 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">32.375</Temperature>
+<Vdd Units="Volts">4.950000</Vdd>
+<Vad Units="Millivolts">4.930000</Vad>
+<Vsense Units="Millivolts">1.220500</Vsense>
+<Humidity Units="PercentRelativeHumidity">136.82</Humidity>
+</owd_DS2438>
+
+<!-- DS2450 -->
+<owd_DS2450 Description="Quad A/D Converter">
+<Name>DS2450</Name>
+<Family>20</Family>
+<ROMId>[romId]</ROMId>
+<Health>7</Health>
+<RawData>[trimed]</RawData>
+<PrimaryValue>0.000000V Chnl A</PrimaryValue>
+<ChannelAConversionValue Units="Volts">0.000000</ChannelAConversionValue>
+<ChannelAConversionResolution Writable="True" Units="Bits">8</ChannelAConversionResolution>
+<ChannelAConversionRange Writable="True">0</ChannelAConversionRange>
+<ChannelAOutputEnable Writable="True">0</ChannelAOutputEnable>
+<ChannelAOutputControl Writable="True">0</ChannelAOutputControl>
+<ChannelBConversionValue Units="Volts">0.000000</ChannelBConversionValue>
+<ChannelBConversionResolution Writable="True" Units="Bits">8</ChannelBConversionResolution>
+<ChannelBConversionRange Writable="True">0</ChannelBConversionRange>
+<ChannelBOutputEnable Writable="True">0</ChannelBOutputEnable>
+<ChannelBOutputControl Writable="True">0</ChannelBOutputControl>
+<ChannelCConversionValue Units="Volts">0.677344</ChannelCConversionValue>
+<ChannelCConversionResolution Writable="True" Units="Bits">8</ChannelCConversionResolution>
+<ChannelCConversionRange Writable="True">0</ChannelCConversionRange>
+<ChannelCOutputEnable Writable="True">0</ChannelCOutputEnable>
+<ChannelCOutputControl Writable="True">0</ChannelCOutputControl>
+<ChannelDConversionValue Units="Volts">0.000000</ChannelDConversionValue>
+<ChannelDConversionResolution Writable="True" Units="Bits">8</ChannelDConversionResolution>
+<ChannelDConversionRange Writable="True">0</ChannelDConversionRange>
+<ChannelDOutputEnable Writable="True">0</ChannelDOutputEnable>
+<ChannelDOutputControl Writable="True">0</ChannelDOutputControl>
+<PowerOnReset Writable="True">1</PowerOnReset>
+<VCCControl Writable="True">0</VCCControl>
+</owd_DS2450>
+
+<!-- DS28EA00 -->
+<owd_DS28EA00 Description="Thermometer with PIO">
+<Name>DS28EA00</Name>
+<Family>42</Family>
+<ROMId>64000000158AAD42</ROMId>
+<Health>7</Health>
+<Channel>3</Channel>
+<RawData>
+8C0103037FFF0410C1FF0F00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+</RawData>
+<PrimaryValue>24.7500 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">24.7500</Temperature>
+<UserByte1 Writable="True">3</UserByte1>
+<UserByte2 Writable="True">3</UserByte2>
 <Resolution>12</Resolution>
 <PowerSource>255</PowerSource>
-</owd_DS18B20>
+<PIOAPinState>1</PIOAPinState>
+<PIOALatchState Writable="True">1</PIOALatchState>
+<PIOBPinState>1</PIOBPinState>
+<PIOBLatchState Writable="True">1</PIOBLatchState>
+</owd_DS28EA00>
+
+<!-- EDS0064 -->
+<owd_EDS0064 Description="Temperature Sensor">
+<Name>EDS0064</Name>
+<Family>7E</Family>
+<ROMId>4C0010000026377E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>64007F010000FFFFFFFF3C01000000000000000000000000160000001700000000007DD864007DD87DD87DD800803E000000002003000000A0860100000000000000000000000000</RawData>
+<PrimaryValue>23.9375 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">23.9375</Temperature>
+<LED>1</LED>
+<Relay>0</Relay>
+<Counter1>23</Counter1>
+<Counter2>22</Counter2>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">125</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-40</TemperatureLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.03</Version>
+</owd_EDS0064>
+
+<!-- EDS0065 -->
+<owd_EDS0065 Description="Temperature and Humidity Sensor">
+<Name>EDS0065</Name>
+<Family>7E</Family>
+<ROMId>00001000002AA37E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>65008901F401670085018801000000000000000000000000150000000000000000007DD864007DD87DD87DD800803E000000002003000000A0860100000000000000000000000000</RawData>
+<PrimaryValue>31.2500 %RH</PrimaryValue>
+<Temperature Units="Centigrade">24.5625</Temperature>
+<Humidity Units="PercentRelativeHumidity">31.2500</Humidity>
+<DewPoint Units="Centigrade">6.4375</DewPoint>
+<Humidex>24.3125</Humidex>
+<HeatIndex Units="Centigrade">24.5000</HeatIndex>
+<LED>0</LED>
+<Relay>0</Relay>
+<Counter1>0</Counter1>
+<Counter2>21</Counter2>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<HumidityHighAlarmState>0</HumidityHighAlarmState>
+<HumidityLowAlarmState>0</HumidityLowAlarmState>
+<DewPointHighAlarmState>0</DewPointHighAlarmState>
+<DewPointLowAlarmState>0</DewPointLowAlarmState>
+<HumidexHighAlarmState>0</HumidexHighAlarmState>
+<HumidexLowAlarmState>0</HumidexLowAlarmState>
+<HeatIndexHighAlarmState>0</HeatIndexHighAlarmState>
+<HeatIndexLowAlarmState>0</HeatIndexLowAlarmState>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<HumidityHighConditionalSearchState Writable="True">0</HumidityHighConditionalSearchState>
+<HumidityLowConditionalSearchState Writable="True">0</HumidityLowConditionalSearchState>
+<DewPointHighConditionalSearchState Writable="True">0</DewPointHighConditionalSearchState>
+<DewPointLowConditionalSearchState Writable="True">0</DewPointLowConditionalSearchState>
+<HumidexHighConditionalSearchState Writable="True">0</HumidexHighConditionalSearchState>
+<HumidexLowConditionalSearchState Writable="True">0</HumidexLowConditionalSearchState>
+<HeatIndexHighConditionalSearchState Writable="True">0</HeatIndexHighConditionalSearchState>
+<HeatIndexLowConditionalSearchState Writable="True">0</HeatIndexLowConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">125</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-40</TemperatureLowAlarmValue>
+<HumidityHighAlarmValue Writable="True" Units="PercentRelativeHumidity">100</HumidityHighAlarmValue>
+<HumidityLowAlarmValue Writable="True" Units="PercentRelativeHumidity">0</HumidityLowAlarmValue>
+<DewPointHighAlarmValue Writable="True" Units="Centigrade">125</DewPointHighAlarmValue>
+<DewPointLowAlarmValue Writable="True" Units="Centigrade">-40</DewPointLowAlarmValue>
+<HumidexHighAlarmValue Writable="True">125</HumidexHighAlarmValue>
+<HumidexLowAlarmValue Writable="True">-40</HumidexLowAlarmValue>
+<HeatIndexHighAlarmValue Writable="True" Units="Centigrade">125</HeatIndexHighAlarmValue>
+<HeatIndexLowAlarmValue Writable="True" Units="Centigrade">-40</HeatIndexLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.06</Version>
+</owd_EDS0065>
+
+<!-- EDS0066 -->
+<owd_EDS0066 Description="Temperature and Barometric Pressure Sensor">
+<Name>EDS0066</Name>
+<Family>7E</Family>
+<ROMId>6A001000002A877E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>66008C010000FFFFFFFF480151E81EA6E900000000000000150000000000000000007DD864007DD87DD87DD800803E000000002003000000A0860100000000000000000000000000</RawData>
+<PrimaryValue>989.040 Mbar</PrimaryValue>
+<Temperature Units="Centigrade">24.7500</Temperature>
+<BarometricPressureMb Units="Millibars">989.040</BarometricPressureMb>
+<BarometricPressureHg Units="InchesOfMercury">29.206</BarometricPressureHg>
+<LED>0</LED>
+<Relay>0</Relay>
+<Counter1>0</Counter1>
+<Counter2>21</Counter2>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<BarometricPressureMbHighAlarmState>0</BarometricPressureMbHighAlarmState>
+<BarometricPressureMbLowAlarmState>0</BarometricPressureMbLowAlarmState>
+<BarometricPressureHgHighAlarmState>0</BarometricPressureHgHighAlarmState>
+<BarometricPressureHgLowAlarmState>0</BarometricPressureHgLowAlarmState>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<BarometricPressureMbHighConditionalSearchState Writable="True">0</BarometricPressureMbHighConditionalSearchState>
+<BarometricPressureMbLowConditionalSearchState Writable="True">0</BarometricPressureMbLowConditionalSearchState>
+<BarometricPressureHgHighConditionalSearchState Writable="True">0</BarometricPressureHgHighConditionalSearchState>
+<BarometricPressureHgLowConditionalSearchState Writable="True">0</BarometricPressureHgLowConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">125</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-40</TemperatureLowAlarmValue>
+<BarometricPressureMbHighAlarmValue Writable="True" Units="Millibars">2000.000</BarometricPressureMbHighAlarmValue>
+<BarometricPressureMbLowAlarmValue Writable="True" Units="Millibars">0.000</BarometricPressureMbLowAlarmValue>
+<BarometricPressureHgHighAlarmValue Writable="True" Units="InchesOfMercury">100.000</BarometricPressureHgHighAlarmValue>
+<BarometricPressureHgLowAlarmValue Writable="True" Units="InchesOfMercury">0.000</BarometricPressureHgLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.06</Version>
+</owd_EDS0066>
+
+<!-- EDS0067 -->
+<owd_EDS0067 Description="Temperature and Light Sensor">
+<Name>EDS0067</Name>
+<Family>7E</Family>
+<ROMId>C40010000022BB7E</ROMId>
+<Health>7</Health>
+<Channel>3</Channel>
+<RawData>6700C2FF0000FFFFC2FFC2FF000000000000BB0100000000B1B400000BB7000000007DD864007DD87DD87DD800803E000000002003000000A086010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000301000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>443 Lux</PrimaryValue>
+<Temperature Units="Centigrade">-3.8750</Temperature>
+<Light Units="Lux">443</Light>
+<LED>0</LED>
+<Relay>0</Relay>
+<Counter1>46859</Counter1>
+<Counter2>46257</Counter2>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<LightHighAlarmState>0</LightHighAlarmState>
+<LightLowAlarmState>0</LightLowAlarmState>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<LightHighConditionalSearchState Writable="True">0</LightHighConditionalSearchState>
+<LightLowConditionalSearchState Writable="True">0</LightLowConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">125</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-40</TemperatureLowAlarmValue>
+<LightHighAlarmValue Writable="True" Units="Lux">100000</LightHighAlarmValue>
+<LightLowAlarmValue Writable="True" Units="Lux">0</LightLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.03</Version>
+</owd_EDS0067>
+
+<!-- EDS0068 -->
+<owd_EDS0068 Description="Temperature, Humidity, Barometric Pressure and Light Sensor">
+<Name>EDS0068</Name>
+<Family>7E</Family>
+<ROMId>76001000002A757E</ROMId>
+<Health>7</Health>
+<Channel>3</Channel>
+<RawData>
+680050016804F60093015001A3F61FA2F100270D00000000B0B40C00D4D40C0000007DD864007DD87DD87DD800803E000000002003000000A0860100000000000000000000000000
+</RawData>
+<PrimaryValue>70.5000 %RH</PrimaryValue>
+<Temperature Units="Centigrade">21.0000</Temperature>
+<Humidity Units="PercentRelativeHumidity">70.5000</Humidity>
+<DewPoint Units="Centigrade">15.3750</DewPoint>
+<Humidex>25.1875</Humidex>
+<HeatIndex Units="Centigrade">21.0000</HeatIndex>
+<BarometricPressureMb Units="Millibars">1022.830</BarometricPressureMb>
+<BarometricPressureHg Units="InchesOfMercury">30.204</BarometricPressureHg>
+<Light Units="Lux">3367</Light>
+<LED>0</LED>
+<Relay>0</Relay>
+<Counter1>840916</Counter1>
+<Counter2>832688</Counter2>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<HumidityHighAlarmState>0</HumidityHighAlarmState>
+<HumidityLowAlarmState>0</HumidityLowAlarmState>
+<DewPointHighAlarmState>0</DewPointHighAlarmState>
+<DewPointLowAlarmState>0</DewPointLowAlarmState>
+<HumidexHighAlarmState>0</HumidexHighAlarmState>
+<HumidexLowAlarmState>0</HumidexLowAlarmState>
+<HeatIndexHighAlarmState>0</HeatIndexHighAlarmState>
+<HeatIndexLowAlarmState>0</HeatIndexLowAlarmState>
+<BarometricPressureMbHighAlarmState>0</BarometricPressureMbHighAlarmState>
+<BarometricPressureMbLowAlarmState>0</BarometricPressureMbLowAlarmState>
+<BarometricPressureHgHighAlarmState>0</BarometricPressureHgHighAlarmState>
+<BarometricPressureHgLowAlarmState>0</BarometricPressureHgLowAlarmState>
+<LightHighAlarmState>0</LightHighAlarmState>
+<LightLowAlarmState>0</LightLowAlarmState>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<HumidityHighConditionalSearchState Writable="True">0</HumidityHighConditionalSearchState>
+<HumidityLowConditionalSearchState Writable="True">0</HumidityLowConditionalSearchState>
+<DewPointHighConditionalSearchState Writable="True">0</DewPointHighConditionalSearchState>
+<DewPointLowConditionalSearchState Writable="True">0</DewPointLowConditionalSearchState>
+<HumidexHighConditionalSearchState Writable="True">0</HumidexHighConditionalSearchState>
+<HumidexLowConditionalSearchState Writable="True">0</HumidexLowConditionalSearchState>
+<HeatIndexHighConditionalSearchState Writable="True">0</HeatIndexHighConditionalSearchState>
+<HeatIndexLowConditionalSearchState Writable="True">0</HeatIndexLowConditionalSearchState>
+<BarometricPressureMbHighConditionalSearchState Writable="True">0</BarometricPressureMbHighConditionalSearchState>
+<BarometricPressureMbLowConditionalSearchState Writable="True">0</BarometricPressureMbLowConditionalSearchState>
+<BarometricPressureHgHighConditionalSearchState Writable="True">0</BarometricPressureHgHighConditionalSearchState>
+<BarometricPressureHgLowConditionalSearchState Writable="True">0</BarometricPressureHgLowConditionalSearchState>
+<LightHighConditionalSearchState Writable="True">0</LightHighConditionalSearchState>
+<LightLowConditionalSearchState Writable="True">0</LightLowConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">125</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-40</TemperatureLowAlarmValue>
+<HumidityHighAlarmValue Writable="True" Units="PercentRelativeHumidity">100</HumidityHighAlarmValue>
+<HumidityLowAlarmValue Writable="True" Units="PercentRelativeHumidity">0</HumidityLowAlarmValue>
+<DewPointHighAlarmValue Writable="True" Units="Centigrade">125</DewPointHighAlarmValue>
+<DewPointLowAlarmValue Writable="True" Units="Centigrade">-40</DewPointLowAlarmValue>
+<HumidexHighAlarmValue Writable="True">125</HumidexHighAlarmValue>
+<HumidexLowAlarmValue Writable="True">-40</HumidexLowAlarmValue>
+<HeatIndexHighAlarmValue Writable="True" Units="Centigrade">125</HeatIndexHighAlarmValue>
+<HeatIndexLowAlarmValue Writable="True" Units="Centigrade">-40</HeatIndexLowAlarmValue>
+<BarometricPressureMbHighAlarmValue Writable="True" Units="Millibars">2000.000</BarometricPressureMbHighAlarmValue>
+<BarometricPressureMbLowAlarmValue Writable="True" Units="Millibars">0.000</BarometricPressureMbLowAlarmValue>
+<BarometricPressureHgHighAlarmValue Writable="True" Units="InchesOfMercury">100.000</BarometricPressureHgHighAlarmValue>
+<BarometricPressureHgLowAlarmValue Writable="True" Units="InchesOfMercury">0.000</BarometricPressureHgLowAlarmValue>
+<LightHighAlarmValue Writable="True" Units="Lux">100000</LightHighAlarmValue>
+<LightLowAlarmValue Writable="True" Units="Lux">69</LightLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">0</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.03</Version>
+</owd_EDS0068>
+
+<!-- EDS0070 -->
+<owd_EDS0070 Description="Vibration Sensor">
+<Name>EDS0070</Name>
+<Family>7E</Family>
+<ROMId>CF0010000023787E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>700000000000010021000000000000000000000000000000000000001500000000000000FF0300000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>0</PrimaryValue>
+<VibrationInstant>27</VibrationInstant>
+<VibrationPeak>1</VibrationPeak>
+<VibrationMaximum>33</VibrationMaximum>
+<VibrationMinimum>0</VibrationMinimum>
+<LED>0</LED>
+<Relay>0</Relay>
+<VibrationHighAlarmState>0</VibrationHighAlarmState>
+<VibrationLowAlarmState>0</VibrationLowAlarmState>
+<Counter>21</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<VibrationHighConditionalSearchState Writable="True">0</VibrationHighConditionalSearchState>
+<VibrationLowConditionalSearchState Writable="True">0</VibrationLowConditionalSearchState>
+<VibrationHighAlarmValue Writable="True">1023</VibrationHighAlarmValue>
+<VibrationLowAlarmValue Writable="True">0</VibrationLowAlarmValue>
+<LEDFunction Writable="True">0</LEDFunction>
+<RelayFunction Writable="True">0</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.00</Version>
+</owd_EDS0070>
+
+<!-- EDS0071 -->
+<owd_EDS0071 Description="RTD Interface, 4 wire">
+<Name>EDS0071</Name>
+<Family>7E</Family>
+<ROMId>C4001000002B6A7E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>7100D86FF80000000000000000000000AA757F3F000000000100000016000000000000901A00C0F900800C0000000000000000000000000000000000491E0A000000000000000000</RawData>
+<PrimaryValue>-242.020 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">-242.020</Temperature>
+<RTDOhms Units="Ohms">123.456</RTDOhms>
+<LED>0</LED>
+<Relay>0</Relay>
+<CalibrationValue>0.997889</CalibrationValue>
+<TemperatureHighAlarmState>0</TemperatureHighAlarmState>
+<TemperatureLowAlarmState>0</TemperatureLowAlarmState>
+<RTDResistanceHighAlarmState>0</RTDResistanceHighAlarmState>
+<RTDResistanceLowAlarmState>0</RTDResistanceLowAlarmState>
+<RTDFault>0</RTDFault>
+<ConversionCounter>1</ConversionCounter>
+<Counter>22</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<TemperatureHighConditionalSearchState Writable="True">0</TemperatureHighConditionalSearchState>
+<TemperatureLowConditionalSearchState Writable="True">0</TemperatureLowConditionalSearchState>
+<RTDResistanceHighConditionalSearchState Writable="True">0</RTDResistanceHighConditionalSearchState>
+<RTDResistanceLowConditionalSearchState Writable="True">0</RTDResistanceLowConditionalSearchState>
+<RTDFaultConditionalSearchState Writable="True">0</RTDFaultConditionalSearchState>
+<TemperatureHighAlarmValue Writable="True" Units="Centigrade">850.000</TemperatureHighAlarmValue>
+<TemperatureLowAlarmValue Writable="True" Units="Centigrade">-200.000</TemperatureLowAlarmValue>
+<RTDResistanceHighAlarmValue Writable="True" Units="Ohms">400.000</RTDResistanceHighAlarmValue>
+<RTDResistanceLowAlarmValue Writable="True" Units="Ohms">0.000</RTDResistanceLowAlarmValue>
+<CalibrationKey Writable="True">73</CalibrationKey>
+<RTDReadDelay Writable="True">30</RTDReadDelay>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.10</Version>
+</owd_EDS0071>
+
+<!-- EDS0080 -->
+<owd_EDS0080 Description="Octal 4-20 Milliamp Input">
+<Name>EDS0080</Name>
+<Family>7E</Family>
+<ROMId>1E001000002B5B7E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>800000000000000000000000130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>0.000 mA</PrimaryValue>
+<v4to20mAInput1Instant Units="Milliamp">19.129</v4to20mAInput1Instant>
+<v4to20mAInput1Maximum Units="Milliamp">20.001</v4to20mAInput1Maximum>
+<v4to20mAInput1Minimum Units="Milliamp">4.001</v4to20mAInput1Minimum>
+<v4to20mAInput2Instant Units="Milliamp">19.225</v4to20mAInput2Instant>
+<v4to20mAInput2Maximum Units="Milliamp">20.002</v4to20mAInput2Maximum>
+<v4to20mAInput2Minimum Units="Milliamp">4.002</v4to20mAInput2Minimum>
+<v4to20mAInput3Instant Units="Milliamp">19.325</v4to20mAInput3Instant>
+<v4to20mAInput3Maximum Units="Milliamp">20.003</v4to20mAInput3Maximum>
+<v4to20mAInput3Minimum Units="Milliamp">4.003</v4to20mAInput3Minimum>
+<v4to20mAInput4Instant Units="Milliamp">19.425</v4to20mAInput4Instant>
+<v4to20mAInput4Maximum Units="Milliamp">20.004</v4to20mAInput4Maximum>
+<v4to20mAInput4Minimum Units="Milliamp">4.004</v4to20mAInput4Minimum>
+<v4to20mAInput5Instant Units="Milliamp">19.525</v4to20mAInput5Instant>
+<v4to20mAInput5Maximum Units="Milliamp">20.005</v4to20mAInput5Maximum>
+<v4to20mAInput5Minimum Units="Milliamp">4.005</v4to20mAInput5Minimum>
+<v4to20mAInput6Instant Units="Milliamp">19.625</v4to20mAInput6Instant>
+<v4to20mAInput6Maximum Units="Milliamp">20.006</v4to20mAInput6Maximum>
+<v4to20mAInput6Minimum Units="Milliamp">4.006</v4to20mAInput6Minimum>
+<v4to20mAInput7Instant Units="Milliamp">19.725</v4to20mAInput7Instant>
+<v4to20mAInput7Maximum Units="Milliamp">20.007</v4to20mAInput7Maximum>
+<v4to20mAInput7Minimum Units="Milliamp">4.007</v4to20mAInput7Minimum>
+<v4to20mAInput8Instant Units="Milliamp">19.825</v4to20mAInput8Instant>
+<v4to20mAInput8Maximum Units="Milliamp">20.008</v4to20mAInput8Maximum>
+<v4to20mAInput8Minimum Units="Milliamp">4.008</v4to20mAInput8Minimum>
+<LED>0</LED>
+<Relay>0</Relay>
+<v4to20mAInput1HighAlarmState>1</v4to20mAInput1HighAlarmState>
+<v4to20mAInput1LowAlarmState>0</v4to20mAInput1LowAlarmState>
+<v4to20mAInput2HighAlarmState>1</v4to20mAInput2HighAlarmState>
+<v4to20mAInput2LowAlarmState>0</v4to20mAInput2LowAlarmState>
+<v4to20mAInput3HighAlarmState>0</v4to20mAInput3HighAlarmState>
+<v4to20mAInput3LowAlarmState>0</v4to20mAInput3LowAlarmState>
+<v4to20mAInput4HighAlarmState>0</v4to20mAInput4HighAlarmState>
+<v4to20mAInput4LowAlarmState>0</v4to20mAInput4LowAlarmState>
+<v4to20mAInput5HighAlarmState>0</v4to20mAInput5HighAlarmState>
+<v4to20mAInput5LowAlarmState>0</v4to20mAInput5LowAlarmState>
+<v4to20mAInput6HighAlarmState>0</v4to20mAInput6HighAlarmState>
+<v4to20mAInput6LowAlarmState>0</v4to20mAInput6LowAlarmState>
+<v4to20mAInput7HighAlarmState>0</v4to20mAInput7HighAlarmState>
+<v4to20mAInput7LowAlarmState>0</v4to20mAInput7LowAlarmState>
+<v4to20mAInput8HighAlarmState>0</v4to20mAInput8HighAlarmState>
+<v4to20mAInput8LowAlarmState>0</v4to20mAInput8LowAlarmState>
+<Counter>19</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<v4to20mAInput1HighConditionalSearchState Writable="True">0</v4to20mAInput1HighConditionalSearchState>
+<v4to20mAInput1LowConditionalSearchState Writable="True">0</v4to20mAInput1LowConditionalSearchState>
+<v4to20mAInput2HighConditionalSearchState Writable="True">0</v4to20mAInput2HighConditionalSearchState>
+<v4to20mAInput2LowConditionalSearchState Writable="True">0</v4to20mAInput2LowConditionalSearchState>
+<v4to20mAInput3HighConditionalSearchState Writable="True">0</v4to20mAInput3HighConditionalSearchState>
+<v4to20mAInput3LowConditionalSearchState Writable="True">0</v4to20mAInput3LowConditionalSearchState>
+<v4to20mAInput4HighConditionalSearchState Writable="True">0</v4to20mAInput4HighConditionalSearchState>
+<v4to20mAInput4LowConditionalSearchState Writable="True">0</v4to20mAInput4LowConditionalSearchState>
+<v4to20mAInput5HighConditionalSearchState Writable="True">0</v4to20mAInput5HighConditionalSearchState>
+<v4to20mAInput5LowConditionalSearchState Writable="True">0</v4to20mAInput5LowConditionalSearchState>
+<v4to20mAInput6HighConditionalSearchState Writable="True">0</v4to20mAInput6HighConditionalSearchState>
+<v4to20mAInput6LowConditionalSearchState Writable="True">0</v4to20mAInput6LowConditionalSearchState>
+<v4to20mAInput7HighConditionalSearchState Writable="True">0</v4to20mAInput7HighConditionalSearchState>
+<v4to20mAInput7LowConditionalSearchState Writable="True">0</v4to20mAInput7LowConditionalSearchState>
+<v4to20mAInput8HighConditionalSearchState Writable="True">0</v4to20mAInput8HighConditionalSearchState>
+<v4to20mAInput8LowConditionalSearchState Writable="True">0</v4to20mAInput8LowConditionalSearchState>
+<v4to20mAInput1HighAlarmValue Writable="True" Units="Milliamp">31.000</v4to20mAInput1HighAlarmValue>
+<v4to20mAInput1LowAlarmValue Writable="True" Units="Milliamp">0.001</v4to20mAInput1LowAlarmValue>
+<v4to20mAInput2HighAlarmValue Writable="True" Units="Milliamp">32.000</v4to20mAInput2HighAlarmValue>
+<v4to20mAInput2LowAlarmValue Writable="True" Units="Milliamp">0.002</v4to20mAInput2LowAlarmValue>
+<v4to20mAInput3HighAlarmValue Writable="True" Units="Milliamp">33.000</v4to20mAInput3HighAlarmValue>
+<v4to20mAInput3LowAlarmValue Writable="True" Units="Milliamp">0.003</v4to20mAInput3LowAlarmValue>
+<v4to20mAInput4HighAlarmValue Writable="True" Units="Milliamp">34.000</v4to20mAInput4HighAlarmValue>
+<v4to20mAInput4LowAlarmValue Writable="True" Units="Milliamp">0.004</v4to20mAInput4LowAlarmValue>
+<v4to20mAInput5HighAlarmValue Writable="True" Units="Milliamp">35.000</v4to20mAInput5HighAlarmValue>
+<v4to20mAInput5LowAlarmValue Writable="True" Units="Milliamp">0.005</v4to20mAInput5LowAlarmValue>
+<v4to20mAInput6HighAlarmValue Writable="True" Units="Milliamp">36.000</v4to20mAInput6HighAlarmValue>
+<v4to20mAInput6LowAlarmValue Writable="True" Units="Milliamp">0.006</v4to20mAInput6LowAlarmValue>
+<v4to20mAInput7HighAlarmValue Writable="True" Units="Milliamp">37.000</v4to20mAInput7HighAlarmValue>
+<v4to20mAInput7LowAlarmValue Writable="True" Units="Milliamp">0.007</v4to20mAInput7LowAlarmValue>
+<v4to20mAInput8HighAlarmValue Writable="True" Units="Milliamp">38.000</v4to20mAInput8HighAlarmValue>
+<v4to20mAInput8LowAlarmValue Writable="True" Units="Milliamp">0.008</v4to20mAInput8LowAlarmValue>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.02</Version>
+</owd_EDS0080>
+
+<!-- EDS0082 -->
+<owd_EDS0082 Description="Octal 0-10 Volt Input">
+<Name>EDS0082</Name>
+<Family>7E</Family>
+<ROMId>A00010000025A97E</ROMId>
+<Health>7</Health>
+<Channel>2</Channel>
+<RawData>
+820000000000000000000000710200000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100
+</RawData>
+<PrimaryValue>0.000 Volts</PrimaryValue>
+<v0to10VoltInput1Instant Units="Volts">1.100</v0to10VoltInput1Instant>
+<v0to10VoltInput1Maximum Units="Volts">0.000</v0to10VoltInput1Maximum>
+<v0to10VoltInput1Minimum Units="Volts">0.000</v0to10VoltInput1Minimum>
+<v0to10VoltInput2Instant Units="Volts">1.200</v0to10VoltInput2Instant>
+<v0to10VoltInput2Maximum Units="Volts">0.000</v0to10VoltInput2Maximum>
+<v0to10VoltInput2Minimum Units="Volts">0.000</v0to10VoltInput2Minimum>
+<v0to10VoltInput3Instant Units="Volts">1.300</v0to10VoltInput3Instant>
+<v0to10VoltInput3Maximum Units="Volts">0.000</v0to10VoltInput3Maximum>
+<v0to10VoltInput3Minimum Units="Volts">0.000</v0to10VoltInput3Minimum>
+<v0to10VoltInput4Instant Units="Volts">1.400</v0to10VoltInput4Instant>
+<v0to10VoltInput4Maximum Units="Volts">0.000</v0to10VoltInput4Maximum>
+<v0to10VoltInput4Minimum Units="Volts">0.000</v0to10VoltInput4Minimum>
+<v0to10VoltInput5Instant Units="Volts">1.500</v0to10VoltInput5Instant>
+<v0to10VoltInput5Maximum Units="Volts">0.000</v0to10VoltInput5Maximum>
+<v0to10VoltInput5Minimum Units="Volts">0.000</v0to10VoltInput5Minimum>
+<v0to10VoltInput6Instant Units="Volts">1.600</v0to10VoltInput6Instant>
+<v0to10VoltInput6Maximum Units="Volts">0.000</v0to10VoltInput6Maximum>
+<v0to10VoltInput6Minimum Units="Volts">0.000</v0to10VoltInput6Minimum>
+<v0to10VoltInput7Instant Units="Volts">1.700</v0to10VoltInput7Instant>
+<v0to10VoltInput7Maximum Units="Volts">0.000</v0to10VoltInput7Maximum>
+<v0to10VoltInput7Minimum Units="Volts">0.000</v0to10VoltInput7Minimum>
+<v0to10VoltInput8Instant Units="Volts">1.800</v0to10VoltInput8Instant>
+<v0to10VoltInput8Maximum Units="Volts">0.000</v0to10VoltInput8Maximum>
+<v0to10VoltInput8Minimum Units="Volts">0.000</v0to10VoltInput8Minimum>
+<LED>0</LED>
+<Relay>0</Relay>
+<v0to10VoltInput1HighAlarmState>0</v0to10VoltInput1HighAlarmState>
+<v0to10VoltInput1LowAlarmState>0</v0to10VoltInput1LowAlarmState>
+<v0to10VoltInput2HighAlarmState>0</v0to10VoltInput2HighAlarmState>
+<v0to10VoltInput2LowAlarmState>0</v0to10VoltInput2LowAlarmState>
+<v0to10VoltInput3HighAlarmState>0</v0to10VoltInput3HighAlarmState>
+<v0to10VoltInput3LowAlarmState>0</v0to10VoltInput3LowAlarmState>
+<v0to10VoltInput4HighAlarmState>0</v0to10VoltInput4HighAlarmState>
+<v0to10VoltInput4LowAlarmState>0</v0to10VoltInput4LowAlarmState>
+<v0to10VoltInput5HighAlarmState>0</v0to10VoltInput5HighAlarmState>
+<v0to10VoltInput5LowAlarmState>0</v0to10VoltInput5LowAlarmState>
+<v0to10VoltInput6HighAlarmState>0</v0to10VoltInput6HighAlarmState>
+<v0to10VoltInput6LowAlarmState>0</v0to10VoltInput6LowAlarmState>
+<v0to10VoltInput7HighAlarmState>0</v0to10VoltInput7HighAlarmState>
+<v0to10VoltInput7LowAlarmState>0</v0to10VoltInput7LowAlarmState>
+<v0to10VoltInput8HighAlarmState>0</v0to10VoltInput8HighAlarmState>
+<v0to10VoltInput8LowAlarmState>0</v0to10VoltInput8LowAlarmState>
+<Counter>625</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<v0to10VoltInput1HighConditionalSearchState Writable="True">0</v0to10VoltInput1HighConditionalSearchState>
+<v0to10VoltInput1LowConditionalSearchState Writable="True">0</v0to10VoltInput1LowConditionalSearchState>
+<v0to10VoltInput2HighConditionalSearchState Writable="True">0</v0to10VoltInput2HighConditionalSearchState>
+<v0to10VoltInput2LowConditionalSearchState Writable="True">0</v0to10VoltInput2LowConditionalSearchState>
+<v0to10VoltInput3HighConditionalSearchState Writable="True">0</v0to10VoltInput3HighConditionalSearchState>
+<v0to10VoltInput3LowConditionalSearchState Writable="True">0</v0to10VoltInput3LowConditionalSearchState>
+<v0to10VoltInput4HighConditionalSearchState Writable="True">0</v0to10VoltInput4HighConditionalSearchState>
+<v0to10VoltInput4LowConditionalSearchState Writable="True">0</v0to10VoltInput4LowConditionalSearchState>
+<v0to10VoltInput5HighConditionalSearchState Writable="True">0</v0to10VoltInput5HighConditionalSearchState>
+<v0to10VoltInput5LowConditionalSearchState Writable="True">0</v0to10VoltInput5LowConditionalSearchState>
+<v0to10VoltInput6HighConditionalSearchState Writable="True">0</v0to10VoltInput6HighConditionalSearchState>
+<v0to10VoltInput6LowConditionalSearchState Writable="True">0</v0to10VoltInput6LowConditionalSearchState>
+<v0to10VoltInput7HighConditionalSearchState Writable="True">0</v0to10VoltInput7HighConditionalSearchState>
+<v0to10VoltInput7LowConditionalSearchState Writable="True">0</v0to10VoltInput7LowConditionalSearchState>
+<v0to10VoltInput8HighConditionalSearchState Writable="True">0</v0to10VoltInput8HighConditionalSearchState>
+<v0to10VoltInput8LowConditionalSearchState Writable="True">0</v0to10VoltInput8LowConditionalSearchState>
+<v0to10VoltInput1HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput1HighAlarmValue>
+<v0to10VoltInput1LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput1LowAlarmValue>
+<v0to10VoltInput2HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput2HighAlarmValue>
+<v0to10VoltInput2LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput2LowAlarmValue>
+<v0to10VoltInput3HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput3HighAlarmValue>
+<v0to10VoltInput3LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput3LowAlarmValue>
+<v0to10VoltInput4HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput4HighAlarmValue>
+<v0to10VoltInput4LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput4LowAlarmValue>
+<v0to10VoltInput5HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput5HighAlarmValue>
+<v0to10VoltInput5LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput5LowAlarmValue>
+<v0to10VoltInput6HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput6HighAlarmValue>
+<v0to10VoltInput6LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput6LowAlarmValue>
+<v0to10VoltInput7HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput7HighAlarmValue>
+<v0to10VoltInput7LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput7LowAlarmValue>
+<v0to10VoltInput8HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput8HighAlarmValue>
+<v0to10VoltInput8LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput8LowAlarmValue>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.00</Version>
+</owd_EDS0082>
+
+<!-- EDS0083 -->
+<owd_EDS0083 Description="Quad 4-20 Milliamp Input">
+<Name>EDS0083</Name>
+<Family>7E</Family>
+<ROMId>7B0010000028A87E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>8300000015000000000000000000000000000000000000000000000000000000000000000000000000F8000000F8000000F8000000F800000000000000000A000000000000000000</RawData>
+<PrimaryValue>0.000 mA</PrimaryValue>
+<v4to20mAInput1Instant Units="Milliamp">1.100</v4to20mAInput1Instant>
+<v4to20mAInput1Maximum Units="Milliamp">0.000</v4to20mAInput1Maximum>
+<v4to20mAInput1Minimum Units="Milliamp">0.000</v4to20mAInput1Minimum>
+<v4to20mAInput2Instant Units="Milliamp">1.200</v4to20mAInput2Instant>
+<v4to20mAInput2Maximum Units="Milliamp">0.000</v4to20mAInput2Maximum>
+<v4to20mAInput2Minimum Units="Milliamp">0.000</v4to20mAInput2Minimum>
+<v4to20mAInput3Instant Units="Milliamp">1.300</v4to20mAInput3Instant>
+<v4to20mAInput3Maximum Units="Milliamp">0.000</v4to20mAInput3Maximum>
+<v4to20mAInput3Minimum Units="Milliamp">0.000</v4to20mAInput3Minimum>
+<v4to20mAInput4Instant Units="Milliamp">1.400</v4to20mAInput4Instant>
+<v4to20mAInput4Maximum Units="Milliamp">0.000</v4to20mAInput4Maximum>
+<v4to20mAInput4Minimum Units="Milliamp">0.000</v4to20mAInput4Minimum>
+<LED>0</LED>
+<Relay>0</Relay>
+<v4to20mAInput1HighAlarmState>0</v4to20mAInput1HighAlarmState>
+<v4to20mAInput1LowAlarmState>0</v4to20mAInput1LowAlarmState>
+<v4to20mAInput2HighAlarmState>0</v4to20mAInput2HighAlarmState>
+<v4to20mAInput2LowAlarmState>0</v4to20mAInput2LowAlarmState>
+<v4to20mAInput3HighAlarmState>0</v4to20mAInput3HighAlarmState>
+<v4to20mAInput3LowAlarmState>0</v4to20mAInput3LowAlarmState>
+<v4to20mAInput4HighAlarmState>0</v4to20mAInput4HighAlarmState>
+<v4to20mAInput4LowAlarmState>0</v4to20mAInput4LowAlarmState>
+<Counter>21</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<v4to20mAInput1HighConditionalSearchState Writable="True">0</v4to20mAInput1HighConditionalSearchState>
+<v4to20mAInput1LowConditionalSearchState Writable="True">0</v4to20mAInput1LowConditionalSearchState>
+<v4to20mAInput2HighConditionalSearchState Writable="True">0</v4to20mAInput2HighConditionalSearchState>
+<v4to20mAInput2LowConditionalSearchState Writable="True">0</v4to20mAInput2LowConditionalSearchState>
+<v4to20mAInput3HighConditionalSearchState Writable="True">0</v4to20mAInput3HighConditionalSearchState>
+<v4to20mAInput3LowConditionalSearchState Writable="True">0</v4to20mAInput3LowConditionalSearchState>
+<v4to20mAInput4HighConditionalSearchState Writable="True">0</v4to20mAInput4HighConditionalSearchState>
+<v4to20mAInput4LowConditionalSearchState Writable="True">0</v4to20mAInput4LowConditionalSearchState>
+<v4to20mAInput1HighAlarmValue Writable="True" Units="Milliamp">31.000</v4to20mAInput1HighAlarmValue>
+<v4to20mAInput1LowAlarmValue Writable="True" Units="Milliamp">0.000</v4to20mAInput1LowAlarmValue>
+<v4to20mAInput2HighAlarmValue Writable="True" Units="Milliamp">31.000</v4to20mAInput2HighAlarmValue>
+<v4to20mAInput2LowAlarmValue Writable="True" Units="Milliamp">0.000</v4to20mAInput2LowAlarmValue>
+<v4to20mAInput3HighAlarmValue Writable="True" Units="Milliamp">31.000</v4to20mAInput3HighAlarmValue>
+<v4to20mAInput3LowAlarmValue Writable="True" Units="Milliamp">0.000</v4to20mAInput3LowAlarmValue>
+<v4to20mAInput4HighAlarmValue Writable="True" Units="Milliamp">31.000</v4to20mAInput4HighAlarmValue>
+<v4to20mAInput4LowAlarmValue Writable="True" Units="Milliamp">0.000</v4to20mAInput4LowAlarmValue>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.00</Version>
+</owd_EDS0083>
+
+<!-- EDS0085 -->
+<owd_EDS0085 Description="Quad 0-10 Volt Input">
+<Name>EDS0085</Name>
+<Family>7E</Family>
+<ROMId>F4001000002AC27E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>8500000015000000010001000100010001000100010001000100010001000100010001000100010000F8000000F8000000F8000000F800000000000000000A000000000000000000</RawData>
+<PrimaryValue>0.000 Volts</PrimaryValue>
+<v0to10VoltInput1Instant Units="Volts">1.100</v0to10VoltInput1Instant>
+<v0to10VoltInput1Maximum Units="Volts">0.000</v0to10VoltInput1Maximum>
+<v0to10VoltInput1Minimum Units="Volts">0.000</v0to10VoltInput1Minimum>
+<v0to10VoltInput2Instant Units="Volts">1.200</v0to10VoltInput2Instant>
+<v0to10VoltInput2Maximum Units="Volts">0.000</v0to10VoltInput2Maximum>
+<v0to10VoltInput2Minimum Units="Volts">0.000</v0to10VoltInput2Minimum>
+<v0to10VoltInput3Instant Units="Volts">1.300</v0to10VoltInput3Instant>
+<v0to10VoltInput3Maximum Units="Volts">0.000</v0to10VoltInput3Maximum>
+<v0to10VoltInput3Minimum Units="Volts">0.000</v0to10VoltInput3Minimum>
+<v0to10VoltInput4Instant Units="Volts">1.400</v0to10VoltInput4Instant>
+<v0to10VoltInput4Maximum Units="Volts">0.000</v0to10VoltInput4Maximum>
+<v0to10VoltInput4Minimum Units="Volts">0.000</v0to10VoltInput4Minimum>
+<LED>0</LED>
+<Relay>1</Relay>
+<v0to10VoltInput1HighAlarmState>0</v0to10VoltInput1HighAlarmState>
+<v0to10VoltInput1LowAlarmState>0</v0to10VoltInput1LowAlarmState>
+<v0to10VoltInput2HighAlarmState>0</v0to10VoltInput2HighAlarmState>
+<v0to10VoltInput2LowAlarmState>0</v0to10VoltInput2LowAlarmState>
+<v0to10VoltInput3HighAlarmState>0</v0to10VoltInput3HighAlarmState>
+<v0to10VoltInput3LowAlarmState>0</v0to10VoltInput3LowAlarmState>
+<v0to10VoltInput4HighAlarmState>0</v0to10VoltInput4HighAlarmState>
+<v0to10VoltInput4LowAlarmState>0</v0to10VoltInput4LowAlarmState>
+<Counter>21</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<v0to10VoltInput1HighConditionalSearchState Writable="True">0</v0to10VoltInput1HighConditionalSearchState>
+<v0to10VoltInput1LowConditionalSearchState Writable="True">0</v0to10VoltInput1LowConditionalSearchState>
+<v0to10VoltInput2HighConditionalSearchState Writable="True">0</v0to10VoltInput2HighConditionalSearchState>
+<v0to10VoltInput2LowConditionalSearchState Writable="True">0</v0to10VoltInput2LowConditionalSearchState>
+<v0to10VoltInput3HighConditionalSearchState Writable="True">0</v0to10VoltInput3HighConditionalSearchState>
+<v0to10VoltInput3LowConditionalSearchState Writable="True">0</v0to10VoltInput3LowConditionalSearchState>
+<v0to10VoltInput4HighConditionalSearchState Writable="True">0</v0to10VoltInput4HighConditionalSearchState>
+<v0to10VoltInput4LowConditionalSearchState Writable="True">0</v0to10VoltInput4LowConditionalSearchState>
+<v0to10VoltInput1HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput1HighAlarmValue>
+<v0to10VoltInput1LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput1LowAlarmValue>
+<v0to10VoltInput2HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput2HighAlarmValue>
+<v0to10VoltInput2LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput2LowAlarmValue>
+<v0to10VoltInput3HighAlarmValue Writable="True" Units="Volts">32.000</v0to10VoltInput3HighAlarmValue>
+<v0to10VoltInput3LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput3LowAlarmValue>
+<v0to10VoltInput4HighAlarmValue Writable="True" Units="Volts">31.000</v0to10VoltInput4HighAlarmValue>
+<v0to10VoltInput4LowAlarmValue Writable="True" Units="Volts">0.000</v0to10VoltInput4LowAlarmValue>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.02</Version>
+</owd_EDS0085>
+
+<!-- EDS0090 -->
+<owd_EDS0090 Description="Octal Discrete IO">
+<Name>EDS0090</Name>
+<Family>7E</Family>
+<ROMId>B20010000026097E</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+<RawData>90000000FFFF0000000000001500000000000000000000000000000000000000000000000000000000000000000000000000000000000000555500FFFF000A000000000000000000</RawData>
+<PrimaryValue>0</PrimaryValue>
+<DiscreteIO1InputState>0</DiscreteIO1InputState>
+<DiscreteIO1ActivityLatch>0</DiscreteIO1ActivityLatch>
+<DiscreteIO1OutputValue>1</DiscreteIO1OutputValue>
+<DiscreteIO1PulldownValue>1</DiscreteIO1PulldownValue>
+<DiscreteIO1PulseCounter>0</DiscreteIO1PulseCounter>
+<DiscreteIO2InputState>0</DiscreteIO2InputState>
+<DiscreteIO2ActivityLatch>0</DiscreteIO2ActivityLatch>
+<DiscreteIO2OutputValue>1</DiscreteIO2OutputValue>
+<DiscreteIO2PulldownValue>1</DiscreteIO2PulldownValue>
+<DiscreteIO2PulseCounter>0</DiscreteIO2PulseCounter>
+<DiscreteIO3InputState>0</DiscreteIO3InputState>
+<DiscreteIO3ActivityLatch>0</DiscreteIO3ActivityLatch>
+<DiscreteIO3OutputValue>1</DiscreteIO3OutputValue>
+<DiscreteIO3PulldownValue>1</DiscreteIO3PulldownValue>
+<DiscreteIO4InputState>0</DiscreteIO4InputState>
+<DiscreteIO4ActivityLatch>0</DiscreteIO4ActivityLatch>
+<DiscreteIO4OutputValue>1</DiscreteIO4OutputValue>
+<DiscreteIO4PulldownValue>1</DiscreteIO4PulldownValue>
+<DiscreteIO5InputState>0</DiscreteIO5InputState>
+<DiscreteIO5ActivityLatch>0</DiscreteIO5ActivityLatch>
+<DiscreteIO5OutputValue>1</DiscreteIO5OutputValue>
+<DiscreteIO5PulldownValue>1</DiscreteIO5PulldownValue>
+<DiscreteIO6InputState>0</DiscreteIO6InputState>
+<DiscreteIO6ActivityLatch>0</DiscreteIO6ActivityLatch>
+<DiscreteIO6OutputValue>1</DiscreteIO6OutputValue>
+<DiscreteIO6PulldownValue>1</DiscreteIO6PulldownValue>
+<DiscreteIO7InputState>0</DiscreteIO7InputState>
+<DiscreteIO7ActivityLatch>0</DiscreteIO7ActivityLatch>
+<DiscreteIO7OutputValue>1</DiscreteIO7OutputValue>
+<DiscreteIO7PulldownValue>1</DiscreteIO7PulldownValue>
+<DiscreteIO8InputState>0</DiscreteIO8InputState>
+<DiscreteIO8ActivityLatch>0</DiscreteIO8ActivityLatch>
+<DiscreteIO8OutputValue>1</DiscreteIO8OutputValue>
+<DiscreteIO8PulldownValue>1</DiscreteIO8PulldownValue>
+<LED>0</LED>
+<Relay>0</Relay>
+<DiscreteIO1HighAlarmState>0</DiscreteIO1HighAlarmState>
+<DiscreteIO1LowAlarmState>0</DiscreteIO1LowAlarmState>
+<DiscreteIO2HighAlarmState>0</DiscreteIO2HighAlarmState>
+<DiscreteIO2LowAlarmState>0</DiscreteIO2LowAlarmState>
+<DiscreteIO3HighAlarmState>0</DiscreteIO3HighAlarmState>
+<DiscreteIO3LowAlarmState>0</DiscreteIO3LowAlarmState>
+<DiscreteIO4HighAlarmState>0</DiscreteIO4HighAlarmState>
+<DiscreteIO4LowAlarmState>0</DiscreteIO4LowAlarmState>
+<DiscreteIO5HighAlarmState>0</DiscreteIO5HighAlarmState>
+<DiscreteIO5LowAlarmState>0</DiscreteIO5LowAlarmState>
+<DiscreteIO6HighAlarmState>0</DiscreteIO6HighAlarmState>
+<DiscreteIO6LowAlarmState>0</DiscreteIO6LowAlarmState>
+<DiscreteIO7HighAlarmState>0</DiscreteIO7HighAlarmState>
+<DiscreteIO7LowAlarmState>0</DiscreteIO7LowAlarmState>
+<DiscreteIO8HighAlarmState>0</DiscreteIO8HighAlarmState>
+<DiscreteIO8LowAlarmState>0</DiscreteIO8LowAlarmState>
+<Counter>21</Counter>
+<ClearAlarms Writable="True">-</ClearAlarms>
+<DiscreteIO1HighConditionalSearchState Writable="True">0</DiscreteIO1HighConditionalSearchState>
+<DiscreteIO1LowConditionalSearchState Writable="True">0</DiscreteIO1LowConditionalSearchState>
+<DiscreteIO2HighConditionalSearchState Writable="True">0</DiscreteIO2HighConditionalSearchState>
+<DiscreteIO2LowConditionalSearchState Writable="True">0</DiscreteIO2LowConditionalSearchState>
+<DiscreteIO3HighConditionalSearchState Writable="True">0</DiscreteIO3HighConditionalSearchState>
+<DiscreteIO3LowConditionalSearchState Writable="True">0</DiscreteIO3LowConditionalSearchState>
+<DiscreteIO4HighConditionalSearchState Writable="True">0</DiscreteIO4HighConditionalSearchState>
+<DiscreteIO4LowConditionalSearchState Writable="True">0</DiscreteIO4LowConditionalSearchState>
+<DiscreteIO5HighConditionalSearchState Writable="True">0</DiscreteIO5HighConditionalSearchState>
+<DiscreteIO5LowConditionalSearchState Writable="True">0</DiscreteIO5LowConditionalSearchState>
+<DiscreteIO6HighConditionalSearchState Writable="True">0</DiscreteIO6HighConditionalSearchState>
+<DiscreteIO6LowConditionalSearchState Writable="True">0</DiscreteIO6LowConditionalSearchState>
+<DiscreteIO7HighConditionalSearchState Writable="True">0</DiscreteIO7HighConditionalSearchState>
+<DiscreteIO7LowConditionalSearchState Writable="True">0</DiscreteIO7LowConditionalSearchState>
+<DiscreteIO8HighConditionalSearchState Writable="True">0</DiscreteIO8HighConditionalSearchState>
+<DiscreteIO8LowConditionalSearchState Writable="True">0</DiscreteIO8LowConditionalSearchState>
+<DiscreteIO1HighAlarmValue Writable="True">1</DiscreteIO1HighAlarmValue>
+<DiscreteIO1LowAlarmValue Writable="True">0</DiscreteIO1LowAlarmValue>
+<DiscreteIO2HighAlarmValue Writable="True">1</DiscreteIO2HighAlarmValue>
+<DiscreteIO2LowAlarmValue Writable="True">0</DiscreteIO2LowAlarmValue>
+<DiscreteIO3HighAlarmValue Writable="True">1</DiscreteIO3HighAlarmValue>
+<DiscreteIO3LowAlarmValue Writable="True">0</DiscreteIO3LowAlarmValue>
+<DiscreteIO4HighAlarmValue Writable="True">1</DiscreteIO4HighAlarmValue>
+<DiscreteIO4LowAlarmValue Writable="True">0</DiscreteIO4LowAlarmValue>
+<DiscreteIO5HighAlarmValue Writable="True">1</DiscreteIO5HighAlarmValue>
+<DiscreteIO5LowAlarmValue Writable="True">0</DiscreteIO5LowAlarmValue>
+<DiscreteIO6HighAlarmValue Writable="True">1</DiscreteIO6HighAlarmValue>
+<DiscreteIO6LowAlarmValue Writable="True">0</DiscreteIO6LowAlarmValue>
+<DiscreteIO7HighAlarmValue Writable="True">1</DiscreteIO7HighAlarmValue>
+<DiscreteIO7LowAlarmValue Writable="True">0</DiscreteIO7LowAlarmValue>
+<DiscreteIO8HighAlarmValue Writable="True">1</DiscreteIO8HighAlarmValue>
+<DiscreteIO8LowAlarmValue Writable="True">0</DiscreteIO8LowAlarmValue>
+<DiscreteIO1PulseCounterReset Writable="True">0</DiscreteIO1PulseCounterReset>
+<DiscreteIO2PulseCounterReset Writable="True">0</DiscreteIO2PulseCounterReset>
+<DiscreteIO1ActivityLatchReset Writable="True">0</DiscreteIO1ActivityLatchReset>
+<DiscreteIO2ActivityLatchReset Writable="True">0</DiscreteIO2ActivityLatchReset>
+<DiscreteIO3ActivityLatchReset Writable="True">0</DiscreteIO3ActivityLatchReset>
+<DiscreteIO4ActivityLatchReset Writable="True">0</DiscreteIO4ActivityLatchReset>
+<DiscreteIO5ActivityLatchReset Writable="True">0</DiscreteIO5ActivityLatchReset>
+<DiscreteIO6ActivityLatchReset Writable="True">0</DiscreteIO6ActivityLatchReset>
+<DiscreteIO7ActivityLatchReset Writable="True">0</DiscreteIO7ActivityLatchReset>
+<DiscreteIO8ActivityLatchReset Writable="True">0</DiscreteIO8ActivityLatchReset>
+<DiscreteIO1PulldownState Writable="True">1</DiscreteIO1PulldownState>
+<DiscreteIO2PulldownState Writable="True">1</DiscreteIO2PulldownState>
+<DiscreteIO3PulldownState Writable="True">1</DiscreteIO3PulldownState>
+<DiscreteIO4PulldownState Writable="True">1</DiscreteIO4PulldownState>
+<DiscreteIO5PulldownState Writable="True">1</DiscreteIO5PulldownState>
+<DiscreteIO6PulldownState Writable="True">1</DiscreteIO6PulldownState>
+<DiscreteIO7PulldownState Writable="True">1</DiscreteIO7PulldownState>
+<DiscreteIO8PulldownState Writable="True">1</DiscreteIO8PulldownState>
+<DiscreteIO1OutputState Writable="True">1</DiscreteIO1OutputState>
+<DiscreteIO2OutputState Writable="True">1</DiscreteIO2OutputState>
+<DiscreteIO3OutputState Writable="True">1</DiscreteIO3OutputState>
+<DiscreteIO4OutputState Writable="True">1</DiscreteIO4OutputState>
+<DiscreteIO5OutputState Writable="True">1</DiscreteIO5OutputState>
+<DiscreteIO6OutputState Writable="True">1</DiscreteIO6OutputState>
+<DiscreteIO7OutputState Writable="True">1</DiscreteIO7OutputState>
+<DiscreteIO8OutputState Writable="True">1</DiscreteIO8OutputState>
+<LEDFunction Writable="True">2</LEDFunction>
+<RelayFunction Writable="True">2</RelayFunction>
+<LEDState Writable="True">1</LEDState>
+<RelayState Writable="True">0</RelayState>
+<Version>1.09</Version>
+</owd_EDS0090>
+
+<!-- Unknown -->
+<owd_Unknown Description="Unknown device">
+<Name>Unknown</Name>
+<Family>41</Family>
+<ROMId>7800000051327D41</ROMId>
+<Health>7</Health>
+<Channel>1</Channel>
+</owd_Unknown>
+
 </Devices-Detail-Response>
