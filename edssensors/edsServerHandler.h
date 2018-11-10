@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <curl/curl.h>
 
 class edsServerHandler
@@ -17,6 +18,7 @@ class edsServerHandler
     edsServerHandler(char*& ip);
     void decodeServerData();
     void storeServerData();
+    void readSensorConfiguration();
     std::string retreivexml(std::string ipaddr);
   private:
     char* ipAddress;
@@ -28,6 +30,8 @@ class edsServerHandler
       std::string value;
     } sensorData;
 
-   std::vector<sensor> sensors;
+    std::vector<sensor> sensors;
+    std::vector<std::string> sensorConfiguration;
+    std::map<std::string,std::vector<std::string>> sc;
 };
 #endif

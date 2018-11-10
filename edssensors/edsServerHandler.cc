@@ -12,8 +12,9 @@
 #include <mysql/mysql.h>
 #include <iomanip>
 #include <time.h>
-#include "tinyxml2.h"
+#include "../../tinyxml2/tinyxml2.h"
 #include <vector>
+#include <map>
 #include <utility>
 #include <curl/curl.h>
 using namespace std;
@@ -135,14 +136,19 @@ void edsServerHandler::storeServerData()
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
+  const char* dbAddr = "192.168.1.45";
+  const char* dbuser = "root";
+  const char* dbpwd  = "root";
+
   string sensorid = "";
   
   mysql_init(&mysql);
 
-   connection = mysql_real_connect(&mysql,"127.0.0.1","dbuser","dbuser",0,0,0,0);
+   connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
 
    if (connection == NULL)
    {
+     std::cout<<dbAddr<<std::endl;
      cout<<mysql_error(&mysql);
      return ;
    }
@@ -150,8 +156,9 @@ void edsServerHandler::storeServerData()
       
   for( auto &sensor : sensors)
   {
+        
     cout<<left;
-    cout<<setw(13)<<sensor.type<<sensor.id<<": "<<setw(10)<<sensor.value<<"  "<<ipAddress<<"\n";  
+    cout<<setw(13)<<sensor.type<<setw(17)<<sensor.id<<setw(7)<<sc[sensor.id].at(1)<<": "<<setw(10)<<sensor.value<<"  "<<ipAddress<<"\n";  
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
@@ -162,9 +169,83 @@ void edsServerHandler::storeServerData()
     string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor.id + "', '" + sensor.value + "')";
     state = mysql_query(connection, query.c_str());
   }
-  
+
   mysql_close(connection);
 
 }
 
+void edsServerHandler::readSensorConfiguration()
+{
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+  MYSQL *connection, mysql;
+  int state;
+  string dbName   = "productiondbpa1";
+  string tbName   = "sensorconfig";
+  const char* dbAddr = "192.168.1.45";
+  const char* dbuser = "root";
+  const char* dbpwd  = "root";
+  
+  
 
+  mysql_init(&mysql);
+
+  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+
+  if (connection == NULL)
+  {
+    std::cout<<dbAddr<<std::endl;
+    cout<<mysql_error(&mysql);
+    return ;
+  }
+  string query = "SELECT * FROM " + dbName + "." + tbName;
+  int num_fields =0;
+  int num_rows = 0;
+  if (mysql_query(connection, query.c_str()))
+  {
+    // error
+  }
+  else // query succeeded, process any data returned by it
+  {
+    result = mysql_store_result(&mysql);
+    if (result)  // there are rows
+    {
+      num_fields = mysql_num_fields(result);
+      unsigned int i;
+      while ((row = mysql_fetch_row(result)))
+      {
+        unsigned long *lengths;
+        lengths = mysql_fetch_lengths(result);
+
+        for(i = 1; i < num_fields-1; i++)
+        {
+          //printf("[%.*s] ", (int) lengths[i], row[i] ? row[i] : "NULL");
+          sensorConfiguration.emplace_back(row[i]);
+        }
+        //cout<<row[1]<<"  "<<sensorConfiguration.size()<<endl;
+        sc[row[1]] = sensorConfiguration;
+        sensorConfiguration.clear();
+        //printf("\n");
+      }
+        // retrieve rows, then call mysql_free_result(result)
+    }
+    else  // mysql_store_result() returned nothing; should it have?
+    {
+      if(mysql_field_count(&mysql) == 0)
+      {
+          // query does not return data
+          // (it was not a SELECT)
+          num_rows = mysql_affected_rows(&mysql);
+      }
+      else // mysql_store_result() should have returned data
+      {
+          fprintf(stderr, "Error: %s\n", mysql_error(&mysql));
+      }
+    }
+  }
+  //map<string,vector<string>>::iterator it = sc.find("C9000002D6613828");
+  //C9000002D6613828
+  //sensorConfiguration = sc["C9000002D6613828"];
+  //cout<<sensorConfiguration.at(0)<<"  "<<sensorConfiguration.at(1)<<endl;
+  mysql_close(connection);
+}

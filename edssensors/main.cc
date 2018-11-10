@@ -14,6 +14,7 @@ using namespace std;
 void test(char* ipadr )
 {
     edsServerHandler eds(ipadr);
+    eds.readSensorConfiguration();
     eds.decodeServerData();
     eds.storeServerData();
 }
@@ -24,8 +25,9 @@ int main(int argc, char* argv[])
   std::vector<double> elapsedTime;
   int noOfBins = 40;
   std::vector<int> bins(noOfBins,0);
-   
 
+  edsServerHandler edsConf(argv[1]); 
+  
   while(1)//for(int j=0;j<100;j++)//while(1)//
   {
     std::cout << "\x1B[2J\x1B[H";
@@ -62,7 +64,8 @@ int main(int argc, char* argv[])
     for(auto mybin : bins)
       cout<<mybin<<",";
     cout<<"\n";  
- 
+    edsConf.readSensorConfiguration();
+    
     sleep(60); 
  } 
   
