@@ -15,6 +15,7 @@
 #include "../../tinyxml2/tinyxml2.h"
 #include <vector>
 #include <map>
+#include <memory>
 #include <utility>
 #include <curl/curl.h>
 using namespace std;
@@ -32,9 +33,12 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 
 edsServerHandler::edsServerHandler(char*& ip)
 {
-   ipAddress = ip;
-   curl = curl_easy_init();
-   sensors.clear();
+  startTime = std::chrono::system_clock::now();
+  ipAddress = ip;
+  curl = curl_easy_init();
+  sensors.clear();
+  
+
 }
 
 
@@ -94,6 +98,7 @@ void edsServerHandler::decodeServerData()
   {
     for( auto sensorType : sensorTypes)
     {
+      
       XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
       XMLNode* rootchild  = root->FirstChild();      //PollCount
       XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
@@ -102,23 +107,28 @@ void edsServerHandler::decodeServerData()
       { 
         if((sensorType.first.compare(rootchild->Value())==0))
         {
+          std::shared_ptr<sensor> sens = std::make_shared<sensor>();
           siblingNode = rootchild->FirstChild();
 	        sensorData.type = rootchild->Value();
+          sens->type = rootchild->Value();
 
 	        while(siblingNode!=NULL)
           {
             if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
             {
               sensorData.id = siblingNode->FirstChild()->Value();
+              sens->id = siblingNode->FirstChild()->Value();
             }
             
             if(!siblingNode->NoChildren() && (sensorType.second.compare(siblingNode->Value()) ==0))
             {
               sensorData.value = siblingNode->FirstChild()->Value();
+              sens->value = siblingNode->FirstChild()->Value();
             }
             siblingNode=siblingNode->NextSibling();
 	        }
 	        sensors.push_back(sensorData);
+          senss.push_back(std::move(sens));
 	      }
 	      rootchild = rootchild->NextSibling();
       }
@@ -144,21 +154,19 @@ void edsServerHandler::storeServerData()
   
   mysql_init(&mysql);
 
-   connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
 
-   if (connection == NULL)
-   {
-     std::cout<<dbAddr<<std::endl;
-     cout<<mysql_error(&mysql);
-     return ;
-   }
+  if (connection == NULL)
+  {
+    std::cout<<dbAddr<<std::endl;
+    cout<<mysql_error(&mysql);
+    return ;
+  }
  
       
   for( auto &sensor : sensors)
   {
-        
-    cout<<left;
-    cout<<setw(13)<<sensor.type<<setw(17)<<sensor.id<<setw(7)<<sc[sensor.id].at(1)<<": "<<setw(10)<<sensor.value<<"  "<<ipAddress<<"\n";  
+    
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
@@ -171,8 +179,27 @@ void edsServerHandler::storeServerData()
   }
 
   mysql_close(connection);
-
+  stopTime = std::chrono::system_clock::now();
 }
+
+std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
+{
+  eds.print();  
+}
+
+void const edsServerHandler::print()
+{
+  std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
+  std::cout<<setw(14)<<ipAddress<<" (" << elapsed_seconds.count() << "s)\n";
+  
+  for( auto &sensor : sensors)
+  {    
+    cout<<left;
+    cout<<setw(0)<<""<<setw(15)<<sensor.type<<setw(17)<<sensor.id<<setw(7)<<sc[sensor.id].at(1)<<": "<<setw(10)<<sensor.value<<"\n";  
+  } 
+  cout<<"\n";
+}
+
 
 void edsServerHandler::readSensorConfiguration()
 {
@@ -186,15 +213,12 @@ void edsServerHandler::readSensorConfiguration()
   const char* dbuser = "root";
   const char* dbpwd  = "root";
   
-  
-
   mysql_init(&mysql);
 
   connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
 
   if (connection == NULL)
   {
-    std::cout<<dbAddr<<std::endl;
     cout<<mysql_error(&mysql);
     return ;
   }
@@ -219,15 +243,14 @@ void edsServerHandler::readSensorConfiguration()
 
         for(i = 1; i < num_fields-1; i++)
         {
-          //printf("[%.*s] ", (int) lengths[i], row[i] ? row[i] : "NULL");
           sensorConfiguration.emplace_back(row[i]);
         }
-        //cout<<row[1]<<"  "<<sensorConfiguration.size()<<endl;
         sc[row[1]] = sensorConfiguration;
         sensorConfiguration.clear();
-        //printf("\n");
+       
       }
         // retrieve rows, then call mysql_free_result(result)
+      mysql_free_result(result);
     }
     else  // mysql_store_result() returned nothing; should it have?
     {
@@ -243,9 +266,32 @@ void edsServerHandler::readSensorConfiguration()
       }
     }
   }
-  //map<string,vector<string>>::iterator it = sc.find("C9000002D6613828");
-  //C9000002D6613828
-  //sensorConfiguration = sc["C9000002D6613828"];
-  //cout<<sensorConfiguration.at(0)<<"  "<<sensorConfiguration.at(1)<<endl;
   mysql_close(connection);
+}
+
+void edsServerHandler::writeSensorConfiguration()
+{
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+  MYSQL *connection, mysql;
+  int state;
+  string dbName   = "mydb";
+  string tbName   = "sensorconfig";
+  const char* dbAddr = "192.168.1.45";
+  const char* dbuser = "root";
+  const char* dbpwd  = "root";
+
+  string sensorid = "";
+  
+  mysql_init(&mysql);
+
+  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+
+  if (connection == NULL)
+  {
+    std::cout<<dbAddr<<std::endl;
+    cout<<mysql_error(&mysql);
+    return ;
+  }
+  state = mysql_query(connection, string("CREATE TABLE "+ dbName+"." + tbName + " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
 }
