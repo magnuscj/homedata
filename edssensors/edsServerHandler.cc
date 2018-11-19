@@ -163,8 +163,7 @@ void edsServerHandler::storeServerData()
     return ;
   }
  
-      
-  for( auto &sensor : sensors)
+  for( auto &sensor : senss)
   {
     
     time_t t = time(NULL);
@@ -174,9 +173,10 @@ void edsServerHandler::storeServerData()
     state = mysql_query(connection, string("CREATE DATABASE "+dbName).c_str());
     state = mysql_query(connection, string("CREATE TABLE "+dbName+"."+ tbName + date + 
 		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3), curr_timestamp TIMESTAMP)").c_str());
-    string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor.id + "', '" + sensor.value + "')";
+    string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor->id + "', '" + sensor->value + "')";
     state = mysql_query(connection, query.c_str());
   }
+
 
   mysql_close(connection);
   stopTime = std::chrono::system_clock::now();
@@ -192,10 +192,16 @@ void const edsServerHandler::print()
   std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
   std::cout<<setw(14)<<ipAddress<<" (" << elapsed_seconds.count() << "s)\n";
   
-  for( auto &sensor : sensors)
+  /*for( auto &sensor : sensors)
   {    
     cout<<left;
     cout<<setw(0)<<""<<setw(15)<<sensor.type<<setw(17)<<sensor.id<<setw(7)<<sc[sensor.id].at(1)<<": "<<setw(10)<<sensor.value<<"\n";  
+  }*/
+
+  for( auto &sensor : senss)
+  {    
+    cout<<left;
+    cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sc[sensor->id].at(1)<<": "<<setw(10)<<sensor->value<<"\n";  
   } 
   cout<<"\n";
 }
