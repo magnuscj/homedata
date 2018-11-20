@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
   int noOfBins = 5*10;
   std::vector<int> bins(noOfBins,0);
   
-  for(int j=0;j<10;j++)//while(1)//
+  while(1)//for(int j=0;j<10;j++)////
   {
     std::cout << "\x1B[2J\x1B[H";
     auto start = std::chrono::steady_clock::now();

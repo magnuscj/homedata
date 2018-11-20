@@ -36,9 +36,8 @@ edsServerHandler::edsServerHandler(char*& ip)
   startTime = std::chrono::system_clock::now();
   ipAddress = ip;
   curl = curl_easy_init();
-  sensors.clear();
+  senss.clear();
   
-
 }
 
 
@@ -109,25 +108,21 @@ void edsServerHandler::decodeServerData()
         {
           std::shared_ptr<sensor> sens = std::make_shared<sensor>();
           siblingNode = rootchild->FirstChild();
-	        sensorData.type = rootchild->Value();
           sens->type = rootchild->Value();
 
 	        while(siblingNode!=NULL)
           {
             if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
             {
-              sensorData.id = siblingNode->FirstChild()->Value();
               sens->id = siblingNode->FirstChild()->Value();
             }
             
             if(!siblingNode->NoChildren() && (sensorType.second.compare(siblingNode->Value()) ==0))
             {
-              sensorData.value = siblingNode->FirstChild()->Value();
               sens->value = siblingNode->FirstChild()->Value();
             }
             siblingNode=siblingNode->NextSibling();
 	        }
-	        sensors.push_back(sensorData);
           senss.push_back(std::move(sens));
 	      }
 	      rootchild = rootchild->NextSibling();
@@ -192,16 +187,12 @@ void const edsServerHandler::print()
   std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
   std::cout<<setw(14)<<ipAddress<<" (" << elapsed_seconds.count() << "s)\n";
   
-  /*for( auto &sensor : sensors)
-  {    
-    cout<<left;
-    cout<<setw(0)<<""<<setw(15)<<sensor.type<<setw(17)<<sensor.id<<setw(7)<<sc[sensor.id].at(1)<<": "<<setw(10)<<sensor.value<<"\n";  
-  }*/
-
+  //sensorConfigurations  
   for( auto &sensor : senss)
   {    
     cout<<left;
-    cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sc[sensor->id].at(1)<<": "<<setw(10)<<sensor->value<<"\n";  
+    cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
+    //cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sc[sensor->id].at(1)<<": "<<setw(10)<<sensor->value<<"\n";
   } 
   cout<<"\n";
 }
@@ -212,7 +203,7 @@ void edsServerHandler::readSensorConfiguration()
   MYSQL_RES *result;
   MYSQL_ROW row;
   MYSQL *connection, mysql;
-  int state;
+  
   string dbName   = "productiondbpa1";
   string tbName   = "sensorconfig";
   const char* dbAddr = "192.168.1.45";
@@ -240,30 +231,28 @@ void edsServerHandler::readSensorConfiguration()
     result = mysql_store_result(&mysql);
     if (result)  // there are rows
     {
-      num_fields = mysql_num_fields(result);
-      unsigned int i;
       while ((row = mysql_fetch_row(result)))
       {
-        unsigned long *lengths;
-        lengths = mysql_fetch_lengths(result);
+        std::shared_ptr<std::vector<string>> sensConf = std::make_shared<std::vector<string>>();
 
-        for(i = 1; i < num_fields-1; i++)
+        for(int i = 1; i < mysql_num_fields(result)-1; i++)
         {
+          sensConf->emplace_back(row[i]);
           sensorConfiguration.emplace_back(row[i]);
         }
+        sensorConfigurations.emplace(row[1], sensConf);
+
         sc[row[1]] = sensorConfiguration;
         sensorConfiguration.clear();
-       
       }
-        // retrieve rows, then call mysql_free_result(result)
+      
       mysql_free_result(result);
     }
     else  // mysql_store_result() returned nothing; should it have?
     {
       if(mysql_field_count(&mysql) == 0)
       {
-          // query does not return data
-          // (it was not a SELECT)
+          // query does not return data, (it was not a SELECT)
           num_rows = mysql_affected_rows(&mysql);
       }
       else // mysql_store_result() should have returned data
