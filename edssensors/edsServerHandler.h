@@ -19,6 +19,7 @@ class edsServerHandler
 {
   public:
     edsServerHandler(char*& ip);
+    ~edsServerHandler();
     void decodeServerData();
     void storeServerData();
     void readSensorConfiguration();

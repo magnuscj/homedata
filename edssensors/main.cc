@@ -12,6 +12,16 @@
 
 using namespace std;
 
+
+void edsHandler(char* ipadr )
+{
+    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(ipadr);
+    eds->readSensorConfiguration();
+    eds->decodeServerData();
+    eds->storeServerData();
+    cout<<*eds;
+}
+
 void test(char* ipadr )
 {
     edsServerHandler eds(ipadr);
@@ -35,7 +45,7 @@ int main(int argc, char* argv[])
 
     for(int i = 1;i < argc;i++)
     {
-      tve.emplace_back(test, argv[i]);
+      tve.emplace_back(edsHandler, argv[i]);
     }
     for(auto& t : tve)
     {

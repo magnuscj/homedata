@@ -28,8 +28,6 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
-//Constructor
-//-------------------------------
 
 edsServerHandler::edsServerHandler(char*& ip)
 {
@@ -37,9 +35,12 @@ edsServerHandler::edsServerHandler(char*& ip)
   ipAddress = ip;
   curl = curl_easy_init();
   senss.clear();
-  
 }
 
+edsServerHandler::~edsServerHandler()
+{
+  
+}
 
 std::string edsServerHandler::retreivexml(std::string ipaddr)
 {
