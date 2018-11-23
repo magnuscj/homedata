@@ -22,15 +22,6 @@ void edsHandler(char* ipadr )
     cout<<*eds;
 }
 
-void test(char* ipadr )
-{
-    edsServerHandler eds(ipadr);
-    eds.readSensorConfiguration();
-    eds.decodeServerData();
-    eds.storeServerData();
-    cout<<eds;
-}
-
 int main(int argc, char* argv[])
 {
   std::vector<std::thread> tve;
@@ -40,9 +31,9 @@ int main(int argc, char* argv[])
   
   while(1)//for(int j=0;j<10;j++)////
   {
+    
     std::cout << "\x1B[2J\x1B[H";
     auto start = std::chrono::steady_clock::now();
-
     for(int i = 1;i < argc;i++)
     {
       tve.emplace_back(edsHandler, argv[i]);

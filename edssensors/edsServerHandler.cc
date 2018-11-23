@@ -44,7 +44,7 @@ edsServerHandler::~edsServerHandler()
 
 std::string edsServerHandler::retreivexml(std::string ipaddr)
 {
-  std:string urlstr =  "http://" + ipaddr + "/details.xml";
+  std::string urlstr =  "http://" + ipaddr + "/details.xml";
   
   CURLcode res;
   std::string readBuffer;
@@ -142,9 +142,9 @@ void edsServerHandler::storeServerData()
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
-  const char* dbAddr = "192.168.1.45";
-  const char* dbuser = "root";
-  const char* dbpwd  = "root";
+  const char* dbAddr = "127.0.0.1";
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "dbuser";
 
   string sensorid = "";
   
@@ -205,11 +205,11 @@ void edsServerHandler::readSensorConfiguration()
   MYSQL_ROW row;
   MYSQL *connection, mysql;
   
-  string dbName   = "productiondbpa1";
+  string dbName   = "mydb";
   string tbName   = "sensorconfig";
-  const char* dbAddr = "192.168.1.45";
-  const char* dbuser = "root";
-  const char* dbpwd  = "root";
+  const char* dbAddr = "127.0.0.1";
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "dbuser";
   
   mysql_init(&mysql);
 
