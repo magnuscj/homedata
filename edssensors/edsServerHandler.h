@@ -39,9 +39,6 @@ class edsServerHandler
     } sensorData;
 
     std::vector<std::shared_ptr<sensor>> senss;
-    
-    std::vector<std::string> sensorConfiguration;
-    std::map<std::string,std::vector<std::string>> sc;
 
     std::map<std::string,std::shared_ptr<std::vector<std::string>>> sensorConfigurations;
 

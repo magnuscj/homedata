@@ -138,7 +138,6 @@ void edsServerHandler::storeServerData()
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  MYSQL *connection, mysql;
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
@@ -148,14 +147,31 @@ void edsServerHandler::storeServerData()
 
   string sensorid = "";
   
-  mysql_init(&mysql);
+  MYSQL* mysql = mysql_init(NULL);
+  cout<<mysql_error(mysql);
 
-  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+  if(mysql == NULL)
+  {
+     cout<<"mysql is NULL\n";
+     for(int i = 0;i<10;i++)
+     {
+       cout<<"Again!\n";
+       sleep(1);
+       mysql = mysql_init(NULL);
+       if(mysql != NULL)
+       {
+         i=10;
+       }
+     }
+     return;
+  }  		
 
-  if (connection == NULL)
+  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+
+  if (mysql == NULL)
   {
     std::cout<<dbAddr<<std::endl;
-    cout<<mysql_error(&mysql);
+    cout<<mysql_error(mysql);
     return ;
   }
  
@@ -166,15 +182,16 @@ void edsServerHandler::storeServerData()
     struct tm tm = *localtime(&t);
 
     string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" + to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
-    state = mysql_query(connection, string("CREATE DATABASE "+dbName).c_str());
-    state = mysql_query(connection, string("CREATE TABLE "+dbName+"."+ tbName + date + 
+    state = mysql_query(mysql, string("CREATE DATABASE "+dbName).c_str());
+    state = mysql_query(mysql, string("CREATE TABLE "+dbName+"."+ tbName + date + 
 		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3), curr_timestamp TIMESTAMP)").c_str());
     string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor->id + "', '" + sensor->value + "')";
-    state = mysql_query(connection, query.c_str());
+    state = mysql_query(mysql, query.c_str());
   }
 
 
-  mysql_close(connection);
+  mysql_close(mysql);
+  mysql_thread_end();
   stopTime = std::chrono::system_clock::now();
 }
 
@@ -186,7 +203,8 @@ std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
 void const edsServerHandler::print()
 {
   std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
-  std::cout<<setw(14)<<ipAddress<<" (" << elapsed_seconds.count() << "s)\n";
+  cout<<left;
+  std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" (" << elapsed_seconds.count() << "s)\n";
   
   //sensorConfigurations  
   for( auto &sensor : senss)
@@ -203,33 +221,60 @@ void edsServerHandler::readSensorConfiguration()
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  MYSQL *connection, mysql;
   
-  string dbName   = "mydb";
-  string tbName   = "sensorconfig";
+  const char* dbName = "mydb";
+  const char* tbName = "sensorconfig";
   const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
   
-  mysql_init(&mysql);
+  if(mysql_thread_safe()== 0)
+	  cout<<"Not safe\n";
 
-  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+  MYSQL* mysql = mysql_init(NULL);
+  cout<<mysql_error(mysql);
 
-  if (connection == NULL)
+  if(mysql == NULL)
   {
-    cout<<mysql_error(&mysql);
+     cout<<"mysql is NULL\n";
+     for(int i = 0;i<10;i++)
+     {
+       cout<<"Again!\n";
+       sleep(1);
+       mysql = mysql_init(NULL);
+       if(mysql != NULL)
+       {
+         i=10;
+       }
+     }
+     return;
+   }  		
+
+
+  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,dbName,0,NULL,0);
+  cout<<mysql_error(mysql);
+
+  if (mysql == NULL)
+  {
+    cout<<mysql_error(mysql);
     return ;
   }
-  string query = "SELECT * FROM " + dbName + "." + tbName;
+
+  std::string db(dbName);
+  std::string tb(tbName);
+
+  string query = "SELECT * FROM " + db + "." + tb;
   int num_fields =0;
   int num_rows = 0;
-  if (mysql_query(connection, query.c_str()))
+
+  if (mysql_query(mysql, query.c_str()))
   {
     // error
+    cout<<"ERROR!!\n";
   }
   else // query succeeded, process any data returned by it
   {
-    result = mysql_store_result(&mysql);
+    result = mysql_store_result(mysql);
     if (result)  // there are rows
     {
       while ((row = mysql_fetch_row(result)))
@@ -239,30 +284,26 @@ void edsServerHandler::readSensorConfiguration()
         for(int i = 1; i < mysql_num_fields(result)-1; i++)
         {
           sensConf->emplace_back(row[i]);
-          sensorConfiguration.emplace_back(row[i]);
         }
-        sensorConfigurations.emplace(row[1], sensConf);
-
-        sc[row[1]] = sensorConfiguration;
-        sensorConfiguration.clear();
-      }
-      
-      mysql_free_result(result);
+        sensorConfigurations.emplace(row[1], std::move(sensConf));
+      } 
     }
     else  // mysql_store_result() returned nothing; should it have?
     {
-      if(mysql_field_count(&mysql) == 0)
+      if(mysql_field_count(mysql) == 0)
       {
           // query does not return data, (it was not a SELECT)
-          num_rows = mysql_affected_rows(&mysql);
+          num_rows = mysql_affected_rows(mysql);
       }
       else // mysql_store_result() should have returned data
       {
-          fprintf(stderr, "Error: %s\n", mysql_error(&mysql));
+          fprintf(stderr, "Error: %s\n", mysql_error(mysql));
       }
     }
+    mysql_free_result(result);
   }
-  mysql_close(connection);
+  mysql_close(mysql);
+  mysql_thread_end();
 }
 
 void edsServerHandler::writeSensorConfiguration()
