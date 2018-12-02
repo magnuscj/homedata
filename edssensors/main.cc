@@ -9,7 +9,8 @@
 #include <vector>
 #include <unistd.h>
 #include <iomanip>
-
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 
@@ -22,6 +23,31 @@ void edsHandler(char* ipadr )
     cout<<*eds;
 }
 
+int parseLine(char* line){
+    // This assumes that a digit will be found and the line ends in " Kb".
+    int i = strlen(line);
+    const char* p = line;
+    while (*p <'0' || *p > '9') p++;
+    line[i-3] = '\0';
+    i = atoi(p);
+    return i;
+}
+
+int getValue(){ //Note: this value is in KB!
+    FILE* file = fopen("/proc/self/status", "r");
+    int result = -1;
+    char line[128];
+
+    while (fgets(line, 128, file) != NULL){
+        if (strncmp(line, "VmRSS:", 6) == 0){
+            result = parseLine(line);
+            break;
+        }
+    }
+    fclose(file);
+    return result;
+}
+
 int main(int argc, char* argv[])
 {
   std::vector<std::thread> tve;
@@ -31,8 +57,7 @@ int main(int argc, char* argv[])
   
   while(1)//for(int j=0;j<10;j++)////
   {
-    
-    std::cout << "\x1B[2J\x1B[H";
+    std::cout<<"\x1B[2J\x1B[H";
     auto start = std::chrono::steady_clock::now();
     for(int i = 1;i < argc;i++)
     {
@@ -82,13 +107,14 @@ int main(int argc, char* argv[])
       if(i/10)
       {
         s++;
-        cout<<setw(tableSpace)<<mybin<<"\n"<<s<<": ";
+        cout<<setw(tableSpace)<<mybin<<endl<<s<<": ";
         i=0;
       }
       else
         cout<<setw(tableSpace)<<mybin<<"";
       i++;
     }
+    std::cout<<endl<<getValue()<<" Kb."<<endl;
     sleep(60); 
  } 
   
