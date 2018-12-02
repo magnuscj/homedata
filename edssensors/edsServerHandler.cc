@@ -111,7 +111,7 @@ void edsServerHandler::decodeServerData()
           siblingNode = rootchild->FirstChild();
           sens->type = rootchild->Value();
 
-	        while(siblingNode!=NULL)
+	  while(siblingNode!=NULL)
           {
             if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
             {
@@ -123,10 +123,14 @@ void edsServerHandler::decodeServerData()
               sens->value = siblingNode->FirstChild()->Value();
             }
             siblingNode=siblingNode->NextSibling();
-	        }
+	  }
+          if(!sensorConfigurations[sens->id])
+          {
+            this->writeSensorConfiguration(sens->id);
+          }
           senss.push_back(std::move(sens));
-	      }
-	      rootchild = rootchild->NextSibling();
+        }
+	rootchild = rootchild->NextSibling();
       }
     }
   }
@@ -210,7 +214,10 @@ void const edsServerHandler::print()
   for( auto &sensor : senss)
   {    
     cout<<left;
-    cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
+    if(sensorConfigurations[sensor->id])
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
+    else
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<"---"<<": "<<setw(10)<<sensor->value<<"\n";
     //cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sc[sensor->id].at(1)<<": "<<setw(10)<<sensor->value<<"\n";
   } 
   cout<<"\n";
@@ -270,7 +277,6 @@ void edsServerHandler::readSensorConfiguration()
   if (mysql_query(mysql, query.c_str()))
   {
     // error
-    cout<<"ERROR!!\n";
   }
   else // query succeeded, process any data returned by it
   {
@@ -306,29 +312,45 @@ void edsServerHandler::readSensorConfiguration()
   mysql_thread_end();
 }
 
-void edsServerHandler::writeSensorConfiguration()
+void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  MYSQL *connection, mysql;
   int state;
   string dbName   = "mydb";
   string tbName   = "sensorconfig";
-  const char* dbAddr = "192.168.1.45";
-  const char* dbuser = "root";
-  const char* dbpwd  = "root";
+  const char* dbAddr = "127.0.0.1";
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "dbuser";
 
-  string sensorid = "";
-  
-  mysql_init(&mysql);
+  MYSQL* mysql = mysql_init(NULL);
 
-  connection = mysql_real_connect(&mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
 
-  if (connection == NULL)
+  if (mysql == NULL)
   {
     std::cout<<dbAddr<<std::endl;
-    cout<<mysql_error(&mysql);
+    cout<<mysql_error(mysql);
     return ;
   }
-  state = mysql_query(connection, string("CREATE TABLE "+ dbName+"." + tbName + " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
+  state = mysql_query(mysql, string("CREATE TABLE "+ dbName+"." + tbName + " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
+
+  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid, sensorname, color,visible, type) VALUES('" + sensorid + "', 'name','black', 'false', 'default'" + ")";
+  state = mysql_query(mysql, query.c_str());
+  mysql_close(mysql);
+  mysql_thread_end();
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

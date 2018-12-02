@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <cstring>
+#include <string.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -23,7 +24,7 @@ class edsServerHandler
     void decodeServerData();
     void storeServerData();
     void readSensorConfiguration();
-    void writeSensorConfiguration();
+    void writeSensorConfiguration(std::string sensor);
     void const print();
     std::string retreivexml(std::string ipaddr);
     friend std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds);

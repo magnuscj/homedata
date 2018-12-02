@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
     for(int i = 1;i < argc;i++)
     {
       tve.emplace_back(edsHandler, argv[i]);
+      //edsHandler(argv[i]);
     }
     for(auto& t : tve)
     {
