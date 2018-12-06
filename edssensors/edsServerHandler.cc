@@ -18,6 +18,8 @@
 #include <memory>
 #include <utility>
 #include <curl/curl.h>
+#include <fstream>
+
 using namespace std;
 using namespace tinyxml2;
 
@@ -35,6 +37,28 @@ edsServerHandler::edsServerHandler(char*& ip)
   ipAddress = ip;
   curl = curl_easy_init();
   senss.clear();
+  std::ifstream infile("edsServerHandlerConf.txt");
+  std::string line;
+  std::string item, value;
+
+  while (std::getline(infile, line))
+  {
+    std::istringstream iss(line);
+    //cout<<line<<endl;    
+    if (!(iss >> item >> value)) 
+    { break; } // error
+    else
+    {
+      if(item=="dbip")
+      {
+         //dbIpAddress = value.c_str();
+         dbIpAddress = new char[value.length() + 1];
+         strcpy( dbIpAddress, value.c_str());
+      }
+    }
+  }
+
+  //TODO check the if db connections are best done in constructor/destructor
 }
 
 edsServerHandler::~edsServerHandler()
@@ -145,21 +169,20 @@ void edsServerHandler::storeServerData()
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
-  const char* dbAddr = "127.0.0.1";
+  //const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
-
   string sensorid = "";
   
   MYSQL* mysql = mysql_init(NULL);
-  cout<<mysql_error(mysql);
+  //cout<<mysql_error(mysql);
 
   if(mysql == NULL)
   {
-     cout<<"mysql is NULL\n";
+     cout<<"mysql is NULL in storeServerData"<<endl;
      for(int i = 0;i<10;i++)
      {
-       cout<<"Again!\n";
+       //cout<<"Again!\n";
        sleep(1);
        mysql = mysql_init(NULL);
        if(mysql != NULL)
@@ -167,15 +190,17 @@ void edsServerHandler::storeServerData()
          i=10;
        }
      }
+     cout<<"Error"<<endl;
      return;
   }  		
 
-  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
-
+  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,0,0,0,0);
+  cout<<mysql_error(mysql);
+  
   if (mysql == NULL)
   {
-    std::cout<<dbAddr<<std::endl;
-    cout<<mysql_error(mysql);
+    //cout<<dbIpAddress<<std::endl;
+    //cout<<mysql_error(mysql);
     return ;
   }
  
@@ -192,7 +217,6 @@ void edsServerHandler::storeServerData()
     string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor->id + "', '" + sensor->value + "')";
     state = mysql_query(mysql, query.c_str());
   }
-
 
   mysql_close(mysql);
   mysql_thread_end();
@@ -218,9 +242,8 @@ void const edsServerHandler::print()
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
     else
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<"---"<<": "<<setw(10)<<sensor->value<<"\n";
-    //cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sc[sensor->id].at(1)<<": "<<setw(10)<<sensor->value<<"\n";
-  } 
-  cout<<"\n";
+  }
+  cout<<endl;  
 }
 
 
@@ -239,14 +262,14 @@ void edsServerHandler::readSensorConfiguration()
 	  cout<<"Not safe\n";
 
   MYSQL* mysql = mysql_init(NULL);
-  cout<<mysql_error(mysql);
+  //cout<<mysql_error(mysql);
 
   if(mysql == NULL)
   {
-     cout<<"mysql is NULL\n";
+     //cout<<"mysql is NULL\n";
      for(int i = 0;i<10;i++)
      {
-       cout<<"Again!\n";
+       //cout<<"Again!\n";
        sleep(1);
        mysql = mysql_init(NULL);
        if(mysql != NULL)

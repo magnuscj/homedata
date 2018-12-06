@@ -31,9 +31,10 @@ class edsServerHandler
 
   private:
     char* ipAddress;
+    char* dbIpAddress;
     CURL *curl;
     struct sensor
-    {
+    { 
       std::string type;
       std::string id;
       std::string value;
