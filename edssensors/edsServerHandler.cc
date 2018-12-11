@@ -19,6 +19,7 @@
 #include <utility>
 #include <curl/curl.h>
 #include <fstream>
+#include <thread>
 
 using namespace std;
 using namespace tinyxml2;
@@ -232,7 +233,8 @@ void const edsServerHandler::print()
 {
   std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
   cout<<left;
-  std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" (" << elapsed_seconds.count() << "s)\n";
+  std::thread::id this_id = std::this_thread::get_id();
+  std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()<<"s) thread id: "<<this_id<<"\n";
   
   //sensorConfigurations  
   for( auto &sensor : senss)
