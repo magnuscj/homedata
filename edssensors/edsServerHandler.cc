@@ -34,7 +34,8 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 
 edsServerHandler::edsServerHandler(char*& ip)
 {
-  startTime = std::chrono::system_clock::now();
+  startTime = std::make_shared<std::chrono::system_clock::time_point> (std::chrono::system_clock::now());
+
   ipAddress = ip;
   curl = curl_easy_init();
   senss.clear();
@@ -221,7 +222,7 @@ void edsServerHandler::storeServerData()
 
   mysql_close(mysql);
   mysql_thread_end();
-  stopTime = std::chrono::system_clock::now();
+  stopTime = std::make_shared<std::chrono::system_clock::time_point> (std::chrono::system_clock::now());// std::chrono::system_clock::now();
 }
 
 std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
@@ -231,7 +232,7 @@ std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
 
 void const edsServerHandler::print()
 {
-  std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
+  std::chrono::duration<double> elapsed_seconds = *stopTime-*startTime;
   cout<<left;
   std::thread::id this_id = std::this_thread::get_id();
   std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()<<"s) thread id: "<<this_id<<"\n";

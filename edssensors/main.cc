@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 {
   std::vector<std::thread> tve;
   std::vector<double> elapsedTime;
+  int mem = 0;
   int noOfBins = 5*10;
   std::vector<int> bins(noOfBins,0);
   
@@ -114,7 +115,9 @@ int main(int argc, char* argv[])
         cout<<setw(tableSpace)<<mybin<<"";
       i++;
     }
-    std::cout<<endl<<getValue()<<" Kb."<<endl;
+    if(!mem)
+      mem=getValue();
+    std::cout<<endl<<mem<<" Kb increased with "<<getValue()-mem<<" Kb."<<endl;
     sleep(60); 
  } 
   
