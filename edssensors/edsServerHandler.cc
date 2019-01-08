@@ -46,14 +46,12 @@ edsServerHandler::edsServerHandler(char*& ip)
   while (std::getline(infile, line))
   {
     std::istringstream iss(line);
-    //cout<<line<<endl;    
     if (!(iss >> item >> value)) 
     { break; } // error
     else
     {
       if(item=="dbip")
       {
-         //dbIpAddress = value.c_str();
          dbIpAddress = new char[value.length() + 1];
          strcpy( dbIpAddress, value.c_str());
       }
@@ -65,10 +63,10 @@ edsServerHandler::edsServerHandler(char*& ip)
 
 edsServerHandler::~edsServerHandler()
 {
-  
+  delete(dbIpAddress);
 }
 
-std::string edsServerHandler::retreivexml(std::string ipaddr)
+std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
 {
   std::string urlstr =  "http://" + ipaddr + "/details.xml";
   
@@ -93,7 +91,7 @@ std::string edsServerHandler::retreivexml(std::string ipaddr)
  
     /* always cleanup */ 
     curl_easy_cleanup(curl);
-    return readBuffer;
+    return std::make_shared<std::string> (readBuffer); 
   }
 }
 
@@ -101,8 +99,8 @@ void edsServerHandler::decodeServerData()
 {
   string sensorid = "";
   tinyxml2::XMLDocument doc;
-  string xmldocstr = this->retreivexml(ipAddress);
-  const char* xmldoc = xmldocstr.c_str();
+  std::shared_ptr<string> xmldocstr = this->retreivexml(ipAddress);
+  const char* xmldoc = xmldocstr->c_str();
   //std::cout<<"doc"<<this->retreivexml(ipAddress)<<"\n";
   
   XMLError err = doc.Parse(xmldoc);

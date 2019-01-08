@@ -26,7 +26,7 @@ class edsServerHandler
     void readSensorConfiguration();
     void writeSensorConfiguration(std::string sensor);
     void const print();
-    std::string retreivexml(std::string ipaddr);
+    std::shared_ptr<std::string> retreivexml(std::string ipaddr);
     friend std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds);
 
   private:
@@ -44,6 +44,5 @@ class edsServerHandler
     std::map<std::string,std::shared_ptr<std::vector<std::string>>> sensorConfigurations;
     std::shared_ptr<std::chrono::system_clock::time_point> startTime;
     std::shared_ptr<std::chrono::system_clock::time_point> stopTime;
-    
 };
 #endif
