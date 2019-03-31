@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
     for(int i = 1;i < argc;i++)
     {
       tve.emplace_back(edsHandler, argv[i]);
+      //edsHandler(argv[i]);
     }
     for(auto& t : tve)
     {
@@ -88,7 +89,7 @@ int main(int argc, char* argv[])
         cout<<setw(tableSpace)<<mybin<<"";
       i++;
     }
-    sleep(60); 
+    std::this_thread::sleep_for(60s);
  } 
   
   return 0;

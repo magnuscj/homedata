@@ -156,7 +156,7 @@ void edsServerHandler::storeServerData()
      for(int i = 0;i<10;i++)
      {
        cout<<"Again!\n";
-       sleep(1);
+       sleep(5);
        mysql = mysql_init(NULL);
        if(mysql != NULL)
        {
@@ -236,17 +236,22 @@ void edsServerHandler::readSensorConfiguration()
 
   if(mysql == NULL)
   {
-     cout<<"mysql is NULL\n";
+     cout<<"mysql is NULL "<<ipAddress<<"\n";
      for(int i = 0;i<10;i++)
      {
-       cout<<"Again!\n";
-       sleep(1);
+       cout<<"try again!\n";
+       cout<<mysql_error(mysql);
+       sleep(5);
        mysql = mysql_init(NULL);
+
+       cout<<"tried again! "<<mysql_get_server_info(mysql)<<"\n";
        if(mysql != NULL)
        {
+	 cout<<"success!\n";
          i=10;
        }
      }
+     cout<<"Give up\n";
      return;
    }  		
 
