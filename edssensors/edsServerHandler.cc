@@ -270,20 +270,18 @@ void edsServerHandler::readSensorConfiguration()
      cout<<"mysql is NULL "<<ipAddress<<"\n";
      for(int i = 0;i<10;i++)
      {
-       cout<<"try again!\n";
+       cout<<"Try again!\n";
        cout<<mysql_error(mysql);
        sleep(5);
        mysql = mysql_init(NULL);
 
-       cout<<"tried again! "<<mysql_get_server_info(mysql)<<"\n";
+       cout<<"tried again! "/*<<mysql_get_server_info(mysql)*/<<"\n";
        if(mysql != NULL)
        {
 	 cout<<"success!\n";
          i=10;
        }
      }
-     cout<<"Give up\n";
-     return;
    }  		
 
 
