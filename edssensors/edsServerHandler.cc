@@ -182,13 +182,8 @@ void edsServerHandler::storeServerData()
      cout<<"mysql is NULL in storeServerData"<<endl;
      for(int i = 0;i<10;i++)
      {
-<<<<<<< HEAD
        cout<<"Again!\n";
        sleep(5);
-=======
-       //cout<<"Again!\n";
-       sleep(1);
->>>>>>> 0142123df01d7b279fb546c82f970cfe5eff51cb
        mysql = mysql_init(NULL);
        if(mysql != NULL)
        {
