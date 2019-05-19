@@ -68,7 +68,7 @@ do
         $graph->initFrame();
 
 	$t2 = new Text($tdate.", ".date("H:i"),337,402);
-	$t2->SetFont(FF_ARIAL,FS_BOLD,10);
+	//$t2->SetFont(FF_ARIAL,FS_BOLD,10);
 	$t2->SetColor('gray:0.63');
 	$t2->Align('center','top');// How should the text box interpret the coordinates?
 	$t2->ParagraphAlign('center');// How should the paragraph be aligned?
@@ -88,9 +88,12 @@ do
 	$i=0;
 	foreach($sensors[$colID] as $sensorId)
 	{
+
 		$name = $sensors[$colName][$senNo];
 		if($sensors[$colType][$senNo] == "temp")
 		{
+
+
         		if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
             		|| $name == "Inne" 
             		|| $name == "Ute" 

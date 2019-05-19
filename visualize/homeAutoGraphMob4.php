@@ -95,10 +95,9 @@ do
 	$ttime = $ftime = date('H:i',time());
 	$i = 0;	
     
-    
 	foreach($sensors[0] as $sensorId)
 	{
-		if(($sensorShow[$i] == "on") && ($i==0))
+		if(($sensorShow[$i] == "on") && ($i==7))
 		{
 			$ydata_temptot = array();
 			$xdata_timeTot = array();
@@ -133,41 +132,47 @@ do
             
 		}
              
-        	if(($sensorShow[$i] == "on") && ($i!=0))
+        	if(($sensorShow[$i] == "on") && ($i!=7))
 		{
-			$confNo = 0;
-            if($sensors[1][$i]=="El")
-            {
-                $retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
-            }
-            else
-            {
-                $retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName);
-               
-            }
-			$lineplot2=new LinePlot(floatAvg(5, $retXY[0]),$retXY[1] );
-			$lineplot2->SetColor($configuration[$confNo][0]);
-            $lineplot2->SetWeight(2);
-            if($sensors[1][$i]=="El")
-            {
-                $lineplot2->SetFillGradient('aquamarine1','black:1.1');		
-            }
+                  $confNo = 0;
+                  if($sensors[1][$i]=="El")
+                  {
+                    $retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
+                  }
+                  else
+                  {
+                    $retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName);
+                  }
+
+		  $lineplot2=new LinePlot(floatAvg(5, $retXY[0]),$retXY[1] );
+		  $lineplot2->SetColor($configuration[$confNo][0]);
+                  $lineplot2->SetWeight(2);
+
+                  if($sensors[1][$i]=="El")
+                  {
+                    $lineplot2->SetFillGradient('aquamarine1','black:1.1');		
+                  }
             
-            $noOf_Y_FlowGraphs = 0;
-			$graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
-            if($sensors[1][$i]=="El")
-                $graph->SetYScale($noOf_Y_FlowGraphs,'lin',0,220);
-            else
-                $graph->SetYScale($noOf_Y_FlowGraphs,'lin');
-			$graph->ynaxis[$noOf_Y_FlowGraphs]->title->Set($configuration[$confNo][1]);
-            $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetColor($configuration[$confNo][2]);
-            $graph->ynaxis[$noOf_Y_FlowGraphs]->SetFont(FF_VERDANA, FS_BOLD, 8);
-            $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetFont(FF_VERDANA, FS_BOLD,8);
-            $graph->ynaxis[$noOf_Y_FlowGraphs]->SetTitleMargin(36);
-			$graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetMargin(14);
-			$graph->ynaxis[$noOf_Y_FlowGraphs]->scale->ticks->Set(20,10); 
-			$graph->ynaxis[$noOf_Y_FlowGraphs]->SetColor($configuration[$confNo][3]);
-			$graph->ynaxis[$noOf_Y_FlowGraphs]->SetPos('max');				
+                  $noOf_Y_FlowGraphs = 0;
+                  if($sensors[1][$i]=="El")
+                  {
+                    $graph->SetYScale($noOf_Y_FlowGraphs,'lin',0,220);
+                  }
+                  else
+                  {
+                    $graph->SetYScale($noOf_Y_FlowGraphs,'lin');
+                  }
+		    
+                  $graph->ynaxis[$noOf_Y_FlowGraphs]->title->Set($configuration[$confNo][1]);
+                  $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetColor($configuration[$confNo][2]);
+                  $graph->ynaxis[$noOf_Y_FlowGraphs]->SetFont(FF_VERDANA, FS_BOLD, 8);
+                  $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetFont(FF_VERDANA, FS_BOLD,8);
+                  $graph->ynaxis[$noOf_Y_FlowGraphs]->SetTitleMargin(36);
+		  $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetMargin(14);
+		  $graph->ynaxis[$noOf_Y_FlowGraphs]->scale->ticks->Set(20,10); 
+		  $graph->ynaxis[$noOf_Y_FlowGraphs]->SetColor($configuration[$confNo][3]);
+		  $graph->ynaxis[$noOf_Y_FlowGraphs]->SetPos('max');				
+		  $graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
 		}	
 		$i++;
 	}
