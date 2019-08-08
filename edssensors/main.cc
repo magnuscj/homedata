@@ -13,27 +13,28 @@
 #include <fstream>
 using namespace std;
 
-
 void edsHandler(char* ipadr )
 {
-    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(ipadr);
-    eds->readSensorConfiguration();
-    eds->decodeServerData();
-    eds->storeServerData();
-    cout<<*eds;
+  std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(ipadr);
+  eds->readSensorConfiguration();
+  eds->decodeServerData();
+  eds->storeServerData();
+  cout<<*eds;
 }
 
-int parseLine(char* line){
-    // This assumes that a digit will be found and the line ends in " Kb".
-    int i = strlen(line);
-    const char* p = line;
-    while (*p <'0' || *p > '9') p++;
-    line[i-3] = '\0';
-    i = atoi(p);
-    return i;
+int parseLine(char* line)
+{
+  // This assumes that a digit will be found and the line ends in " Kb".
+  int i = strlen(line);
+  const char* p = line;
+  while (*p <'0' || *p > '9') p++;
+  line[i-3] = '\0';
+  i = atoi(p);
+  return i;
 }
 
-int getValue(){ //Note: this value is in KB!
+int getMemory()
+{  //Note: this value is in KB!
     FILE* file = fopen("/proc/self/status", "r");
     int result = -1;
     char line[128];
@@ -117,8 +118,8 @@ int main(int argc, char* argv[])
     }
     
     if(!mem)
-      mem=getValue();
-    std::cout<<endl<<mem<<" Kb increased with "<<getValue()-mem<<" Kb."<<endl;
+      mem=getMemory();
+    std::cout<<endl<<mem<<" Kb increased with "<<getMemory()-mem<<" Kb."<<endl;
     std::this_thread::sleep_for(60s);
  } 
   

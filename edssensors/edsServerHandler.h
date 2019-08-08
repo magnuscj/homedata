@@ -1,5 +1,5 @@
-#ifndef EDSSERVERHANDLER
-#define EDSSERVERHANDLER
+#ifndef EDSSERVERHANDLER_H_
+#define EDSSERVERHANDLER_H_
   
 #include <netinet/in.h>
 #include <stdio.h>
@@ -45,4 +45,4 @@ class edsServerHandler
     std::shared_ptr<std::chrono::system_clock::time_point> startTime;
     std::shared_ptr<std::chrono::system_clock::time_point> stopTime;
 };
-#endif
+#endif  // EDSSERVERHANDLER_H_

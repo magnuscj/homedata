@@ -93,6 +93,7 @@ std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
     curl_easy_cleanup(curl);
     return std::make_shared<std::string> (readBuffer); 
   }
+  return std::make_shared<std::string> (readBuffer); 
 }
 
 void edsServerHandler::decodeServerData()
@@ -225,7 +226,8 @@ void edsServerHandler::storeServerData()
 
 std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
 {
-  eds.print();  
+  eds.print(); 
+  return stream;
 }
 
 void const edsServerHandler::print()
