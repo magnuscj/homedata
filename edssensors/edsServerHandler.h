@@ -1,6 +1,6 @@
 #ifndef EDSSERVERHANDLER_H_
 #define EDSSERVERHANDLER_H_
-  
+
 #include <netinet/in.h>
 #include <stdio.h>
 #include <cstring>
@@ -34,7 +34,7 @@ class edsServerHandler
     char* dbIpAddress;
     CURL *curl;
     struct sensor
-    { 
+    {
       std::string type;
       std::string id;
       std::string value;

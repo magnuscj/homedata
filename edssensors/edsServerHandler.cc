@@ -28,13 +28,14 @@ using namespace tinyxml2;
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
+  ((std::string*)userp)->append((char*)contents, size * nmemb);
+  return size * nmemb;
 }
 
 edsServerHandler::edsServerHandler(char*& ip)
 {
-  startTime = std::make_shared<std::chrono::system_clock::time_point> (std::chrono::system_clock::now());
+  startTime = std::make_shared<std::chrono::system_clock::time_point>
+              (std::chrono::system_clock::now());
 
   ipAddress = ip;
   curl = curl_easy_init();
@@ -46,7 +47,7 @@ edsServerHandler::edsServerHandler(char*& ip)
   while (std::getline(infile, line))
   {
     std::istringstream iss(line);
-    if (!(iss >> item >> value)) 
+    if (!(iss >> item >> value))
     { break; } // error
     else
     {
@@ -69,31 +70,30 @@ edsServerHandler::~edsServerHandler()
 std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
 {
   std::string urlstr =  "http://" + ipaddr + "/details.xml";
-  
-  CURLcode res;
-  std::string readBuffer;
 
-  if(curl) 
+  CURLcode res;
+  std::string readBuffer = "";
+
+  if(curl)
   {
     curl_easy_setopt(curl, CURLOPT_URL, urlstr.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    /* example.com is redirected, so we tell libcurl to follow redirection */ 
+    /* example.com is redirected, so we tell libcurl to follow redirection */
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
- 
-    /* Perform the request, res will get the return code */ 
+
+    /* Perform the request, res will get the return code */
     res = curl_easy_perform(curl);
-    /* Check for errors */ 
+    /* Check for errors */
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
- 
-    /* always cleanup */ 
+
+    /* always cleanup */
     curl_easy_cleanup(curl);
-    return std::make_shared<std::string> (readBuffer); 
   }
-  return std::make_shared<std::string> (readBuffer); 
+  return std::make_shared<std::string> (readBuffer);
 }
 
 void edsServerHandler::decodeServerData()
@@ -102,8 +102,7 @@ void edsServerHandler::decodeServerData()
   tinyxml2::XMLDocument doc;
   std::shared_ptr<string> xmldocstr = this->retreivexml(ipAddress);
   const char* xmldoc = xmldocstr->c_str();
-  //std::cout<<"doc"<<this->retreivexml(ipAddress)<<"\n";
-  
+
   XMLError err = doc.Parse(xmldoc);
   std::pair <string,string> sensorType;
   vector <std::pair <string,string>> sensorTypes;
@@ -123,39 +122,39 @@ void edsServerHandler::decodeServerData()
   {
     for( auto sensorType : sensorTypes)
     {
-      
       XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
       XMLNode* rootchild  = root->FirstChild();      //PollCount
       XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
 
       while(rootchild!=NULL)
-      { 
+      {
         if((sensorType.first.compare(rootchild->Value())==0))
         {
           std::shared_ptr<sensor> sens = std::make_shared<sensor>();
           siblingNode = rootchild->FirstChild();
           sens->type = rootchild->Value();
 
-	  while(siblingNode!=NULL)
+          while(siblingNode!=NULL)
           {
             if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
             {
-              sens->id = siblingNode->FirstChild()->Value();
+            sens->id = siblingNode->FirstChild()->Value();
             }
-            
+
             if(!siblingNode->NoChildren() && (sensorType.second.compare(siblingNode->Value()) ==0))
             {
-              sens->value = siblingNode->FirstChild()->Value();
+            sens->value = siblingNode->FirstChild()->Value();
             }
             siblingNode=siblingNode->NextSibling();
-	  }
+          }
+
           if(!sensorConfigurations[sens->id])
           {
             this->writeSensorConfiguration(sens->id);
           }
           senss.push_back(std::move(sens));
         }
-	rootchild = rootchild->NextSibling();
+        rootchild = rootchild->NextSibling();
       }
     }
   }
@@ -174,7 +173,7 @@ void edsServerHandler::storeServerData()
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
   string sensorid = "";
-  
+
   MYSQL* mysql = mysql_init(NULL);
   //cout<<mysql_error(mysql);
 
@@ -193,40 +192,45 @@ void edsServerHandler::storeServerData()
      }
      cout<<"Error"<<endl;
      return;
-  }  		
+  }
 
   mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,0,0,0,0);
   cout<<mysql_error(mysql);
-  
+
   if (mysql == NULL)
   {
     //cout<<dbIpAddress<<std::endl;
     //cout<<mysql_error(mysql);
     return ;
   }
- 
+
   for( auto &sensor : senss)
   {
-    
+
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
-    string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" + to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
+    string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" +
+                    to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
     state = mysql_query(mysql, string("CREATE DATABASE "+dbName).c_str());
-    state = mysql_query(mysql, string("CREATE TABLE "+dbName+"."+ tbName + date + 
-		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3), curr_timestamp TIMESTAMP)").c_str());
-    string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('" + sensor->id + "', '" + sensor->value + "')";
+    state = mysql_query(mysql, string("CREATE TABLE "+dbName+"."+ tbName + date +
+		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3),\
+       curr_timestamp TIMESTAMP)").c_str());
+
+    string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('"
+                     + sensor->id + "', '" + sensor->value + "')";
     state = mysql_query(mysql, query.c_str());
   }
 
   mysql_close(mysql);
   mysql_thread_end();
-  stopTime = std::make_shared<std::chrono::system_clock::time_point> (std::chrono::system_clock::now());// std::chrono::system_clock::now();
+  stopTime = std::make_shared<std::chrono::system_clock::time_point>
+               (std::chrono::system_clock::now());
 }
 
 std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
 {
-  eds.print(); 
+  eds.print();
   return stream;
 }
 
@@ -235,18 +239,21 @@ void const edsServerHandler::print()
   std::chrono::duration<double> elapsed_seconds = *stopTime-*startTime;
   cout<<left;
   std::thread::id this_id = std::this_thread::get_id();
-  std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()<<"s) thread id: "<<this_id<<"\n";
-  
-  //sensorConfigurations  
+  std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()
+           <<"s) thread id: "<<this_id<<"\n";
+
+  //sensorConfigurations
   for( auto &sensor : senss)
-  {    
+  {
     cout<<left;
     if(sensorConfigurations[sensor->id])
-       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)
+         <<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
     else
-       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)<<"---"<<": "<<setw(10)<<sensor->value<<"\n";
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)
+         <<"---"<<": "<<setw(10)<<sensor->value<<"\n";
   }
-  cout<<endl;  
+  cout<<endl;
 }
 
 
@@ -254,13 +261,13 @@ void edsServerHandler::readSensorConfiguration()
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  
+
   const char* dbName = "mydb";
   const char* tbName = "sensorconfig";
   const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
-  
+
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
 
@@ -284,7 +291,7 @@ void edsServerHandler::readSensorConfiguration()
          i=10;
        }
      }
-   }  		
+   }
 
 
   mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,dbName,0,NULL,0);
@@ -321,7 +328,7 @@ void edsServerHandler::readSensorConfiguration()
           sensConf->emplace_back(row[i]);
         }
         sensorConfigurations.emplace(row[1], std::move(sensConf));
-      } 
+      }
     }
     else  // mysql_store_result() returned nothing; should it have?
     {
@@ -362,24 +369,15 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
     cout<<mysql_error(mysql);
     return ;
   }
-  state = mysql_query(mysql, string("CREATE TABLE "+ dbName+"." + tbName + " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
+  state = mysql_query(mysql, string("CREATE TABLE "+ dbName+"." + tbName +
+          " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL,\
+          sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL,\
+          type TEXT NOT NULL)").c_str());
 
-  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid, sensorname, color,visible, type) VALUES('" + sensorid + "', 'name','black', 'false', 'default'" + ")";
+  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,sensorname,\
+                 color,visible, type) VALUES('" + sensorid + "','name','black',\
+                 'false', 'default'" + ")";
   state = mysql_query(mysql, query.c_str());
   mysql_close(mysql);
   mysql_thread_end();
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
