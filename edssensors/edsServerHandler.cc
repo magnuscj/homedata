@@ -138,12 +138,12 @@ void edsServerHandler::decodeServerData()
           {
             if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
             {
-            sens->id = siblingNode->FirstChild()->Value();
+              sens->id = siblingNode->FirstChild()->Value();
             }
 
             if(!siblingNode->NoChildren() && (sensorType.second.compare(siblingNode->Value()) ==0))
             {
-            sens->value = siblingNode->FirstChild()->Value();
+              sens->value = siblingNode->FirstChild()->Value();
             }
             siblingNode=siblingNode->NextSibling();
           }
