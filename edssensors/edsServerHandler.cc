@@ -20,6 +20,7 @@
 #include <curl/curl.h>
 #include <fstream>
 #include <thread>
+#include <algorithm>
 
 using namespace std;
 using namespace tinyxml2;
@@ -80,7 +81,6 @@ std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    /* example.com is redirected, so we tell libcurl to follow redirection */
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
     /* Perform the request, res will get the return code */
@@ -90,7 +90,6 @@ std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
 
-    /* always cleanup */
     curl_easy_cleanup(curl);
   }
   return std::make_shared<std::string> (readBuffer);
@@ -104,7 +103,6 @@ void edsServerHandler::decodeServerData()
   const char* xmldoc = xmldocstr->c_str();
 
   XMLError err = doc.Parse(xmldoc);
-  std::pair <string,string> sensorType;
   vector <std::pair <string,string>> sensorTypes;
 
   sensorTypes.push_back(std::make_pair("owd_DS18B20","Temperature"));
@@ -120,45 +118,56 @@ void edsServerHandler::decodeServerData()
   }
   else
   {
-    for( auto sensorType : sensorTypes)
+    XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
+    XMLNode* rootchild  = root->FirstChild();      //PollCount
+    XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
+
+    while(rootchild != NULL)
     {
-      XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
-      XMLNode* rootchild  = root->FirstChild();      //PollCount
-      XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
+      bool supported = false;
+      string metricType = "";
 
-      while(rootchild!=NULL)
+      for_each(sensorTypes.begin(),sensorTypes.end(),[&rootchild, &supported, &metricType]
+        (std::pair<string,string> a)
       {
-        if((sensorType.first.compare(rootchild->Value())==0))
+        if(a.first.compare(rootchild->Value()) == 0)
         {
-          std::shared_ptr<sensor> sens = std::make_shared<sensor>();
-          siblingNode = rootchild->FirstChild();
-          sens->type = rootchild->Value();
-
-          while(siblingNode!=NULL)
-          {
-            if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId")==0))
-            {
-              sens->id = siblingNode->FirstChild()->Value();
-            }
-
-            if(!siblingNode->NoChildren() && (sensorType.second.compare(siblingNode->Value()) ==0))
-            {
-              sens->value = siblingNode->FirstChild()->Value();
-            }
-            siblingNode=siblingNode->NextSibling();
-          }
-
-          if(!sensorConfigurations[sens->id])
-          {
-            this->writeSensorConfiguration(sens->id);
-          }
-          senss.push_back(std::move(sens));
+          supported = true;
+          metricType = a.second;
         }
-        rootchild = rootchild->NextSibling();
+      });
+
+      if(supported)
+      {
+        std::shared_ptr<sensor> sens = std::make_shared<sensor>();
+        siblingNode = rootchild->FirstChild();
+        sens->type = rootchild->Value();
+
+        while(siblingNode != NULL)
+        {
+          if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId") == 0))
+          {
+            sens->id = siblingNode->FirstChild()->Value();
+          }
+
+          if(!siblingNode->NoChildren()&&(strcmp(siblingNode->Value(),metricType.c_str()) == 0))
+          {
+            sens->value = siblingNode->FirstChild()->Value();
+          }
+          siblingNode=siblingNode->NextSibling();
+        }
+
+        if(!sensorConfigurations[sens->id])
+        {
+          this->writeSensorConfiguration(sens->id);
+        }
+        senss.push_back(std::move(sens));
       }
+      rootchild = rootchild->NextSibling();
     }
   }
   doc.Clear();
+  std::sort(senss.begin(), senss.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
 }
 
 
@@ -272,27 +281,25 @@ void edsServerHandler::readSensorConfiguration()
 	  cout<<"Not safe\n";
 
   MYSQL* mysql = mysql_init(NULL);
-  //cout<<mysql_error(mysql);
 
   if(mysql == NULL)
   {
-     cout<<"mysql is NULL "<<ipAddress<<"\n";
+     cout<<"The connection atempt failed("<<ipAddress<<").\n";
      for(int i = 0;i<10;i++)
      {
-       cout<<"Try again!\n";
        cout<<mysql_error(mysql);
+       cout<<"Trying again!\n";
        sleep(5);
        mysql = mysql_init(NULL);
 
-       cout<<"tried again! "/*<<mysql_get_server_info(mysql)*/<<"\n";
+       cout<<"tried again! "<<"\n";
        if(mysql != NULL)
        {
-	 cout<<"success!\n";
+         cout<<"success!\n";
          i=10;
        }
      }
    }
-
 
   mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,dbName,0,NULL,0);
   cout<<mysql_error(mysql);
@@ -319,7 +326,7 @@ void edsServerHandler::readSensorConfiguration()
     result = mysql_store_result(mysql);
     if (result)  // there are rows
     {
-      while ((row = mysql_fetch_row(result)))
+      while (row = mysql_fetch_row(result))
       {
         std::shared_ptr<std::vector<string>> sensConf = std::make_shared<std::vector<string>>();
 
