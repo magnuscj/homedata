@@ -25,8 +25,6 @@
 using namespace std;
 using namespace tinyxml2;
 
-
-
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
   ((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -44,7 +42,6 @@ edsServerHandler::edsServerHandler(char*& ip)
   std::ifstream infile("edsServerHandlerConf.txt");
   std::string line;
   std::string item, value;
-
 
   while (std::getline(infile, line))
   {
@@ -64,9 +61,7 @@ edsServerHandler::edsServerHandler(char*& ip)
       }
     }
   }
-
   this->connectToDatabase();
-  //TODO check the if db connections are best done in constructor/destructor
 }
 
 edsServerHandler::~edsServerHandler()
@@ -109,15 +104,12 @@ void edsServerHandler::decodeServerData()
   tinyxml2::XMLDocument doc;
   std::shared_ptr<string> xmldocstr = this->retreivexml(ipAddress);
   const char* xmldoc = xmldocstr->c_str();
-
   XMLError err = doc.Parse(xmldoc);
 
   if(err)
   {
 	  printf("Error %d \n", err);
     cout<<"Ip"<<xmldocstr<<"\n";
-	  //TODO count error of this type j
-    //std::system("clear");
   }
   else
   {
@@ -173,7 +165,6 @@ void edsServerHandler::decodeServerData()
   std::sort(senss.begin(), senss.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
 }
 
-
 void edsServerHandler::storeServerData()
 {
   MYSQL_RES *result;
@@ -185,7 +176,6 @@ void edsServerHandler::storeServerData()
 
   for( auto &sensor : senss)
   {
-
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
@@ -219,7 +209,6 @@ void const edsServerHandler::print()
   std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()
            <<"s) thread id: "<<this_id<<"\n";
 
-  //sensorConfigurations
   for( auto &sensor : senss)
   {
     cout<<left;
@@ -232,7 +221,6 @@ void const edsServerHandler::print()
   }
   cout<<endl;
 }
-
 
 void edsServerHandler::readSensorConfiguration()
 {
