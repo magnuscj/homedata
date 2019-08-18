@@ -45,6 +45,7 @@ edsServerHandler::edsServerHandler(char*& ip)
   std::string line;
   std::string item, value;
 
+
   while (std::getline(infile, line))
   {
     std::istringstream iss(line);
@@ -56,6 +57,10 @@ edsServerHandler::edsServerHandler(char*& ip)
       {
          dbIpAddress = new char[value.length() + 1];
          strcpy( dbIpAddress, value.c_str());
+      }
+      else
+      {
+        sensorTypes.push_back(std::make_pair(item,value));
       }
     }
   }
@@ -103,11 +108,6 @@ void edsServerHandler::decodeServerData()
   const char* xmldoc = xmldocstr->c_str();
 
   XMLError err = doc.Parse(xmldoc);
-  vector <std::pair <string,string>> sensorTypes;
-
-  sensorTypes.push_back(std::make_pair("owd_DS18B20","Temperature"));
-  sensorTypes.push_back(std::make_pair("owd_DS18S20","Temperature"));
-  sensorTypes.push_back(std::make_pair("owd_DS2423","Counter_A"));
 
   if(err)
   {
@@ -178,7 +178,6 @@ void edsServerHandler::storeServerData()
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
-  //const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
   string sensorid = "";
@@ -273,7 +272,6 @@ void edsServerHandler::readSensorConfiguration()
 
   const char* dbName = "mydb";
   const char* tbName = "sensorconfig";
-  const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
 
@@ -301,7 +299,7 @@ void edsServerHandler::readSensorConfiguration()
      }
    }
 
-  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,dbName,0,NULL,0);
+  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,dbName,0,NULL,0);
   cout<<mysql_error(mysql);
 
   if (mysql == NULL)
@@ -362,17 +360,16 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
   int state;
   string dbName   = "mydb";
   string tbName   = "sensorconfig";
-  const char* dbAddr = "127.0.0.1";
   const char* dbuser = "dbuser";
   const char* dbpwd  = "dbuser";
 
   MYSQL* mysql = mysql_init(NULL);
 
-  mysql = mysql_real_connect(mysql,dbAddr,dbuser,dbpwd,0,0,0,0);
+  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,0,0,0,0);
 
   if (mysql == NULL)
   {
-    std::cout<<dbAddr<<std::endl;
+    std::cout<<dbIpAddress<<std::endl;
     cout<<mysql_error(mysql);
     return ;
   }
