@@ -38,7 +38,7 @@ edsServerHandler::edsServerHandler(char*& ip)
 
   ipAddress = ip;
   curl = curl_easy_init();
-  senss.clear();
+  sensors.clear();
   std::ifstream infile("edsServerHandlerConf.txt");
   std::string line;
   std::string item, value;
@@ -156,13 +156,13 @@ void edsServerHandler::decodeServerData()
         {
           this->writeSensorConfiguration(sens->id);
         }
-        senss.push_back(std::move(sens));
+        sensors.push_back(std::move(sens));
       }
       rootchild = rootchild->NextSibling();
     }
   }
   doc.Clear();
-  std::sort(senss.begin(), senss.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
+  std::sort(sensors.begin(), sensors.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
 }
 
 void edsServerHandler::storeServerData()
@@ -174,7 +174,7 @@ void edsServerHandler::storeServerData()
   string tbName   = "table";
   string sensorid = "";
 
-  for( auto &sensor : senss)
+  for( auto &sensor : sensors)
   {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -209,7 +209,7 @@ void const edsServerHandler::print()
   std::cout<<"\033[1;32m"<<setw(14)<<ipAddress<<"\033[0m"<<" ("<<elapsed_seconds.count()
            <<"s) thread id: "<<this_id<<"\n";
 
-  for( auto &sensor : senss)
+  for( auto &sensor : sensors)
   {
     cout<<left;
     if(sensorConfigurations[sensor->id])
