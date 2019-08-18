@@ -15,7 +15,7 @@
 #include <memory>
 #include <curl/curl.h>
 #include <chrono>
-
+#include <mysql/mysql.h>
 class edsServerHandler
 {
   public:
@@ -26,6 +26,7 @@ class edsServerHandler
     void readSensorConfiguration();
     void writeSensorConfiguration(std::string sensor);
     void const print();
+    void connectToDatabase();
     std::shared_ptr<std::string> retreivexml(std::string ipaddr);
     friend std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds);
 
@@ -33,6 +34,7 @@ class edsServerHandler
     char* ipAddress;
     char* dbIpAddress;
     CURL *curl;
+    MYSQL* dbConnection;
     struct sensor
     {
       std::string type;

@@ -65,12 +65,15 @@ edsServerHandler::edsServerHandler(char*& ip)
     }
   }
 
+  this->connectToDatabase();
   //TODO check the if db connections are best done in constructor/destructor
 }
 
 edsServerHandler::~edsServerHandler()
 {
   delete(dbIpAddress);
+  mysql_close(dbConnection);
+  mysql_thread_end();
 }
 
 std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
@@ -178,39 +181,7 @@ void edsServerHandler::storeServerData()
   int state;
   string dbName   = "mydb";
   string tbName   = "table";
-  const char* dbuser = "dbuser";
-  const char* dbpwd  = "dbuser";
   string sensorid = "";
-
-  MYSQL* mysql = mysql_init(NULL);
-  //cout<<mysql_error(mysql);
-
-  if(mysql == NULL)
-  {
-     cout<<"mysql is NULL in storeServerData"<<endl;
-     for(int i = 0;i<10;i++)
-     {
-       cout<<"Again!\n";
-       sleep(5);
-       mysql = mysql_init(NULL);
-       if(mysql != NULL)
-       {
-         i=10;
-       }
-     }
-     cout<<"Error"<<endl;
-     return;
-  }
-
-  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,0,0,0,0);
-  cout<<mysql_error(mysql);
-
-  if (mysql == NULL)
-  {
-    //cout<<dbIpAddress<<std::endl;
-    //cout<<mysql_error(mysql);
-    return ;
-  }
 
   for( auto &sensor : senss)
   {
@@ -220,18 +191,16 @@ void edsServerHandler::storeServerData()
 
     string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" +
                     to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
-    state = mysql_query(mysql, string("CREATE DATABASE "+dbName).c_str());
-    state = mysql_query(mysql, string("CREATE TABLE "+dbName+"."+ tbName + date +
+    state = mysql_query(dbConnection, string("CREATE DATABASE "+dbName).c_str());
+    state = mysql_query(dbConnection, string("CREATE TABLE "+dbName+"."+ tbName + date +
 		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3),\
        curr_timestamp TIMESTAMP)").c_str());
 
     string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('"
                      + sensor->id + "', '" + sensor->value + "')";
-    state = mysql_query(mysql, query.c_str());
+    state = mysql_query(dbConnection, query.c_str());
   }
-
-  mysql_close(mysql);
-  mysql_thread_end();
+  
   stopTime = std::make_shared<std::chrono::system_clock::time_point>
                (std::chrono::system_clock::now());
 }
@@ -272,41 +241,6 @@ void edsServerHandler::readSensorConfiguration()
 
   const char* dbName = "mydb";
   const char* tbName = "sensorconfig";
-  const char* dbuser = "dbuser";
-  const char* dbpwd  = "dbuser";
-
-  if(mysql_thread_safe()== 0)
-	  cout<<"Not safe\n";
-
-  MYSQL* mysql = mysql_init(NULL);
-
-  if(mysql == NULL)
-  {
-     cout<<"The connection atempt failed("<<ipAddress<<").\n";
-     for(int i = 0;i<10;i++)
-     {
-       cout<<mysql_error(mysql);
-       cout<<"Trying again!\n";
-       sleep(5);
-       mysql = mysql_init(NULL);
-
-       cout<<"tried again! "<<"\n";
-       if(mysql != NULL)
-       {
-         cout<<"success!\n";
-         i=10;
-       }
-     }
-   }
-
-  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,dbName,0,NULL,0);
-  cout<<mysql_error(mysql);
-
-  if (mysql == NULL)
-  {
-    cout<<mysql_error(mysql);
-    return ;
-  }
 
   std::string db(dbName);
   std::string tb(tbName);
@@ -315,13 +249,13 @@ void edsServerHandler::readSensorConfiguration()
   int num_fields =0;
   int num_rows = 0;
 
-  if (mysql_query(mysql, query.c_str()))
+  if (mysql_query(dbConnection, query.c_str()))
   {
     // error
   }
   else // query succeeded, process any data returned by it
   {
-    result = mysql_store_result(mysql);
+    result = mysql_store_result(dbConnection);
     if (result)  // there are rows
     {
       while (row = mysql_fetch_row(result))
@@ -337,20 +271,18 @@ void edsServerHandler::readSensorConfiguration()
     }
     else  // mysql_store_result() returned nothing; should it have?
     {
-      if(mysql_field_count(mysql) == 0)
+      if(mysql_field_count(dbConnection) == 0)
       {
           // query does not return data, (it was not a SELECT)
-          num_rows = mysql_affected_rows(mysql);
+          num_rows = mysql_affected_rows(dbConnection);
       }
       else // mysql_store_result() should have returned data
       {
-          fprintf(stderr, "Error: %s\n", mysql_error(mysql));
+          fprintf(stderr, "Error: %s\n", mysql_error(dbConnection));
       }
     }
     mysql_free_result(result);
   }
-  mysql_close(mysql);
-  mysql_thread_end();
 }
 
 void edsServerHandler::writeSensorConfiguration(std::string sensorid)
@@ -360,20 +292,8 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
   int state;
   string dbName   = "mydb";
   string tbName   = "sensorconfig";
-  const char* dbuser = "dbuser";
-  const char* dbpwd  = "dbuser";
 
-  MYSQL* mysql = mysql_init(NULL);
-
-  mysql = mysql_real_connect(mysql,dbIpAddress,dbuser,dbpwd,0,0,0,0);
-
-  if (mysql == NULL)
-  {
-    std::cout<<dbIpAddress<<std::endl;
-    cout<<mysql_error(mysql);
-    return ;
-  }
-  state = mysql_query(mysql, string("CREATE TABLE "+ dbName+"." + tbName +
+  state = mysql_query(dbConnection, string("CREATE TABLE "+ dbName+"." + tbName +
           " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL,\
           sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL,\
           type TEXT NOT NULL)").c_str());
@@ -381,7 +301,34 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
   string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,sensorname,\
                  color,visible, type) VALUES('" + sensorid + "','name','black',\
                  'false', 'default'" + ")";
-  state = mysql_query(mysql, query.c_str());
-  mysql_close(mysql);
-  mysql_thread_end();
+  state = mysql_query(dbConnection, query.c_str());
+}
+
+void edsServerHandler::connectToDatabase()
+{
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "dbuser";
+  dbConnection = mysql_init(NULL);
+  if(mysql_thread_safe()== 0)
+	  cout<<"Not safe\n";
+
+  if(dbConnection == NULL)
+  {
+     cout<<"The connection atempt failed("<<ipAddress<<").\n";
+     for(int i = 0;i<10;i++)
+     {
+       cout<<mysql_error(dbConnection);
+       cout<<"Trying again!\n";
+       sleep(5);
+       dbConnection = mysql_init(NULL);
+
+       cout<<"tried again! "<<"\n";
+       if(dbConnection != NULL)
+       {
+         cout<<"success!\n";
+         i=10;
+       }
+     }
+   }
+  dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,0,0,0);
 }
