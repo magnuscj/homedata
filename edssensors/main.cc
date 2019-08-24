@@ -11,6 +11,8 @@
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <cmath>
+
 using namespace std;
 
 void edsHandler(char* ipadr )
@@ -85,50 +87,29 @@ int main(int argc, char* argv[])
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::cout<< "Elapsed time (system): " << elapsed_seconds.count() << "s\n";
 
-    double step = 0.1;
-    double bin = 0;
-    for(int i=0;i<noOfBins;i++)
-    {
-      if(elapsed_seconds.count()>bin && elapsed_seconds.count()<(bin + step))
-      {
-        bins[i]++;
-      }
-      bin = bin + step;
-    }
-    int tableSpace = 6;
-    int biggest = 0;
+    //Select and update bin for timedistribution
+    int b = elapsed_seconds.count() * 10;
+    int m = (elapsed_seconds.count() * 100 - 10 * b) == 0 ? 0 : 1;
+    int ind = m == 0 ? b - 1 : b ;
+    bins.at(ind)++;
 
-    for(auto mybin : bins)
-    {
-      biggest = mybin > biggest ? mybin : biggest;
-    }
+    //Calculete the table spce for the columns
+    int biggest = *std::max_element(bins.begin(), bins.end());
+    int tableSpace = std::log10(biggest) + 2;
 
-    for(int i = 10000;i>=1;i=i/10)
+    int i = 10;
+    for_each(bins.begin(), bins.end(), [&tableSpace, &i](int bin)
     {
-      tableSpace = (biggest/i) ? tableSpace : tableSpace-1;
-    }
-
-    int i=1;
-    int s=1;
-    for(auto mybin : bins)
-    {
-      if(i==1)
+      if(i%10 == 0)
       {
-        cout<<endl<<s<<": ";
-        cout<<setw(tableSpace)<<mybin<<"";
-        s++;
-        i++;
+        cout<<endl<<i/10<<": "<<setw(tableSpace)<<bin<<"";
       }
-      else if(i<=10)
+      else
       {
-        cout<<setw(tableSpace)<<mybin<<"";
-        i++;
-        if(i==11)
-        {
-          i=1;
-        }
+        cout<<setw(tableSpace)<<bin<<"";
       }
-    }
+      i++;
+    });
 
     if(!mem)
       mem=getMemory();

@@ -1,4 +1,4 @@
-dbip 127.0.0.1
+dbip 192.168.1.45
 owd_DS18B20 Temperature
 owd_DS18S20 Temperature
 owd_DS2423 Counter_A
