@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
   int mem = 0;
-  int noOfBins = 5*10;
+  int noOfBins = 7*10;
   std::vector<int> bins(noOfBins,0);
 
   while(1)
@@ -90,29 +90,31 @@ int main(int argc, char* argv[])
     //Select and update bin for timedistribution
     int b = elapsed_seconds.count() * 10;
     int m = (elapsed_seconds.count() * 100 - 10 * b) == 0 ? 0 : 1;
-    int ind = m == 0 ? b - 1 : b ;
-    bins.at(ind)++;
+    int binIndex = m == 0 ? b - 1 : b ;
+    bins.at(binIndex)++;
 
-    //Calculete the table spce for the columns
+    //Calculete the table space for the columns
     int biggest = *std::max_element(bins.begin(), bins.end());
     int tableSpace = std::log10(biggest) + 2;
 
     int i = 10;
-    for_each(bins.begin(), bins.end(), [&tableSpace, &i](int bin)
+    for_each(bins.begin(), bins.end(), [&tableSpace, &i, &binIndex](int bin)
     {
+      string colorLatest = binIndex == (i - 10) ? "\033[1;33m" : "\033[0m";
       if(i%10 == 0)
       {
-        cout<<endl<<i/10<<": "<<setw(tableSpace)<<bin<<"";
+        cout<<endl<<"\033[1;32m"<<i/10<<": "<<"\033[1;0m"<<colorLatest<<setw(tableSpace)<<bin<<"";
       }
       else
       {
-        cout<<setw(tableSpace)<<bin<<"";
+        cout<<colorLatest<<setw(tableSpace)<<bin<<"";
       }
       i++;
     });
 
     if(!mem)
       mem=getMemory();
+
     std::cout<<endl<<endl<<mem<<" Kb increased with "<<getMemory()-mem<<" Kb."<<endl;
     std::this_thread::sleep_for(60s);
  }

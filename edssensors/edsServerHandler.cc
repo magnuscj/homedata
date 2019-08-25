@@ -294,10 +294,10 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
 void edsServerHandler::connectToDatabase()
 {
-  const char* dbuser = "root";
-  const char* dbpwd  = "root";
   //const char* dbuser = "root";
   //const char* dbpwd  = "root";
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "dbuser";
   dbConnection = mysql_init(NULL);
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
