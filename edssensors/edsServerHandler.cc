@@ -115,54 +115,58 @@ void edsServerHandler::decodeServerData()
   {
     XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
     XMLNode* rootchild  = root->FirstChild();      //PollCount
+    XMLNode* firstChild = root->FirstChild();      //PollCount
     XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
-
-    while(rootchild != NULL)
+    for(auto a : sensorTypes)
     {
-      bool supported = false;
-      string metricType = "";
-
-      for_each(sensorTypes.begin(),sensorTypes.end(),[&rootchild, &supported, &metricType]
-        (std::pair<string,string> a)
+      while(rootchild != NULL)
       {
+        bool supported = false;
+        string metricType = "";
+
         if(a.first.compare(rootchild->Value()) == 0)
         {
           supported = true;
           metricType = a.second;
         }
-      });
-
-      if(supported)
-      {
-        std::shared_ptr<sensor> sens = std::make_shared<sensor>();
-        siblingNode = rootchild->FirstChild();
-        sens->type = rootchild->Value();
-
-        while(siblingNode != NULL)
+        
+        if(supported)
         {
-          if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId") == 0))
-          {
-            sens->id = siblingNode->FirstChild()->Value();
-          }
+          std::shared_ptr<sensor> sens = std::make_shared<sensor>();
+          siblingNode = rootchild->FirstChild();
+          sens->type = rootchild->Value();
 
-          if(!siblingNode->NoChildren()&&(strcmp(siblingNode->Value(),metricType.c_str()) == 0))
+          while(siblingNode != NULL)
           {
-            sens->value = siblingNode->FirstChild()->Value();
-          }
-          siblingNode=siblingNode->NextSibling();
-        }
+            if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId") == 0))
+            {
+              sens->id = siblingNode->FirstChild()->Value();
+            }
 
-        if(!sensorConfigurations[sens->id])
-        {
-          this->writeSensorConfiguration(sens->id);
+            if(!siblingNode->NoChildren()&&(strcmp(siblingNode->Value(),metricType.c_str()) == 0))
+            {
+              sens->value = siblingNode->FirstChild()->Value();
+            }
+            siblingNode=siblingNode->NextSibling();
+          }
+          
+          sens->id = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
+          sens->unit = metricType;
+
+          if(!sensorConfigurations[sens->id])
+          {
+            this->writeSensorConfiguration(sens->id);
+          }
+          sensors.push_back(std::move(sens));
         }
-        sensors.push_back(std::move(sens));
+        rootchild = rootchild->NextSibling();
       }
-      rootchild = rootchild->NextSibling();
+      rootchild = firstChild;
     }
   }
   doc.Clear();
   std::sort(sensors.begin(), sensors.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
+  
 }
 
 void edsServerHandler::storeServerData()
@@ -213,11 +217,12 @@ void const edsServerHandler::print()
   {
     cout<<left;
     if(sensorConfigurations[sensor->id])
-       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)
-         <<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value<<"\n";
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
+         <<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value
+         <<"("<<sensor->unit<<")"<<"\n";
     else
-       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(17)<<sensor->id<<setw(7)
-         <<"---"<<": "<<setw(10)<<sensor->value<<"\n";
+       cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
+         <<"---"<<": "<<setw(10)<<sensor->value<<"("<<sensor->unit<<")"<<"\n";
   }
   cout<<endl;
 }
@@ -294,13 +299,17 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
 void edsServerHandler::connectToDatabase()
 {
-  //const char* dbuser = "root";
-  //const char* dbpwd  = "root";
-  const char* dbuser = "dbuser";
-  const char* dbpwd  = "dbuser";
+  const char* dbuser = "root";
+  const char* dbpwd  = "root";
+  //const char* dbuser = "dbuser";
+  //const char* dbpwd  = "dbuser";
   dbConnection = mysql_init(NULL);
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
+
+  cout<<"Mysql error"<<endl;
+  cout<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
+  cout<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
 
   if(dbConnection == NULL)
   {
@@ -321,4 +330,12 @@ void edsServerHandler::connectToDatabase()
      }
    }
   dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,0,0,0);
+  if(dbConnection == NULL)
+  {
+    cout<<"Mysql error"<<endl;
+    cout<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
+    cout<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
+    
+    exit(1);
+  }
 }

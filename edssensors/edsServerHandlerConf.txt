@@ -1,8 +1,10 @@
-dbip 127.0.0.1
+dbip 192.168.1.45
 owd_DS18B20 Temperature
+XXowd_DS18B20 Resolution
 owd_DS18S20 Temperature
 owd_DS2423 Counter_A
-owd_DS2406 ActivityLatch_B
-owd_DS2408 PrimaryValue
+XXowd_DS2423 Counter_B
+XXowd_DS2406 ActivityLatch_B
+XXowd_DS2408 PrimaryValue
 owd_DS2438 Temperature
-owd_DS2450 ChannelBConversionResolution 
+XXowd_DS2450 ChannelBConversionResolution 

@@ -40,6 +40,7 @@ class edsServerHandler
       std::string type;
       std::string id;
       std::string value;
+      std::string unit;
     } sensorData;
 
     std::vector<std::shared_ptr<sensor>> sensors;
