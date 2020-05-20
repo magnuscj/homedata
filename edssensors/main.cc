@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include "edsServerHandler.h"
+#include "communication.h"
 #include <thread>
 #include <chrono>
 #include <memory>
@@ -60,6 +61,9 @@ int getMemory()
 
 int main(int argc, char* argv[])
 {
+  communication c;
+  string m = "Hej";
+  c.sendMail(m.c_str());
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
   int mem = 0;

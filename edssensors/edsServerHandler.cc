@@ -307,10 +307,6 @@ void edsServerHandler::connectToDatabase()
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
 
-  cout<<"Mysql error"<<endl;
-  cout<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
-  cout<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
-
   if(dbConnection == NULL)
   {
      cout<<"The connection atempt failed("<<ipAddress<<").\n";
