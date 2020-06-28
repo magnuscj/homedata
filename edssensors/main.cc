@@ -2,7 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include "edsServerHandler.h"
-#include "communication.h"
+//#include "communication.h"
 #include <thread>
 #include <chrono>
 #include <memory>
@@ -61,9 +61,9 @@ int getMemory()
 
 int main(int argc, char* argv[])
 {
-  communication c;
+  //communication c;
   string m = "Hej";
-  c.sendMail(m.c_str());
+  //c.sendMail(m.c_str());
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
   int mem = 0;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
       string colorLatest = binIndex == (i - 10) ? "\033[1;33m" : "\033[0m";
       if(i%10 == 0)
       {
-        cout<<endl<<"\033[1;32m"<<i/10<<": "<<"\033[1;0m"<<colorLatest<<setw(tableSpace)<<bin<<"";
+        cout<<endl<<"\033[1;32m"<<(i/10)-1<<": "<<"\033[1;0m"<<colorLatest<<setw(tableSpace)<<bin<<"";
       }
       else
       {
