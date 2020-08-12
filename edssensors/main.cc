@@ -62,7 +62,6 @@ int getMemory()
 int main(int argc, char* argv[])
 {
   //communication c;
-  string m = "Hej";
   //c.sendMail(m.c_str());
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
@@ -84,7 +83,8 @@ int main(int argc, char* argv[])
     {
       t.join();
     }
-    edsServers.clear();
+
+	 edsServers.clear();
 
     auto end = std::chrono::steady_clock::now();
 
@@ -92,9 +92,14 @@ int main(int argc, char* argv[])
     std::cout<< "Elapsed time (system): " << elapsed_seconds.count() << "s\n";
 
     //Select and update bin for timedistribution
-    int b = elapsed_seconds.count() * 10;
+
+	 int b = elapsed_seconds.count() * 10;
     int m = (elapsed_seconds.count() * 100 - 10 * b) == 0 ? 0 : 1;
     int binIndex = m == 0 ? b - 1 : b ;
+
+    if(noOfBins <= elapsed_seconds.count()*10)
+       binIndex = noOfBins - 1;
+
     bins.at(binIndex)++;
 
     //Calculete the table space for the columns

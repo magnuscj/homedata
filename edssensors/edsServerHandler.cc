@@ -90,9 +90,10 @@ std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
     res = curl_easy_perform(curl);
     /* Check for errors */
     if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
-
+    {
+       fprintf(stderr, "curl_easy_perform() failed: %s\n",
+       curl_easy_strerror(res));
+    }
     curl_easy_cleanup(curl);
   }
   return std::make_shared<std::string> (readBuffer);
@@ -108,8 +109,8 @@ void edsServerHandler::decodeServerData()
 
   if(err)
   {
-	  printf("Error %d \n", err);
-    cout<<"Ip"<<xmldocstr<<"\n";
+	  //printf("Error %d \n", err);
+	  return;
   }
   else
   {
@@ -178,22 +179,21 @@ void edsServerHandler::storeServerData()
   string tbName   = "table";
   string sensorid = "";
 
-  for( auto &sensor : sensors)
-  {
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-
-    string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" +
-                    to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
-    state = mysql_query(dbConnection, string("CREATE DATABASE "+dbName).c_str());
-    state = mysql_query(dbConnection, string("CREATE TABLE "+dbName+"."+ tbName + date +
-		   " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3),\
-       curr_timestamp TIMESTAMP)").c_str());
-
-    string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('"
-                     + sensor->id + "', '" + sensor->value + "')";
-    state = mysql_query(dbConnection, query.c_str());
-  }
+  if(sensors.size() > 0)
+    for( auto &sensor : sensors)
+	 {
+		time_t t = time(NULL);
+		struct tm tm = *localtime(&t);
+		string date = to_string(tm.tm_year + 1900).append((((1+tm.tm_mon) <=9) ? "0" +
+							 to_string(tm.tm_mon+1) : to_string(tm.tm_mon+1 )));
+		state = mysql_query(dbConnection, string("CREATE DATABASE "+dbName).c_str());
+		state = mysql_query(dbConnection, string("CREATE TABLE "+dbName+"."+ tbName + date +
+			  " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3),\
+			curr_timestamp TIMESTAMP)").c_str());
+			string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('"
+							  + sensor->id + "', '" + sensor->value + "')";
+		state = mysql_query(dbConnection, query.c_str());
+	 }
   
   stopTime = std::make_shared<std::chrono::system_clock::time_point>
                (std::chrono::system_clock::now());
@@ -299,28 +299,24 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
 void edsServerHandler::connectToDatabase()
 {
-  const char* dbuser = "root";
-  const char* dbpwd  = "root";
-  //const char* dbuser = "dbuser";
-  //const char* dbpwd  = "dbuser";
+  const char* dbuser = "dbuser";
+  const char* dbpwd  = "kmjmkm54C#";
+
   dbConnection = mysql_init(NULL);
+
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
 
   if(dbConnection == NULL)
   {
-     cout<<"The connection atempt failed("<<ipAddress<<").\n";
      for(int i = 0;i<10;i++)
      {
-       cout<<mysql_error(dbConnection);
-       cout<<"Trying again!\n";
-       sleep(5);
+       //cout<<mysql_error(dbConnection);
+       sleep(1);
        dbConnection = mysql_init(NULL);
 
-       cout<<"tried again! "<<"\n";
        if(dbConnection != NULL)
        {
-         cout<<"success!\n";
          i=10;
        }
      }
@@ -329,8 +325,9 @@ void edsServerHandler::connectToDatabase()
   if(dbConnection == NULL)
   {
     cout<<"Mysql error"<<endl;
-    cout<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
-    cout<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
+
+    cout<<"Error:    "<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
+    cout<<"Error no: "<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
     
     exit(1);
   }

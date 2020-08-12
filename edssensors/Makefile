@@ -2,7 +2,7 @@
 #	g++ -Wl,--no-as-needed -lpthread -o eds main.cc ../../tinyxml2/tinyxml2.cpp edsServerHandler.cc `mysql_config --cflags --libs` -lcurl
 
 output: main.o tinyxml2.o edsServerHandler.o
-	g++ -Wl,--no-as-needed -lpthread `mysql_config --cflags --libs` -lcurl main.o tinyxml2.o edsServerHandler.o -o eds
+	g++ -g -Wl,--no-as-needed -lpthread `mysql_config --cflags --libs` -lcurl main.o tinyxml2.o edsServerHandler.o -o eds
 
 main.o: main.cc
 	g++ -c main.cc

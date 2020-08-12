@@ -1150,7 +1150,7 @@ date_default_timezone_set('Europe/Stockholm');
     {
 	try
 	{
-		$con =  mysqli_connect("127.0.0.1","dbuser","dbuser");//$serverHostName,$username,$password);
+		$con =  mysqli_connect("127.0.0.1",$username,$password,$database);//$serverHostName,$username,$password);
 		
 	}
 	catch(Exception $e)

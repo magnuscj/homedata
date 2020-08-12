@@ -1,4 +1,4 @@
-dbip 192.168.1.45
+dbip 127.0.0.1
 owd_DS18B20 Temperature
 XXowd_DS18B20 Resolution
 owd_DS18S20 Temperature

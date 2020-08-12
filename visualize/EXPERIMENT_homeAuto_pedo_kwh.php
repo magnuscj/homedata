@@ -1,12 +1,12 @@
 <?php
 date_default_timezone_set('Europe/Stockholm');
-require_once ("jpgraph/jpgraph.php");
-require_once ("jpgraph/jpgraph_line.php");
-require_once ('jpgraph/jpgraph_plotline.php');
-require_once ("jpgraph/jpgraph_date.php"); 
-require_once ("jpgraph/jpgraph_regstat.php");
-require_once ("jpgraph/jpgraph_bar.php");
-require_once ('jpgraph/jpgraph_canvas.php');
+require_once ("jpgraph.php");
+require_once ("jpgraph_line.php");
+require_once ('jpgraph_plotline.php');
+require_once ("jpgraph_date.php");
+require_once ("jpgraph_regstat.php");
+require_once ("jpgraph_bar.php");
+require_once ('jpgraph_canvas.php');
 include ("homeFunctions.php");
 
 
@@ -17,8 +17,8 @@ $fileName = $file[sizeof($file)-1].".png";
 if(isCli())
 {
     $path = "pictures\\".$fileName;
-    $path2 = "html/pic/".$fileName;
-    $sleepTime = getConfig("SLEEP")+20;
+    $path2 = "/var/www/html/picture/".$fileName;
+	 $sleepTime = getConfig("SLEEP")+20;
 }
 else
 {
