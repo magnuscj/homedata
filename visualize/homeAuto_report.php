@@ -9,7 +9,6 @@ require_once ("jpgraph_bar.php");
 require_once ('jpgraph_canvas.php');
 include ("homeFunctions.php");
 
-
 $file = explode('.', __FILE__);
 $file = explode('/', $file[0]);
 $fileName = $file[sizeof($file)-1].".png";
@@ -183,17 +182,15 @@ do
       $graph->img->Stream($path2);
 		$utr = time()-$time;
 		print ", it took "."$utr"." seconds. Next run will be in "."$sleepTime"." seconds.\n";
-        
-		sleep($sleepTime);
 	}
 	else
 	{
         
       $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
 		$graph->img->Stream($path2);
-		sleep($sleepTime);
-    }
-	
+   }
+   sleep($sleepTime);
+
 }while (true);
 	
 ?>

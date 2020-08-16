@@ -3,3 +3,4 @@ DBNAME:mydb
 DBPSW:kmjmkm54C#
 DBUSN:dbuser
 SLEEP:300
+PATH:/var/www/html/picture/

@@ -6,50 +6,45 @@ include ("jpgraph_date.php");
 include ("jpgraph_regstat.php");
 include ("homeFunctions.php");
 
-$fileName = "/var/www/html/picture/homeAutoGraphMob.png";
+$file = explode('.', __FILE__);
+$file = explode('/', $file[0]);
+$fileName = $file[sizeof($file)-1].".png";
+$path = getConfig("PATH");
 
+$fileName = $path.$fileName;
 $sleepTime = getConfig("SLEEP")+30;
-if(isCli())
-{
-   //sleep($sleepTime);
-}
+
 do
 {
 	if(isCli())
-	{
-		$time = time();
-		print date('H:i:s',$time).", Working with ".$fileName;
-	}
+   {
+      $time = time();
+      print date('H:i:s',$time).", Working with ".$fileName;
+   }
 
-
-	// Create the graph.
-	$graph = new Graph(395,219);
-	$graph->SetMargin(40,52,10,25);
-	$graph->SetScale("datint");
-	$graph->ClearTheme();
-	$graph->xaxis->SetPos("min");
-	$graph->xgrid->Show(true);
-	$graph->xaxis->scale-> SetDateFormat('H'); 
-	$graph->xaxis->SetLabelAngle(0);
-	$graph->yaxis->SetTitleMargin(29);
+   // Create the graph.
+   $graph = new Graph(395,219);
+   $graph->SetScale("datint");
+   $graph->ClearTheme();
+   $graph->xaxis->SetPos("min");
+   $graph->SetMargin(40,42,10,25);
+   $graph->xgrid->Show(true);
+   $graph->xaxis->scale-> SetDateFormat('H'); 
+   $graph->xaxis->SetLabelAngle(0);
+   $graph->yaxis->SetTitleMargin(29);
    $graph->yaxis->title->Set('°C');
-	$graph->yaxis->title->SetColor('gray');
+   $graph->yaxis->title->SetColor('gray');
    $graph->yaxis->title->SetFont(FF_VERDANA, FS_BOLD,8);
-	$graph->yaxis->SetColor('black:1.5','gray'); 
-	$graph->xaxis->SetColor('black:1.5','gray'); 
-	$graph->xaxis->SetTitleMargin(1);
-	$graph->xaxis->SetFont(FF_VERDANA, FS_BOLD,8);	
-	$graph->yaxis->SetFont(FF_VERDANA, FS_BOLD,8);
-	$graph->xgrid->SetColor('black:1.5');
-	$graph->ygrid->SetColor('black:1.5');
-	$graph->SetColor('gray:0.43');
-	$graph->SetBackgroundGradient('black:1.1','black:1.1',GRAD_HOR,BGRAD_MARGIN);
+   $graph->yaxis->SetColor('black:1.5','gray'); 
+   $graph->xaxis->SetColor('black:1.5','gray'); 
+   $graph->xaxis->SetTitleMargin(1);
+   $graph->xaxis->SetFont(FF_VERDANA, FS_BOLD,8);	
+   $graph->yaxis->SetFont(FF_VERDANA, FS_BOLD,8);
+   $graph->xgrid->SetColor('black:1.5');
+   $graph->ygrid->SetColor('black:1.5');
+   $graph->SetColor('gray:0.43');
+   $graph->SetBackgroundGradient('black:1.1','black:1.1',GRAD_HOR,BGRAD_MARGIN);
 	
-	//Default values
-	//$past          = mktime(0,0,0,date("m")-0,date("d")-1,date("Y"));
-	//$fdate         = date("Y-m-d", $past);
-	//$tdate         = date("Y-m-d");
-    
    $color         = array("black", "blue","red","green","brown");
 	$configuration = array(array("orange",           /*Line color*/
                                     "°C",           /*Y-axis name*/
@@ -169,10 +164,11 @@ do
          $graph->ynaxis[$noOf_Y_FlowGraphs]->SetFont(FF_VERDANA, FS_BOLD, 8);
          $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetFont(FF_VERDANA, FS_BOLD,8);
          $graph->ynaxis[$noOf_Y_FlowGraphs]->SetTitleMargin(36);
-		   $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetMargin(14);
+		   $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetMargin(4);
 		   $graph->ynaxis[$noOf_Y_FlowGraphs]->scale->ticks->Set(20,10); 
 		   $graph->ynaxis[$noOf_Y_FlowGraphs]->SetColor($configuration[$confNo][3]);
 		   $graph->ynaxis[$noOf_Y_FlowGraphs]->SetPos('max');				
+		   $graph->ynaxis[$noOf_Y_FlowGraphs]->SetTitleSide(SIDE_RIGHT);
 		   $graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
 		}	
 		$i++;
@@ -181,8 +177,7 @@ do
 	if(isCli())
 	{
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-		//$graph->img->Stream($fileName);
-                $graph->img->Stream($fileName);
+		$graph->img->Stream($fileName);
 	
 		$utr = time()-$time;
 		print ", it took "."$utr"." seconds. Next run will be in ".$sleepTime." seconds. \n";
