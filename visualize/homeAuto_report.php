@@ -69,87 +69,74 @@ do
 	$t2->Align('center','top');// How should the text box interpret the coordinates?
 	$t2->ParagraphAlign('center');// How should the paragraph be aligned?
 	$graph->AddText($t2);
-	//Determin which sensors that are valid for this view.
-	//The information comes either from the web page or the
-	//db.
-	foreach($sensors[$colName] as $sensorName)
-	{		
-		if($sensors[$colVisible][$i] == 'True')
-			$sensorShow[$i] 	= "on";
-		else
-			$sensorShow[$i] 	= "off";
-		$i++;
-		
-	}
 	$i=0;
 	foreach($sensors[$colID] as $sensorId)
 	{
-
 		$name = $sensors[$colName][$senNo];
 		if($sensors[$colType][$senNo] == "temp")
 		{
-
-
-        		if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
-            		|| $name == "Inne" 
-            		|| $name == "Ute" 
-            		|| $name == "Sovrum" 
-            		||($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> 30)))
-        		{
-			
-				if($sensorShow[$senNo] == "on" /*&& substr($sensors[$colType][$senNo],0,4)=="temp")*/ && $sensors[$colType][$senNo] == "temp")
-		    	{			
-			    		//degree sign &#176; &deg;
-			    
-			    	$txt= $sensors[$colName][$senNo];
-			    	$t = new Text($txt,10,$infoStart_Y + $i*70-30);
-			    	$t->SetFont(FF_ARIAL,FS_BOLD,15);
-			    	$t->SetColor($textColor);
-			    	$t->Align('left','top');	// How should the text box interpret the coordinates?
-			    	$t->ParagraphAlign('left');	// How should the paragraph be aligned?
-			    	$graph->AddText($t);	// Stroke the text
-			
-			    	$txt= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'Â°';//"This\nis\na TEXT!!!";
-			    	$t = new Text($txt,240,$infoStart_Y-32 + $i*70);
-			    	$t->SetFont(FF_ARIAL,FS_BOLD,50);
-			    	$t->SetColor($textColor);
-			    	$t->Align('right','top');	// How should the text box interpret the coordinates?
-			    	$t->ParagraphAlign('left');	// How should the paragraph be aligned?
-			    	$graph->AddText($t);	// Stroke the text
-                
-			    	$max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
-                		$t = new Text($max,285,$infoStart_Y-32 + $i*70);
-			    	$t->SetFont(FF_ARIAL,FS_BOLD,15);
-			    	$t->SetColor('red:1.6');
-			    	$t->Align('left','top');	// How should the text box interpret the coordinates?
-			    	$t->ParagraphAlign('left');	// How should the paragraph be aligned?
-			    	$graph->AddText($t);	// Stroke the text
-                
-			    	$min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
-                		$t = new Text($min,285,$infoStart_Y+3 + $i*70);
-			    	$t->SetFont(FF_ARIAL,FS_BOLD,15);
-			    	$t->SetColor('blue:1.6');
-			    	$t->Align('left','top');	// How should the text box interpret the coordinates?
-			    	$t->ParagraphAlign('left');	// How should the paragraph be aligned?
-			    	$graph->AddText($t);	// Stroke the text
-                
-               $next = 68*$i;              
-               $p =  array( 10,$infoStart_Y+28+$next, 
-                            10,$infoStart_Y+30+$next, 
-                           385,$infoStart_Y+30+$next,
-                           385,$infoStart_Y+28+$next,
-                            10,$infoStart_Y+28+$next); 
-               $graph->img->SetColor('gray:0.47');
-               $graph->img->FilledPolygon($p);
-                
-			    	$i++;
-		    		}
-        		}
-        	}
+         if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
+             || $name == "Inne" 
+             || $name == "Ute" 
+             || $name == "Sovrum" 
+             ||($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> 30)))
+         {
+            $sensorName= $sensors[$colName][$senNo];
+            $t = new Text($sensorName,10,$infoStart_Y + $i*70-30);
+            $t->SetFont(FF_ARIAL,FS_BOLD,15);
+            $t->SetColor($textColor);
+            $t->Align('left','top');	
+            $t->ParagraphAlign('left');
+            $graph->AddText($t);       
+      
+            $sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'Â°';
+            $t = new Text($sensorValue,240,$infoStart_Y-32 + $i*70);
+            $t->SetFont(FF_ARIAL,FS_BOLD,50);
+            $t->SetColor($textColor);
+            $t->Align('right','top');	
+            $t->ParagraphAlign('left');
+            $graph->AddText($t);	      
+             
+            $max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
+            $t = new Text($max,285,$infoStart_Y-32 + $i*70);
+            $t->SetFont(FF_ARIAL,FS_BOLD,15);
+            $t->SetColor('red:1.6');
+            $t->Align('left','top');	
+            $t->ParagraphAlign('left');	
+            $graph->AddText($t);	
+            
+            $min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
+            $t = new Text($min,285,$infoStart_Y+3 + $i*70);
+            $t->SetFont(FF_ARIAL,FS_BOLD,15);
+            $t->SetColor('blue:1.6');
+            $t->Align('left','top');
+            $t->ParagraphAlign('left');	
+            $graph->AddText($t);
+             
+            $next = 68*$i;              
+            $p =  array( 10,$infoStart_Y+28+$next, 
+                         10,$infoStart_Y+30+$next, 
+                        385,$infoStart_Y+30+$next,
+                        385,$infoStart_Y+28+$next,
+                         10,$infoStart_Y+28+$next); 
+            $graph->img->SetColor('gray:0.47');
+            $graph->img->FilledPolygon($p);
+             
+            $i++;
+         }
+      }
         
-      if($sensorShow[$senNo] == "on" && $sensors[$colType][$senNo] == "power")
+      if($sensors[$colType][$senNo] == "power")
 		{	
-			$graph->InitFrame();
+
+         $sensorName= $sensors[$colName][$senNo];
+			$t = new Text($sensorName,10,$infoStart_Y+210 + 90 + $kwhPosDelta);
+			$t->SetFont(FF_ARIAL,FS_BOLD,15);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+
 			$time = time();
 		   $frdate = date('Y-m-d H:i:s',$time-180);
 			$todate = date('Y-m-d H:i:s',$time);
@@ -157,7 +144,7 @@ do
 			$txt= number_format($avg,2);
 			$txt2= "kwh";
 						
-			$t = new Text($txt,360,$infoStart_Y+227 + $kwhPosDelta);
+			$t = new Text($txt,170,$infoStart_Y+227 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,30);
 			$t->SetColor($textColor);
 			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
@@ -165,13 +152,13 @@ do
 			$graph->AddText($t);	// Stroke the text
 			
 			
-			$t = new Text($txt2,365,$infoStart_Y+227 + $kwhPosDelta);
+			$t = new Text($txt2,170,$infoStart_Y+227 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,12);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
-			$kwhPosDelta = 33;
+			$kwhPosDelta = $kwhPosDelta + 33;
 		}
 		$senNo++;
 	}
