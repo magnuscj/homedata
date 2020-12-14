@@ -32,7 +32,7 @@ do
    $graph->xaxis->scale-> SetDateFormat('H'); 
    $graph->xaxis->SetLabelAngle(0);
    $graph->yaxis->SetTitleMargin(29);
-   $graph->yaxis->title->Set('°C');
+   $graph->yaxis->title->Set('ï¿½C');
    $graph->yaxis->title->SetColor('gray');
    $graph->yaxis->title->SetFont(FF_VERDANA, FS_BOLD,8);
    $graph->yaxis->SetColor('black:1.5','gray'); 
@@ -47,7 +47,7 @@ do
 	
    $color         = array("black", "blue","red","green","brown");
 	$configuration = array(array("orange",           /*Line color*/
-                                    "°C",           /*Y-axis name*/
+                                    "ï¿½C",           /*Y-axis name*/
                                 "orange",           /*Y-axix title color*/
                                 "orange",           /*Y-axix color */
                                  "xxxx"),
@@ -93,7 +93,7 @@ do
     
 	foreach($sensors[0] as $sensorId)
 	{
-		if(($sensorShow[$i] == "on") && ($i==2))
+		if(($sensorShow[$i] == "on") && ($i==3))
 		{
 	      $ydata_temptot = array();
 			$xdata_timeTot = array();

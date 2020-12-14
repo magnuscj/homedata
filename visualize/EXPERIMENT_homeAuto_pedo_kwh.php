@@ -116,11 +116,10 @@ do
 	foreach($sensors[$colID] as $sensorId)
 	{
         $name = $sensors[$colName][$senNo];
-        if($name == $sensorNameToShow )
-            
+        if($name == $sensorNameToShow )          
         {
-		    if($sensorShow[$senNo] == "on" && $sensors[$colType][$senNo] == $sensorType)
-		    {			
+		    //if($sensorShow[$senNo] == "on" && $sensors[$colType][$senNo] == $sensorType)
+		    //{			
 			    $graph->InitFrame();
 			    $txt= "kwh";//$sensors[$colName][$senNo];//"This\nis\na TEXT!!!";
                 
@@ -172,7 +171,7 @@ do
 			        $graph->AddText($t);
                 }
 			    $i++;
-		    }
+		    //}
         }
 		$senNo++;
 	}
