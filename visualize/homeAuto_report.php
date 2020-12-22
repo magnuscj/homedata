@@ -29,7 +29,7 @@ do
 	if(isCli())
 	{
 		$time = time();
-		print date('H:i:s',$time).", Working with ".$fileName;
+		print date('H:i:s',$time).", ".$fileName;
 	}
 	
 	$username       = getConfig("DBUSN");
@@ -97,7 +97,7 @@ do
             $t->ParagraphAlign('left');
             $graph->AddText($t);	      
              
-            $max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
+            $max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'ï¿½';
             $t = new Text($max,285,$infoStart_Y-32 + $i*70);
             $t->SetFont(FF_ARIAL,FS_BOLD,15);
             $t->SetColor('red:1.6');
@@ -105,7 +105,7 @@ do
             $t->ParagraphAlign('left');	
             $graph->AddText($t);	
             
-            $min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
+            $min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'ï¿½';
             $t = new Text($min,285,$infoStart_Y+3 + $i*70);
             $t->SetFont(FF_ARIAL,FS_BOLD,15);
             $t->SetColor('blue:1.6');
@@ -168,7 +168,7 @@ do
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
       $graph->img->Stream($path2);
 		$utr = time()-$time;
-		print ", it took "."$utr"." seconds. Next run will be in "."$sleepTime"." seconds.\n";
+		print ", "."$utr"."s, sleep "."$sleepTime"."s\n";
 	}
 	else
 	{

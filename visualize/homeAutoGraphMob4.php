@@ -11,7 +11,6 @@ $file = explode('/', $file[0]);
 $fileName = $file[sizeof($file)-1].".png";
 $path = getConfig("PATH");
 
-$fileName = $path.$fileName;
 $sleepTime = getConfig("SLEEP")+30;
 
 do
@@ -19,7 +18,7 @@ do
 	if(isCli())
    {
       $time = time();
-      print date('H:i:s',$time).", Working with ".$fileName;
+      print date('H:i:s',$time).", ".$fileName;
    }
 
    // Create the graph.
@@ -177,10 +176,10 @@ do
 	if(isCli())
 	{
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-		$graph->img->Stream($fileName);
+		$graph->img->Stream($path.$fileName);
 	
 		$utr = time()-$time;
-		print ", it took "."$utr"." seconds. Next run will be in ".$sleepTime." seconds. \n";
+		print ", "."$utr"."s, sleep ".$sleepTime."s\n";
 		sleep($sleepTime);
 	}
 	

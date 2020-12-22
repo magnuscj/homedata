@@ -32,7 +32,7 @@ do
 	if(isCli())
 	{
 		$time = time();
-		print date('H:i:s',$time).", Working with ".$fileName;
+		print date('H:i:s',$time).", ".$fileName;
 	}
 	$debug          = false;
 	$username		= getConfig("DBUSN");
@@ -326,7 +326,7 @@ do
 		//$graph->img->Stream($path);
                 $graph->img->Stream($path2);		
 		$utr = time()-$time;
-		print ", it took "."$utr"." seconds. Next run will be in "."$sleepTime"." seconds.\n";
+		print ", "."$utr"."s sleep "."$sleepTime"."s\n";
 		sleep($sleepTime);
 	}
     else
