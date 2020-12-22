@@ -89,11 +89,10 @@ do
 	{
 		$ydata_temptot = array();
 		$xdata_timeTot = array();
-		print "\n".$sensors[$colName][$senNo]."  ".$sensors[$colType][$senNo];
+		
 		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "temp")
 		{
 			$retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName);		
-            /*EXPERIMENT*/
             $retXY = reduceData(sizeof($retXY[0])/1500, $retXY);
                         
 			$minimum = number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1);
@@ -143,7 +142,16 @@ do
             $retXY = reduceData(sizeof($retXY[0])/1000, $retXY);
 			$lineplot2=new LinePlot(floatAvg(5, $retXY[0]),$retXY[1] );
 			$lineplot2->SetColor($sensors[$colColor][$senNo]);
-			$lineplot2->SetFillGradient('red@0.4','orange@0.4');		
+			
+			if($sensors[$colName][$senNo]=="Heater")
+			{
+				$lineplot2->SetFillGradient('red@0.4','red');
+			}
+			else
+			{
+				$lineplot2->SetFillGradient('red@0.4','orange@0.4');
+			}
+
 			$lineplot2->SetLegend($sensors[$colName][$senNo]." :  ".strval(number_format($sum/1000,1))." kwh" );
 					
 			if(!onlyPowerType($sensors))
