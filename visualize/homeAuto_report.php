@@ -138,7 +138,7 @@ do
 			$graph->AddText($t);	// Stroke the text
 
 			$time = time();
-		   $frdate = date('Y-m-d H:i:s',$time-180);
+		    $frdate = date('Y-m-d H:i:s',$time-180);
 			$todate = date('Y-m-d H:i:s',$time);
 			$avg = strval(60*60*getPowerAvg($frdate,$todate,$sensorId,$username,$password,$serverHostName,$database)/1000);			
 			$txt= number_format($avg,2);

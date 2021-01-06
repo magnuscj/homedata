@@ -155,17 +155,17 @@ do
 			$lineplot2->SetLegend($sensors[$colName][$senNo]." :  ".strval(number_format($sum/1000,1))." kwh" );
 					
 			if(!onlyPowerType($sensors))
-			{					
-				$graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
-				$graph->SetYScale($noOf_Y_FlowGraphs,'lin',0,300);
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->SetColor('teal');
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->title->Set('wh');
-            $graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetColor('orange');
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->title->SetMargin(11);
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->scale->ticks->Set(20,10); 
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->SetColor('orange');
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->SetPos('max');
-				$graph->ynaxis[$noOf_Y_FlowGraphs]->SetTitleSide('right');	
+			{
+				$graph->AddY($noOf_Y_FlowGraphs + 1,$lineplot2);
+				$graph->SetYScale($noOf_Y_FlowGraphs + 1,'lin',0,300);
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetColor('teal');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->Set('wh');
+                $graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->SetColor('orange');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->SetMargin(11);
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->scale->ticks->Set(20,10); 
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetColor('orange');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetPos('max');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetTitleSide('right');	
 				$noOf_Y_FlowGraphs 		+= 1;
 			}
 			else
@@ -183,29 +183,31 @@ do
 		if(  $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "rain")
 		{
 			$retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
-			//$lineplot2=new LinePlot(scaleChange(0.25 , $retXY[0]),$retXY[1] );
+		
             $lineplot2=new LinePlot($retXY[0],$retXY[1] );
 			$lineplot2->SetColor($sensors[$colColor][$senNo]);
 			$lineplot2->SetFillGradient('royalblue4','royalblue4');
 			$lineplot2->SetLegend($sensors[$colName][$senNo]." :   ".strval(number_format(sum($retXY[0], TRUE)*0.254,1))." mm" );
 					
-			if($noOfFlowGraphs>=0)
+			if($noOfFlowGraphs >= 0)
 			{		
-				$graph->AddY(1,$lineplot2);						
-				$graph->SetYScale(1,'lin',0,5);
-				$graph->ynaxis[1]->SetColor('teal');
-				$graph->ynaxis[1]->title->Set('mm');
-				$graph->ynaxis[1]->title->SetMargin(10);
-				$noOfFlowGraphs 		+= 1;
+				$graph->AddY(0,$lineplot2);						
+				$graph->SetYScale(0,'lin',0,5);
+				$graph->ynaxis[0]->SetColor($sensors[$colColor][$senNo]);
+				$graph->ynaxis[0]->SetPos('max');
+				$graph->ynaxis[0]->title->Set('mm');
+				$graph->ynaxis[0]->title->SetMargin(25);
+				$graph->ynaxis[0]->title->SetColor($sensors[$colColor][$senNo]);
+				$noOfFlowGraphs += 1;
 			}
 			else
 			{
-				$graph->Add($lineplot);					
+				$graph->Add($lineplot2);					
 				$graph->yaxis->title->Set("mm" );
 				$graph->SetScale('lin',0,2);
 				$graph->title->SetMargin(11);
 				$graph->SetColor('khaki:1.5');
-				$noOfFlowGraphs 		+= 1;	
+				$noOfFlowGraphs += 1;	
 			}	
 		}	
 		$senNo++;
@@ -216,8 +218,7 @@ do
 	$graph->SetBackgroundGradient('black:1.1','black:1.1',GRAD_HOR,BGRAD_MARGIN);
 
 	if(isCli())
-	{
-			
+	{		
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
 		$graph->img->Stream($path2);
 		$utr = time()-$time;
@@ -226,9 +227,8 @@ do
 	}
 	else
 	{
-       
         $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-                $graph->img->Stream($path2);
+        $graph->img->Stream($path2);
 		sleep($sleepTime);
     }
 	
