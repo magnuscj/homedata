@@ -2,7 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include "edsServerHandler.h"
-//#include "communication.h"
+#include "communication.h"
 #include <thread>
 #include <chrono>
 #include <memory>
@@ -13,10 +13,10 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
-
+#include <arpa/inet.h>
 using namespace std;
 
-void edsHandler(char* ipadr )
+void edsHandler(std::string ipadr )
 {
   std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(ipadr);
   eds->readSensorConfiguration();
@@ -61,22 +61,35 @@ int getMemory()
 
 int main(int argc, char* argv[])
 {
-  //communication c;
-  //c.sendMail(m.c_str());
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
+  std::vector<std::string> ips;
   int mem = 0;
   int noOfBins = 7*10;
   std::vector<int> bins(noOfBins,0);
+  communication com;
+
+  for(int i = 1;i < argc;i++)
+  {
+    struct sockaddr_in sa;
+    if (inet_pton(AF_INET, argv[i], &(sa.sin_addr) == 1 );
+      ips.emplace_back(argv[i]);
+  }
 
   while(1)
   {
+    std::shared_ptr<std::string> ip = com.receiveUDP();
+    if(*ip != "")
+    {
+      ips.emplace_back(*ip);
+    }
+
     std::cout<<"\x1B[2J\x1B[H";
     auto start = std::chrono::steady_clock::now();
 
-    for(int i = 1;i < argc;i++)
+    for(auto &i : ips )
     {
-      edsServers.emplace_back(edsHandler, argv[i]);
+      edsServers.emplace_back(edsHandler, i);
     }
 
     for(auto& t : edsServers)
@@ -93,7 +106,7 @@ int main(int argc, char* argv[])
 
     //Select and update bin for timedistribution
 
-	 int b = elapsed_seconds.count() * 10;
+	  int b = elapsed_seconds.count() * 10;
     int m = (elapsed_seconds.count() * 100 - 10 * b) == 0 ? 0 : 1;
     int binIndex = m == 0 ? b - 1 : b ;
 

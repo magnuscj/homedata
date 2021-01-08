@@ -31,7 +31,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
   return size * nmemb;
 }
 
-edsServerHandler::edsServerHandler(char*& ip)
+edsServerHandler::edsServerHandler(std::string ip)
 {
   startTime = std::make_shared<std::chrono::system_clock::time_point>
               (std::chrono::system_clock::now());

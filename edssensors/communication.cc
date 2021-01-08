@@ -3,14 +3,51 @@
 #include <string.h>
 #include <cstring>
 #include <chrono>
+#include <memory>
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 using namespace std;
 using namespace std::chrono;
 
+void err(char const *str)
+{
+    perror(str);
+    exit(1);
+}
+
 communication::communication()
-{}
+{
+  if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+    {
+      char const *msg = "socket";
+      err(msg);
+    }
+  else
+    printf("Server : Socket() successful\n");
+
+  bzero(&my_addr, sizeof(my_addr));
+  my_addr.sin_family = AF_INET;
+  my_addr.sin_port = htons(PORT);
+  my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (bind(sockfd, (struct sockaddr* ) &my_addr, sizeof(my_addr))==-1)
+    err("bind");
+  else
+    printf("Server : bind() successful\n");
+
+}
 
 communication::~communication()
-{}
+{
+  close(sockfd);
+}
 
 size_t communication::handlePayload(void *ptr, size_t size, size_t nmemb, void *userp)
 {
@@ -89,4 +126,34 @@ void communication::sendMail(const char* message)
     curl_slist_free_all(recipients);
     curl_easy_cleanup(curl);
   }
+}
+
+std::shared_ptr<string> communication::receiveUDP()
+{
+  std::shared_ptr<string> p1(new string(""));
+  fd_set readfds, masterfds;
+  struct timeval timeout;
+  timeout.tv_sec = 1;                    /*set the timeout to 10 seconds*/
+  timeout.tv_usec = 0;
+  FD_ZERO(&masterfds);
+  FD_SET(sockfd, &masterfds);
+  memcpy(&readfds, &masterfds, sizeof(fd_set));
+
+  if (select(sockfd+1, &readfds, NULL, NULL, &timeout) < 0)
+  {
+    perror("on select");
+    exit(1);
+  }
+
+  if (FD_ISSET(sockfd, &readfds))
+  {
+    if (recvfrom(sockfd, buf, BUFLEN, 0, (struct sockaddr*)&cli_addr, &slen)==-1)
+      err("recvfrom()");
+    printf("Received packet from %s:%d\nData: %s\n\n",
+          inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buf);
+    memcpy(&returnVal, &buf, sizeof(buf));
+    std::string s(buf);
+    *p1=s;
+  }
+  return p1;
 }

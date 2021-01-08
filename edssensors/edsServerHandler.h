@@ -19,7 +19,7 @@
 class edsServerHandler
 {
   public:
-    edsServerHandler(char*& ip);
+    edsServerHandler(std::string ip);
     ~edsServerHandler();
     void decodeServerData();
     void storeServerData();
@@ -31,7 +31,7 @@ class edsServerHandler
     friend std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds);
 
   private:
-    char* ipAddress;
+    std::string ipAddress;
     char* dbIpAddress;
     CURL *curl;
     MYSQL* dbConnection;
