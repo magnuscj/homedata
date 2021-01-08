@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   for(int i = 1;i < argc;i++)
   {
     struct sockaddr_in sa;
-    if (inet_pton(AF_INET, argv[i], &(sa.sin_addr) == 1 );
+    if (inet_pton(AF_INET, argv[i], &(sa.sin_addr))== 1);
       ips.emplace_back(argv[i]);
   }
 
