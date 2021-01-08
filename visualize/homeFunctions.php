@@ -636,7 +636,7 @@ date_default_timezone_set('Europe/Stockholm');
 		$tomonthT  = $tomonth;
 		$frommonthT= $frommonth;	
 		
-		
+
 		for($ycont = $fromyear; $ycont <= $toyear; $ycont++)
 		{
 			if ($fromyear != $toyear)
@@ -671,24 +671,23 @@ date_default_timezone_set('Europe/Stockholm');
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
 		
 		$result = mysqli_query($con, $query1);		
-		$myrow=mysqli_fetch_array($result);
+		$myrow = mysqli_fetch_array($result);
 	
 		$i=0;
 		if($result!=false)
 		{
-			 if ($myrow) 
-			 {
+			if ($myrow) 
+			{
 			 	
 			   	do
 			   	{
 			   		$ydata[]        = $myrow['MAX(data)'];  //It would not create the graphs without using '[]'
 					$datedata[]    	= $myrow['MAX(curr_timestamp)'];  //It would not create the graphs without using '[]'
-
 	  	 			$UNIXdata[] 	= UnixTime($datedata[0]);
 	  	 			$i++;
 			   	}while ($myrow=mysqli_fetch_array($result));
 			   	mysqli_free_result($result);
-			 }
+			}
 			 
 			 
 			$result = mysqli_query($con, $query2);		
@@ -697,36 +696,25 @@ date_default_timezone_set('Europe/Stockholm');
 
 			if($result!=false)
 			{
-				 if ($myrow) 
-				 {
+				if ($myrow) 
+				{
 				   	do
 				   	{
 				   		$ydata[]        = $myrow['MIN(data)'];  //It would not create the graphs without using '[]'
-				     		$datedata[]    	= $myrow['MIN(curr_timestamp)'];  //It would not create the graphs without using '[]'
+				     	$datedata[]    	= $myrow['MIN(curr_timestamp)'];  //It would not create the graphs without using '[]'
 		  	 			$UNIXdata[] 	= UnixTime($datedata[1]);
 		  	 			$i++;
 				   	}while ($myrow=mysqli_fetch_array($result));
 				   	mysqli_free_result($result);
-				 }
+				}
 
-				 if(((sizeof($UNIXdata)>= 2) && (sizeof($ydata) >= 2)) &&
+				if(((sizeof($UNIXdata)>= 2) && (sizeof($ydata) >= 2)) &&
 				 	    ($UNIXdata[0]>0 && $UNIXdata[1]>0 && $ydata[0]>0 && $ydata[1]>0) &&
-				 	    ($UNIXdata[0] != $UNIXdata[1])
-				   )
+				 	    ($UNIXdata[0] != $UNIXdata[1]))
 				 {
-				 	
-				 	$seconds   = date($UNIXdata[0]-$UNIXdata[1]);
+				 	$seconds= date($UNIXdata[0]-$UNIXdata[1]);
 				 	$counts = $ydata[0]-$ydata[1];
 				 	$avgP   = $counts/$seconds; //  counter steps/ T(s)
-				 	/*print "Size T  : ".sizeof($UNIXdata)."\n";
-				 	print "Size D  : ".sizeof($ydata)."\n";
-				 	print "Counts  : ".number_format($counts,1)."\n";
-				 	print "Max Time: ".date('H:i:s',$UNIXdata[1])."\n";
-				 	print "Min Time: ".date('H:i:s',$UNIXdata[0])."\n";
-				 	print "Result T: ".$seconds."s\n";
-				 	print "Max     : ".$ydata[0]."\n";
-				 	print "Min     : ".$ydata[1]."\n";
-				 	print "Return V: ".$avgP."\n";*/
 				 }
 				 else 
 				 {
