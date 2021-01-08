@@ -7,4 +7,7 @@ XXowd_DS2423 Counter_B
 XXowd_DS2406 ActivityLatch_B
 XXowd_DS2408 PrimaryValue
 owd_DS2438 Temperature
-XXowd_DS2450 ChannelBConversionResolution 
+XXowd_DS2450 ChannelBConversionResolution
+owd_EDS0068 BarometricPressureHg
+owd_EDS0068 Humidity
+

@@ -68,10 +68,10 @@ int main(int argc, char* argv[])
   int noOfBins = 7*10;
   std::vector<int> bins(noOfBins,0);
   communication com;
-
+  struct sockaddr_in sa;
+  
   for(int i = 1;i < argc;i++)
   {
-    struct sockaddr_in sa;
     if (inet_pton(AF_INET, argv[i], &(sa.sin_addr))== 1);
       ips.emplace_back(argv[i]);
   }
@@ -79,7 +79,10 @@ int main(int argc, char* argv[])
   while(1)
   {
     std::shared_ptr<std::string> ip = com.receiveUDP();
-    if(*ip != "")
+    std::string str = *ip;
+    const char * c = str.c_str();
+
+    if((*ip != "") && (inet_pton(AF_INET, c, &(sa.sin_addr))== 1))
     {
       ips.emplace_back(*ip);
     }
@@ -97,7 +100,7 @@ int main(int argc, char* argv[])
       t.join();
     }
 
-	 edsServers.clear();
+	  edsServers.clear();
 
     auto end = std::chrono::steady_clock::now();
 
