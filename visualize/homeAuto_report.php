@@ -37,9 +37,9 @@ do
 	$database       = getConfig('DBNAME');
 	$serverHostName = getConfig('DBIP');
 	waitDbAlive($serverHostName,$username,$password,$database);
-   $textColor      = 'gray:2.7';
-   $frameColor     = 'black:1.1';
-   $backGroundClr  = 'gray:0.43';
+   	$textColor      = 'gray:2.7';
+  	$frameColor     = 'black:1.1';
+   	$backGroundClr  = 'gray:0.43';
 	$sensors        = getSensorNames($username,$password,$database, $serverHostName); //From sensor configuration
 	//Index names for the sensor configuration db table
 	$colID          = 0;
@@ -54,8 +54,9 @@ do
 	$infoStart_Y    = 47;
 	$senNo          = 0;
 	$tdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
-   $fdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
+   	$fdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
 	$kwhPosDelta    = 0;
+	$moiPosDelta    = 0;
 	
 	$graph = new CanvasGraph(405,425,'auto');
    $graph->SetMarginColor($frameColor);
@@ -129,7 +130,7 @@ do
       if($sensors[$colType][$senNo] == "power")
 		{	
 
-         $sensorName= $sensors[$colName][$senNo];
+         	$sensorName= $sensors[$colName][$senNo];
 			$t = new Text($sensorName,10,$infoStart_Y+210 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,15);
 			$t->SetColor($textColor);
@@ -159,6 +160,39 @@ do
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 			$kwhPosDelta = $kwhPosDelta + 33;
+		}
+		if($sensors[$colType][$senNo] == "moisture")
+		{	
+         	$sensorName= $sensors[$colName][$senNo];
+			$t = new Text($sensorName,240,$infoStart_Y+210 + 90 + $moiPosDelta);
+			$t->SetFont(FF_ARIAL,FS_BOLD,15);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+
+			$time = time();
+		    $frdate = date('Y-m-d H:i:s',$time-180);
+			$todate = date('Y-m-d H:i:s',$time);
+			$avg = strval(getCurr($sensorId,$username,$password,$serverHostName,$database));			
+			$txt= number_format($avg,1);
+			$txt2= "%";
+						
+			$t = new Text($txt,370,$infoStart_Y+227 + 90 + $moiPosDelta);
+			$t->SetFont(FF_ARIAL,FS_BOLD,30);
+			$t->SetColor($textColor);
+			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+			
+			
+			$t = new Text($txt2,370,$infoStart_Y+227 + 90 + $moiPosDelta);
+			$t->SetFont(FF_ARIAL,FS_BOLD,12);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+			
 		}
 		$senNo++;
 	}
