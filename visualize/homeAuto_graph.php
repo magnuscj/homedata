@@ -74,7 +74,7 @@ do
 	$noOfFlowGraphs    = 0;
 	$noOf_Y_FlowGraphs = 0;
 		
-	$ttime = $ftime = date('H:i',time());;
+	$ttime = $ftime = date('H:i',time());
 	
 	$fdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
 	$tdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));

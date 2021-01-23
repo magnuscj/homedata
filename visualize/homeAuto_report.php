@@ -53,19 +53,19 @@ do
 	$i              = 0;	//General counter/index variable
 	$infoStart_Y    = 47;
 	$senNo          = 0;
+	$ttime = $ftime = date('H:i',time());
 	$tdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
    	$fdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
 	$kwhPosDelta    = 0;
 	$moiPosDelta    = 0;
 	
 	$graph = new CanvasGraph(405,425,'auto');
-   $graph->SetMarginColor($frameColor);
+   	$graph->SetMarginColor($frameColor);
 	$graph->SetMargin(5,6,6,6);
-   $graph->SetColor($backGroundClr);
-   $graph->initFrame();
+   	$graph->SetColor($backGroundClr);
+   	$graph->initFrame();
 
 	$t2 = new Text($tdate.", ".date("H:i"),337,402);
-	//$t2->SetFont(FF_ARIAL,FS_BOLD,10);
 	$t2->SetColor('gray:0.63');
 	$t2->Align('center','top');// How should the text box interpret the coordinates?
 	$t2->ParagraphAlign('center');// How should the paragraph be aligned?
@@ -98,7 +98,7 @@ do
             $t->ParagraphAlign('left');
             $graph->AddText($t);	      
              
-            $max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'�';
+            $max= "Max: ".number_format(getMax($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
             $t = new Text($max,285,$infoStart_Y-32 + $i*70);
             $t->SetFont(FF_ARIAL,FS_BOLD,15);
             $t->SetColor('red:1.6');
@@ -106,7 +106,7 @@ do
             $t->ParagraphAlign('left');	
             $graph->AddText($t);	
             
-            $min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'�';
+            $min= "Min: ".number_format(getMin($fdate,$tdate,$sensorId,$username,$password,$serverHostName,$database),1).'°';
             $t = new Text($min,285,$infoStart_Y+3 + $i*70);
             $t->SetFont(FF_ARIAL,FS_BOLD,15);
             $t->SetColor('blue:1.6');
@@ -161,6 +161,7 @@ do
 			$graph->AddText($t);	// Stroke the text
 			$kwhPosDelta = $kwhPosDelta + 33;
 		}
+
 		if($sensors[$colType][$senNo] == "moisture")
 		{	
          	$sensorName= $sensors[$colName][$senNo];
@@ -185,14 +186,44 @@ do
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 			
-			
 			$t = new Text($txt2,370,$infoStart_Y+227 + 90 + $moiPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,12);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
+		}
+
+		if($sensors[$colType][$senNo] == "rain")
+		{	
+         	$sensorName= $sensors[$colName][$senNo];
+			$t = new Text($sensorName,240,$infoStart_Y+210 + 90 + 33);
+			$t->SetFont(FF_ARIAL,FS_BOLD,15);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+
+			//$time = time();
+		    
+			$retXY = deltaChange(addMissingTime(getDataFromDb($username,$password,$database, $fdate." ".$ftime,$tdate." ".$ttime,$sensorId, $serverHostName)));
+			$avg = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
+			$txt= number_format($avg,1);
+			$txt2= "mm";
+						
+			$t = new Text($txt,370,$infoStart_Y+227 + 90 + 33);
+			$t->SetFont(FF_ARIAL,FS_BOLD,30);
+			$t->SetColor($textColor);
+			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
 			
+			$t = new Text($txt2,370,$infoStart_Y+227 + 90 + 33);
+			$t->SetFont(FF_ARIAL,FS_BOLD,12);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
 		}
 		$senNo++;
 	}

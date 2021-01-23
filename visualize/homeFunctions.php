@@ -711,18 +711,17 @@ date_default_timezone_set('Europe/Stockholm');
 				if(((sizeof($UNIXdata)>= 2) && (sizeof($ydata) >= 2)) &&
 				 	    ($UNIXdata[0]>0 && $UNIXdata[1]>0 && $ydata[0]>0 && $ydata[1]>0) &&
 				 	    ($UNIXdata[0] != $UNIXdata[1]))
-				 {
-				 	$seconds= date($UNIXdata[0]-$UNIXdata[1]);
-				 	$counts = $ydata[0]-$ydata[1];
-				 	$avgP   = $counts/$seconds; //  counter steps/ T(s)
-				 }
-				 else 
-				 {
-				 	$avgP=0;
-				 	print "Error: Not enough data\n";
-				 }
+				{
+				$seconds= date($UNIXdata[0]-$UNIXdata[1]);
+				$counts = $ydata[0]-$ydata[1];
+				$avgP   = $counts/$seconds; //  counter steps/ T(s)
+				}
+				else 
+				{
+				$avgP=0;
+				print "Error: Not enough data\n";
+				}
 			}	 
-				 
 		}	 
 		mysqli_close($con);
 		return $avgP;

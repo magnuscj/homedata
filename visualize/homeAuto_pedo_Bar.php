@@ -92,7 +92,6 @@ do
 	$t2 = new Text($tdate.", ".date("H:i"),$length*3.0,190);
 	$t2->SetFont(FF_ARIAL,FS_NORMAL,7);
 	$t2->SetColor($dbgText);
-	//$t2->Align('right','top', 'right');   // How should the text box interpret the coordinates?
     $t2->ParagraphAlign('right');
 	$graph->AddText($t2);
 	
@@ -102,10 +101,8 @@ do
         $name = $sensors[$colName][$senNo];
         if($name == $sensorNameToShow )          
         {
-	
             $graph->InitFrame();
             $txt= "inHg";//$sensors[$colName][$senNo];//"This\nis\na TEXT!!!";
-            
             $t = new Text($txt,12,$infoStart_Y-184);
             $t->SetFont(FF_ARIAL,FS_BOLD,22);
             $t->SetColor($textColor);
@@ -120,12 +117,11 @@ do
             
             //Get all data with a give time range
             $ttimeP = $ftimeP = date('H:i',time());
-            $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
+            $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-3,date("Y")));
             $tdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
             $retXY_P = addMissingTime(removeInvalidZeroes(deltaChange(getDataFromDb($username, $password, $database, $fdateP." ".$ftimeP, $tdateP." ".$ttimeP, $sensorId, $serverHostName))));
     
             $avgMax = getMax($fdateP,$tdateP,$sensorId,$username,$password,$serverHostName,$database);	
-           
             $avgMin = getMin($fdateP,$tdateP,$sensorId,$username,$password,$serverHostName,$database);	
                  
             if($debug)
@@ -138,14 +134,12 @@ do
                 $graph->AddText($t);
             }
             $i++;
-
         }
 		$senNo++;
 	}
  
     for($deg_M=180;$deg_M>=0;$deg_M = $deg_M-4.5)
     { 
-        #------------------------------------------------------------------------------
         $X_coord= ($length_M3*cos(deg2rad($deg_M)));
         $Y_coord= (($length_M3)*sin(deg2rad($deg_M)));
         $X_stop_deg  = $X_offset + $X_coord;
@@ -158,13 +152,10 @@ do
         
 	    $graph->img->SetColor($tickColor);
         $graph->img->Line($X_stop_deg_M,$Y_stop_deg_M,$X_stop_deg,$Y_stop_deg);     
-        #------------------------------------------------------------------------------
     }
     
     for($deg_M=180;$deg_M>=0;$deg_M = $deg_M-9)
     {     
-        #------------------------------------------------------------------------------
-        
         $X_coord= ($length_M2*cos(deg2rad($deg_M)));
         $Y_coord= (($length_M2)*sin(deg2rad($deg_M)));
         $X_stop_deg  = $X_offset + $X_coord;
@@ -177,18 +168,16 @@ do
         
 	    $graph->img->SetColor($tickColor);
         $graph->img->Line($X_stop_deg_M,$Y_stop_deg_M,$X_stop_deg,$Y_stop_deg);     
-        #------------------------------------------------------------------------------
     }
     
     $deg_max= 180;
     $deg_min= 0;
-    $max    = 60;
-    $min    = 0 ;
+    $max    = 34;
+    $min    = 24 ;
     $tics   = $max;
    
     for($deg_M=180;$deg_M>=0;$deg_M = $deg_M-18)
     {        
-        #------------------------------------------------------------------------------
         $X_coord= ($length_M*cos(deg2rad($deg_M)));
         $Y_coord= (($length_M)*sin(deg2rad($deg_M)));
         $X_stop_deg  = $X_offset + $X_coord;
@@ -201,7 +190,6 @@ do
         
 	    $graph->img->SetColor($tickColor);
         $graph->img->Line($X_stop_deg_M,$Y_stop_deg_M,$X_stop_deg,$Y_stop_deg);     
-        #------------------------------------------------------------------------------
               
         $degTxt = $tics;
         $tics = $tics-($max-$min)/10;
@@ -211,7 +199,6 @@ do
         $X_stop_deg  = $X_offset+ $M + $X_coord;
         $Y_stop_deg  = $Y_start+5 - $Y_coord;
       
-      #  $t = new Text(strval($deg_M*0.1-9.0),$X_stop_deg,$Y_stop_deg);       
         $t = new Text(strval($degTxt),$X_stop_deg,$Y_stop_deg);       
         $t->SetPos($X_stop_deg-10,$Y_stop_deg,'center');	// How should the paragraph be aligned?
         $t->SetFont(FF_ARIAL,FS_BOLD,$length*0.155);
@@ -220,8 +207,6 @@ do
        
         $graph->AddText($t);	// Stroke the text
     }
-    
-   
     
     $deg = $avgMin*$deg_max/($max-$min)-$min*$deg_max/($max-$min);
     
@@ -239,13 +224,8 @@ do
                 $X_start,$Y_start); 
     $graph->img->SetColor('steelblue4:0.9');
     $graph->img->FilledPolygon($p);
-    //$graph->img->FilledCircle($length*1.48,$length*1.49,$baseLength-0);
-    
-    
-    //$avgMax  = 10.0;
    
     $deg = $avgMax*$deg_max/($max-$min)-$min*$deg_max/($max-$min);
-    
     
     $X_B_coord= (0.4*$baseLength*cos(deg2rad(90-$deg)));
     $Y_B_coord= ((0.4*$baseLength)*sin(deg2rad(90-$deg)));   
@@ -261,10 +241,7 @@ do
                 $X_start,$Y_start); 
     $graph->img->SetColor('orangered3:0.75');
     $graph->img->FilledPolygon($p);
-    //$graph->img->FilledCircle($length*1.48,$length*1.49,$baseLength-0);
-    
-    
-    #$avg  = 5.0;
+
     $deg = $avg*$deg_max/($max-$min)-$min*$deg_max/($max-$min);
     
     $X_B_coord= ($baseLength*cos(deg2rad(90-$deg)));
@@ -282,10 +259,6 @@ do
     $graph->img->SetColor($needleColor);
     $graph->img->FilledPolygon($p);
     $graph->img->FilledCircle($X_start,$Y_start,$baseLength-0);
-    
-    
-    
-    
     
 	if(isCli())
 	{
