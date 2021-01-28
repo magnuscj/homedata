@@ -89,8 +89,8 @@ do
 	$graph->SetColor($backGroundClr);
 	
     //Graph time stamp 
-	$t2 = new Text($tdate.", ".date("H:i"),$length*3.0,190);
-	$t2->SetFont(FF_ARIAL,FS_NORMAL,7);
+	$t2 = new Text($tdate.", ".date("H:i"),$length*2.92,190);
+	$t2->SetFont(FF_ARIAL,FS_NORMAL,8);
 	$t2->SetColor($dbgText);
     $t2->ParagraphAlign('right');
 	$graph->AddText($t2);
@@ -263,8 +263,7 @@ do
 	if(isCli())
 	{
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-		//$graph->img->Stream($path);
-                $graph->img->Stream($path2);		
+        $graph->img->Stream($path2);		
 		$utr = time()-$time;
 		print ", "."$utr"."s sleep "."$sleepTime"."s\n";
 		sleep($sleepTime);
@@ -272,8 +271,7 @@ do
     else
     {
         $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-		//$graph->img->Stream($path);
-                $graph->img->Stream($path2);
+        $graph->img->Stream($path2);
 		sleep($sleepTime);
     }
 		

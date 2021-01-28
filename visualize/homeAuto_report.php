@@ -65,10 +65,11 @@ do
    	$graph->SetColor($backGroundClr);
    	$graph->initFrame();
 
-	$t2 = new Text($tdate.", ".date("H:i"),337,402);
+	$t2 = new Text($tdate.", ".date("H:i"),356,409);
+	$t2->SetFont(FF_ARIAL,FS_NORMAL,8);
 	$t2->SetColor('gray:0.63');
-	$t2->Align('center','top');// How should the text box interpret the coordinates?
-	$t2->ParagraphAlign('center');// How should the paragraph be aligned?
+	$t2->Align('center','top');
+	$t2->ParagraphAlign('center');
 	$graph->AddText($t2);
 	$i=0;
 	foreach($sensors[$colID] as $sensorId)
