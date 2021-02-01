@@ -19,7 +19,7 @@ using namespace std::chrono;
 void err(char const *str)
 {
     perror(str);
-    exit(1);
+    //exit(1);
 }
 
 communication::communication()
@@ -138,6 +138,7 @@ std::shared_ptr<string> communication::receiveUDP()
   if (select(sockfd+1, &readfds, NULL, NULL, &timeout) < 0)
   {
     perror("on select");
+    return p1;
     exit(1);
   }
 

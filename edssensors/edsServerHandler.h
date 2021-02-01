@@ -23,6 +23,8 @@ class edsServerHandler
     ~edsServerHandler();
     void decodeServerData();
     void storeServerData();
+    void printServerData();
+    void printIdValue(std::string id);
     void readSensorConfiguration();
     void writeSensorConfiguration(std::string sensor);
     void const print();

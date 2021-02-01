@@ -199,6 +199,25 @@ void edsServerHandler::storeServerData()
                (std::chrono::system_clock::now());
 }
 
+void edsServerHandler::printServerData()
+{
+  if(sensors.size() > 0)
+    for( auto &sensor : sensors)
+	 {
+		  cout<<sensor->id<<" "<<sensor->value<<" "<<sensor->unit<<endl;		
+	 }
+}
+
+void edsServerHandler::printIdValue(std::string id)
+{
+  if(sensors.size() > 0)
+    for( auto &sensor : sensors)
+	 {
+     if(!id.compare(sensor->id))
+		  cout<<sensor->value<<endl;		
+	 }
+}
+
 std::ostream& operator<< (std::ostream& stream, edsServerHandler& eds)
 {
   eds.print();

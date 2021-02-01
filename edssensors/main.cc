@@ -61,6 +61,26 @@ int getMemory()
 
 int main(int argc, char* argv[])
 {
+  std::string arg = argv[1];
+  if(!arg.compare("-s"))
+  {
+    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
+    eds->readSensorConfiguration();
+    eds->decodeServerData();
+    eds->printServerData();
+    return 0;
+  }
+
+  if(!arg.compare("-i"))
+  {
+    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
+    eds->readSensorConfiguration();
+    eds->decodeServerData();
+    eds->printIdValue(argv[3]);
+    return 0;
+  }
+
+
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
   std::vector<std::string> ips;
