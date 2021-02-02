@@ -39,8 +39,8 @@ do
    $graph->legend->SetLayout(LEGEND_HOR);			// Adjust the legend position
    $graph->legend->SetFont(FF_VERDANA,FS_NORMAL,8);
    $graph->legend->SetFillColor('gray:0.43');
-   $graph->legend->SetColumns(2);					// Set number of colums for legend
-   $graph->legend->Pos(0.5,0.05,"center","top");	
+   $graph->legend->SetColumns(3);					// Set number of colums for legend
+   $graph->legend->Pos(0.5,0.03,"center","top");	
    $graph->legend->SetColor('gray', 'gray');
 
    $graph->xaxis->SetPos("min");
