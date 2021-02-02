@@ -123,7 +123,6 @@ do
 			    $graph->InitFrame();
 			    $txt= "kwh";//$sensors[$colName][$senNo];//"This\nis\na TEXT!!!";
                 
-                
 			    $t = new Text($txt,12,$infoStart_Y-184);
 			    $t->SetFont(FF_ARIAL,FS_BOLD,22);
 			    $t->SetColor($textColor);
@@ -131,29 +130,29 @@ do
 			    $t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			    $graph->AddText($t);	// Stroke the text
                	
-		            $time = time();
-                	    $frdate = date('Y-m-d H:i:s',$time-180);
-                	    $todate = date('Y-m-d H:i:s',$time);
-                            $avg = 60*60*getPowerAvg($frdate,$todate,$sensorId,$username,$password,$serverHostName,$database)/1000;			
+		        $time = time();
+                $frdate = date('Y-m-d H:i:s',$time-180);
+                $todate = date('Y-m-d H:i:s',$time);
+                $avg = 60*60*getPowerAvg($frdate,$todate,$sensorId,$username,$password,$serverHostName,$database)/1000;			
 
-                	    //Get all data with a give time range
-                	    $ttimeP = $ftimeP = date('H:i',time());
-                            $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
-                            $tdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
-                            $retXY_P = addMissingTime(removeInvalidZeroes(deltaChange(getDataFromDb($username, $password, $database, $fdateP." ".$ftimeP, $tdateP." ".$ttimeP, $sensorId, $serverHostName))));
-			     
-                            //Get the max vale
-                            $maxP = max($retXY_P[0]);               
-                            $maxPIndex = array_search($maxP,$retXY_P[0]);
-                            $toMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]+90);
-                            $frMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]-90);
-                            $avgMax = 60*60*getPowerAvg($frMaxTime,$toMaxTime,$sensorId,$username,$password,$serverHostName,$database)/1000;	
-                	    //Get the min value
-                	    $minP = min($retXY_P[0]);
-                	    $minPIndex = array_search($minP,$retXY_P[0]);
-                	    $toMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]+90);
-                	    $frMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]-90);
-                	    $avgMin = 60*60*getPowerAvg($frMinTime,$toMinTime,$sensorId,$username,$password,$serverHostName,$database)/1000;	
+                //Get all data with a give time range
+                $ttimeP = $ftimeP = date('H:i',time());
+                $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
+                $tdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
+                $retXY_P = addMissingTime(removeInvalidZeroes(deltaChange(getDataFromDb($username, $password, $database, $fdateP." ".$ftimeP, $tdateP." ".$ttimeP, $sensorId, $serverHostName))));
+        
+                //Get the max vale
+                $maxP = max($retXY_P[0]);               
+                $maxPIndex = array_search($maxP,$retXY_P[0]);
+                $toMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]+90);
+                $frMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]-90);
+                $avgMax = 60*60*getPowerAvg($frMaxTime,$toMaxTime,$sensorId,$username,$password,$serverHostName,$database)/1000;	
+                //Get the min value
+                $minP = min($retXY_P[0]);
+                $minPIndex = array_search($minP,$retXY_P[0]);
+                $toMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]+90);
+                $frMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]-90);
+                $avgMin = 60*60*getPowerAvg($frMinTime,$toMinTime,$sensorId,$username,$password,$serverHostName,$database)/1000;	
                                 
                 if($avg<$avgMin)
                     $avgMin=$avg;

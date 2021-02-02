@@ -131,8 +131,35 @@ do
       if($sensors[$colType][$senNo] == "power")
 		{	
 
+			//Get all data with a give time range
+			$ttimeP = $ftimeP = date('H:i',time());
+			$fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
+			$tdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
+			$retXY_P = addMissingTime(removeInvalidZeroes(deltaChange(getDataFromDb($username, $password, $database, $fdateP." ".$ftimeP, $tdateP." ".$ttimeP, $sensorId, $serverHostName))));
+	
+			//Get the max vale
+			$maxP = max($retXY_P[0]);
+			$maxPIndex = array_search($maxP,$retXY_P[0]);
+			$toMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]+90);
+			$frMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]-90);
+			$avgMax = 60*60*getPowerAvg($frMaxTime,$toMaxTime,$sensorId,$username,$password,$serverHostName,$database)/1000;
+			//Get the min value
+			$minP = min($retXY_P[0]);
+			$minPIndex = array_search($minP,$retXY_P[0]);
+			$toMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]+90);
+			$frMinTime = date('Y-m-d H:i:s',$retXY_P[1][$minPIndex]-90);
+			$avgMin = 60*60*getPowerAvg($frMinTime,$toMinTime,$sensorId,$username,$password,$serverHostName,$database)/1000;
+
+			$t = number_format($avgMin,1)."/".number_format($avgMax,1);
+			$t = new Text($t,170,$infoStart_Y+223 + 90 + $kwhPosDelta);
+			$t->SetFont(FF_ARIAL,FS_BOLD,9);
+			$t->SetColor($textColor);
+			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+
          	$sensorName= $sensors[$colName][$senNo];
-			$t = new Text($sensorName,10,$infoStart_Y+210 + 90 + $kwhPosDelta);
+			$t = new Text($sensorName,10,$infoStart_Y+195 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,15);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
@@ -144,29 +171,37 @@ do
 			$todate = date('Y-m-d H:i:s',$time);
 			$avg = strval(60*60*getPowerAvg($frdate,$todate,$sensorId,$username,$password,$serverHostName,$database)/1000);			
 			$txt= number_format($avg,2);
-			$txt2= "kwh";
-						
-			$t = new Text($txt,170,$infoStart_Y+227 + 90 + $kwhPosDelta);
+									
+			$t = new Text($txt,170,$infoStart_Y+212 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,30);
 			$t->SetColor($textColor);
 			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 			
-			
-			$t = new Text($txt2,170,$infoStart_Y+227 + 90 + $kwhPosDelta);
+			$txt2= "kwh";
+			$t = new Text($txt2,170,$infoStart_Y+212 + 90 + $kwhPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,12);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
-			$kwhPosDelta = $kwhPosDelta + 33;
+
+			$p =  array( 10,313, 
+                         10,313, 
+                        385,313,
+                        385,312,
+                         10,312); 
+            $graph->img->SetColor('gray:0.47');
+            $graph->img->FilledPolygon($p);
+	
+			$kwhPosDelta = $kwhPosDelta + 45;
 		}
 
 		if($sensors[$colType][$senNo] == "moisture")
 		{	
          	$sensorName= $sensors[$colName][$senNo];
-			$t = new Text($sensorName,240,$infoStart_Y+210 + 90 + $moiPosDelta);
+			$t = new Text($sensorName,240,$infoStart_Y+195 + 90 + $moiPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,15);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
@@ -180,14 +215,14 @@ do
 			$txt= number_format($avg,1);
 			$txt2= "%";
 						
-			$t = new Text($txt,370,$infoStart_Y+227 + 90 + $moiPosDelta);
+			$t = new Text($txt,370,$infoStart_Y+212 + 90 + $moiPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,30);
 			$t->SetColor($textColor);
 			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 			
-			$t = new Text($txt2,370,$infoStart_Y+227 + 90 + $moiPosDelta);
+			$t = new Text($txt2,370,$infoStart_Y+212 + 90 + $moiPosDelta);
 			$t->SetFont(FF_ARIAL,FS_BOLD,12);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
