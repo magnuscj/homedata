@@ -239,15 +239,33 @@ do
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
-
-			//$time = time();
-		    
+	    
 			$retXY = deltaChange(addMissingTime(getDataFromDb($username,$password,$database, $fdate." ".$ftime,$tdate." ".$ttime,$sensorId, $serverHostName)));
 			$avg = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
-			$txt= number_format($avg,1);
+			$day= number_format($avg,1);
 			$txt2= "mm";
-						
-			$t = new Text($txt,370,$infoStart_Y+227 + 90 + 33);
+
+			$tdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
+			$wfdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-7,date("Y")));
+			$mfdate = date("Y-m-d", mktime(0,0,0,date("m")-1,date("d"),date("Y")));   
+
+			$retXY = deltaChange(addMissingTime(getDataFromDb($username,$password,$database, $wfdate." ".$ftime,$tdate." ".$ttime,$sensorId, $serverHostName)));
+			$avg  = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
+			$week  = number_format($avg,1);
+									
+			$retXY = deltaChange(addMissingTime(getDataFromDb($username,$password,$database, $mfdate." ".$ftime,$tdate." ".$ttime,$sensorId, $serverHostName)));
+			$avg  = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
+			$month  = number_format($avg,1);
+
+			$t = number_format($month,1)."/".number_format($week,1);
+			$t = new Text($t,370,$infoStart_Y+223 + 90 + 48);
+			$t->SetFont(FF_ARIAL,FS_BOLD,9);
+			$t->SetColor($textColor);
+			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+
+			$t = new Text($day,370,$infoStart_Y+227 + 90 + 33);
 			$t->SetFont(FF_ARIAL,FS_BOLD,30);
 			$t->SetColor($textColor);
 			$t->Align('right','bottom');	// How should the text box interpret the coordinates?
