@@ -223,6 +223,7 @@ do
 		$graph->img->Stream($path2);
 		$utr = time()-$time;
 		print ", "."$utr"."s, sleep ".$sleepTime."s\n";
+		exit(1);
 		sleep($sleepTime);
 	}
 	else

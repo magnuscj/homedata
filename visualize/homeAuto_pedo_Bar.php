@@ -117,7 +117,7 @@ do
             
             //Get all data with a give time range
             $ttimeP = $ftimeP = date('H:i',time());
-            $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-3,date("Y")));
+            $fdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-7,date("Y")));
             $tdateP = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
             $retXY_P = addMissingTime(removeInvalidZeroes(deltaChange(getDataFromDb($username, $password, $database, $fdateP." ".$ftimeP, $tdateP." ".$ttimeP, $sensorId, $serverHostName))));
     
@@ -172,8 +172,8 @@ do
     
     $deg_max= 180;
     $deg_min= 0;
-    $max    = 34;
-    $min    = 24 ;
+    $max    = 32;
+    $min    = 27 ;
     $tics   = $max;
    
     for($deg_M=180;$deg_M>=0;$deg_M = $deg_M-18)
@@ -266,6 +266,7 @@ do
         $graph->img->Stream($path2);		
 		$utr = time()-$time;
 		print ", "."$utr"."s sleep "."$sleepTime"."s\n";
+        exit(1);
 		sleep($sleepTime);
 	}
     else

@@ -247,7 +247,7 @@ do
 
 			$tdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
 			$wfdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-7,date("Y")));
-			$mfdate = date("Y-m-d", mktime(0,0,0,date("m")-1,date("d"),date("Y")));   
+			$mfdate = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-30,date("Y")));   
 
 			$retXY = deltaChange(addMissingTime(getDataFromDb($username,$password,$database, $wfdate." ".$ftime,$tdate." ".$ttime,$sensorId, $serverHostName)));
 			$avg  = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
@@ -285,9 +285,10 @@ do
 	if(isCli())
 	{
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-      $graph->img->Stream($path2);
+    	$graph->img->Stream($path2);
 		$utr = time()-$time;
 		print ", "."$utr"."s, sleep "."$sleepTime"."s\n";
+		exit(1);
 	}
 	else
 	{
