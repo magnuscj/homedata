@@ -61,26 +61,6 @@ int getMemory()
 
 int main(int argc, char* argv[])
 {
-  std::string arg = argv[1];
-  if(!arg.compare("-s"))
-  {
-    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
-    eds->readSensorConfiguration();
-    eds->decodeServerData();
-    eds->printServerData();
-    return 0;
-  }
-
-  if(!arg.compare("-i"))
-  {
-    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
-    eds->readSensorConfiguration();
-    eds->decodeServerData();
-    eds->printIdValue(argv[3]);
-    return 0;
-  }
-
-
   std::vector<std::thread> edsServers;
   std::vector<double> elapsedTime;
   std::vector<std::string> ips;
@@ -89,11 +69,50 @@ int main(int argc, char* argv[])
   std::vector<int> bins(noOfBins,0);
   communication com;
   struct sockaddr_in sa;
-  
+  bool exit = false;
+  bool pServerData = false;
+  bool pIdvalue = false;
+
   for(int i = 1;i < argc;i++)
   {
-    if (inet_pton(AF_INET, argv[i], &(sa.sin_addr))== 1);
+    std::string arg = argv[i];
+    if(inet_pton(AF_INET, argv[i], &(sa.sin_addr)) == 1)
+    {
       ips.emplace_back(argv[i]);
+    }
+
+    if(!arg.compare("-e"))
+    {
+      exit = true;
+    }
+
+    if(!arg.compare("-s"))
+    {
+      pServerData = true;
+    }
+
+    if(!arg.compare("-i"))
+    {
+      pIdvalue = true;
+    }
+  }
+
+  if(pServerData)
+  {
+    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
+    eds->readSensorConfiguration();
+    eds->decodeServerData();
+    eds->printServerData();
+    return 0;
+  }
+
+  if(pIdvalue)
+  {
+    std::shared_ptr<edsServerHandler> eds = std::make_shared<edsServerHandler>(argv[2]);
+    eds->readSensorConfiguration();
+    eds->decodeServerData();
+    eds->printIdValue(argv[3]);
+    return 0;
   }
 
   while(1)
@@ -101,11 +120,6 @@ int main(int argc, char* argv[])
     std::shared_ptr<std::string> ip = com.receiveUDP();
     std::string str = *ip;
     const char * c = str.c_str();
-
-    if((*ip != "") && (inet_pton(AF_INET, c, &(sa.sin_addr))== 1))
-    {
-      ips.emplace_back(*ip);
-    }
 
     std::cout<<"\x1B[2J\x1B[H";
     auto start = std::chrono::steady_clock::now();
@@ -129,7 +143,7 @@ int main(int argc, char* argv[])
 
     //Select and update bin for timedistribution
 
-	  int b = elapsed_seconds.count() * 10;
+	 int b = elapsed_seconds.count() * 10;
     int m = (elapsed_seconds.count() * 100 - 10 * b) == 0 ? 0 : 1;
     int binIndex = m == 0 ? b - 1 : b ;
 
@@ -141,6 +155,8 @@ int main(int argc, char* argv[])
     //Calculete the table space for the columns
     int biggest = *std::max_element(bins.begin(), bins.end());
     int tableSpace = std::log10(biggest) + 2;
+
+    std::stringstream report("", ios_base::app | ios_base::out);
 
     int i = 10;
     for_each(bins.begin(), bins.end(), [&tableSpace, &i, &binIndex](int bin)
@@ -161,7 +177,12 @@ int main(int argc, char* argv[])
       mem=getMemory();
 
     std::cout<<endl<<endl<<mem<<" Kb increased with "<<getMemory()-mem<<" Kb."<<endl;
+
+
+    if(exit)
+      return 0;
     std::this_thread::sleep_for(60s);
+
  }
   return 0;
 }
