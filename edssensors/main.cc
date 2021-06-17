@@ -88,6 +88,8 @@ int main(int argc, char* argv[])
 
     if(!arg.compare("-s"))
     {
+      if(argc != 3)
+       return 0;
       pServerData = true;
     }
 
