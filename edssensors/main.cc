@@ -90,6 +90,10 @@ int main(int argc, char* argv[])
     {
       if(argc != 3)
        return 0;
+
+      if(!(inet_pton(AF_INET, argv[2], &(sa.sin_addr)) == 1))
+        return 0;
+
       pServerData = true;
     }
 
