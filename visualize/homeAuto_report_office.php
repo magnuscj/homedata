@@ -81,6 +81,7 @@ do
              || $name == "Inne" 
              || $name == "Ute" 
              || $name == "Sovrum" 
+			 || $name == "Kontor"
              ||($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> 30)))
          {
             $sensorName= $sensors[$colName][$senNo];
