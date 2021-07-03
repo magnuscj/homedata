@@ -189,7 +189,7 @@ void edsServerHandler::storeServerData()
 		state = mysql_query(dbConnection, string("CREATE DATABASE "+dbName).c_str());
 		state = mysql_query(dbConnection, string("CREATE TABLE "+dbName+"."+ tbName + date +
 			  " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT, data float(23,3),\
-			curr_timestamp TIMESTAMP)").c_str());
+			curr_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)").c_str());
 			string query = "INSERT INTO " + dbName + "." + tbName + date + " (sensorid, data) VALUES('"
 							  + sensor->id + "', '" + sensor->value + "')";
 		state = mysql_query(dbConnection, query.c_str());
