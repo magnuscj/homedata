@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PollCount>26071246</PollCount>
+<DevicesConnected>2</DevicesConnected>
+<LoopTime>1.094</LoopTime>
+<DataErrors>51</DataErrors>
+<owd_DS18S20 Description="Parasite power thermometer">
+<Name>DS18S20</Name>
+<Family>10</Family>
+<ROMId>AE00080192AD9010</ROMId>
+<Health>7</Health>
+<RawData>06001C17FFFF0F102400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</RawData>
+<PrimaryValue>3.0 Deg C</PrimaryValue>
+<Temperature Units="Centigrade">#VALUE#</Temperature>
+<UserByte1 Writable="True">28</UserByte1>
+<UserByte2 Writable="True">23</UserByte2>
+</owd_DS18S20>
+</Devices-Detail-Response>
