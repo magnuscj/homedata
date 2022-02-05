@@ -12,4 +12,8 @@ owd_EDS0068 BarometricPressureHg
 owd_EDS0068 Humidity
 owd_EDS0065 Humidity
 owd_EDS0065 Temperature
+owd_PI Wind
+owd_PI WindMax 
+owd_PI Direction
+
 

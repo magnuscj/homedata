@@ -279,6 +279,30 @@ do
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 		}
+
+		if($sensors[$colType][$senNo] == "Wind")
+		{
+			if($sensors[$colName][$senNo]=="WiSpeed")
+			{
+				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'';
+				$t = new Text($sensorValue,240,$infoStart_Y+140 + 90 + 33);
+			}
+			if($sensors[$colName][$senNo]=="WiSMax")
+			{
+				$sensorValue= '('.number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).')m/s';
+				$t = new Text($sensorValue,268,$infoStart_Y+140 + 90 + 33);
+			}
+			if($sensors[$colName][$senNo]=="WiSDir")
+			{
+				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),0).'°';
+				$t = new Text($sensorValue,350,$infoStart_Y+140 + 90 + 33);
+			}
+			$t->SetFont(FF_ARIAL,FS_BOLD,15);
+			$t->SetColor($textColor);
+			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
+			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
+			$graph->AddText($t);	// Stroke the text
+		}
 		$senNo++;
 	}
 		
