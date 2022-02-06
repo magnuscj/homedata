@@ -286,7 +286,7 @@ do
 			if($sensors[$colName][$senNo]=="WiSpeed")
 			{
 				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'';
-				$t = new Text($sensorValue,2400-$O,$infoStart_Y+140 + 90 + 33);
+				$t = new Text($sensorValue,240-$O,$infoStart_Y+140 + 90 + 33);
 			}
 
 			if($sensors[$colName][$senNo]=="WiSMax")
