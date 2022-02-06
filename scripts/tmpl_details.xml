@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PollCount>75832619</PollCount>
+<DevicesConnected>1</DevicesConnected>
+<LoopTime>0.192</LoopTime>
+<DevicesConnectedChannel1>1</DevicesConnectedChannel1>
+<DataErrorsChannel3>0</DataErrorsChannel3>
+<VoltageChannel3>4.76</VoltageChannel3>
+<VoltagePower>5.00</VoltagePower>
+<DeviceName>RASP_SERVER</DeviceName>
+<HostName>RASP_SERVER1</HostName>
+<MACAddress>#MAC#</MACAddress>
+<DateTime>#TIME#</DateTime>
+<owd_PI Description="Wind and direction Sensor">
+<Name>PI</Name>
+<ROMId>Some_ID</ROMId>
+<Wind Units="m/s">#WIND#</Wind>
+<WindMax Units="m/s">#WINDMAX#</WindMax>
+<Direction Units="Degrees">#DIRECTION#</Direction>
+<Version>1.04</Version>
+</owd_PI>
+</Devices-Detail-Response>

@@ -282,21 +282,35 @@ do
 
 		if($sensors[$colType][$senNo] == "Wind")
 		{
+			$O=30;
 			if($sensors[$colName][$senNo]=="WiSpeed")
 			{
 				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'';
-				$t = new Text($sensorValue,240,$infoStart_Y+140 + 90 + 33);
+				$t = new Text($sensorValue,2400-$O,$infoStart_Y+140 + 90 + 33);
 			}
+
 			if($sensors[$colName][$senNo]=="WiSMax")
 			{
 				$sensorValue= '('.number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).')m/s';
-				$t = new Text($sensorValue,268,$infoStart_Y+140 + 90 + 33);
+				$t = new Text($sensorValue,268-$O,$infoStart_Y+140 + 90 + 33);
 			}
+
 			if($sensors[$colName][$senNo]=="WiSDir")
 			{
-				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),0).'°';
-				$t = new Text($sensorValue,350,$infoStart_Y+140 + 90 + 33);
+				$DirStr = "";
+				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),0);
+				if($sensorValue >= 0 && $sensorValue <= 45) $DirStr = "N";
+				if($sensorValue > 45 && $sensorValue <= 90) $DirStr = "NO";
+				if($sensorValue > 90 && $sensorValue <= 135) $DirStr = "O";
+				if($sensorValue > 135 && $sensorValue <= 180) $DirStr = "SO";
+				if($sensorValue > 180 && $sensorValue <= 225) $DirStr = "S";
+				if($sensorValue > 225 && $sensorValue <= 270) $DirStr = "SV";
+				if($sensorValue > 270 && $sensorValue <= 315) $DirStr = "V";
+				if($sensorValue > 315 && $sensorValue <= 360) $DirStr = "NV";
+				$sensorValue= number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),0).'° '.$DirStr;
+				$t = new Text($sensorValue,350-$O,$infoStart_Y+140 + 90 + 33);
 			}
+			
 			$t->SetFont(FF_ARIAL,FS_BOLD,15);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
