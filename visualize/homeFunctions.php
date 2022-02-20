@@ -238,6 +238,31 @@ date_default_timezone_set('Europe/Stockholm');
 		mysqli_close($con);
 		return $sensors;
 	}
+
+	function getSensorId($name, $username,$password,$database,$serverHostName)
+	{
+		$sensors  = array();//The array will contain arrays
+		$errConDb = "Unable to select database";
+		$query    = "SELECT sensorid FROM sensorconfig WHERE sensorname='".$name."';";
+		$con = mysqli_connect($serverHostName, $username,$password);
+		@mysqli_select_db($con,$database) or die($errConDb);
+			
+		$result = mysqli_query($con, $query); //Sending the query.
+		//Now lets walk trough the result array and store the data according
+		//to the table layout.
+		if ($result) 
+		{
+			$myrow=mysqli_fetch_array($result, MYSQLI_BOTH);
+		   	do
+		   	{	
+		   		$id[]      = $myrow['sensorid']; 
+		   	}while ($myrow=mysqli_fetch_array($result, MYSQLI_BOTH));
+			mysqli_free_result($result);
+		}
+
+		mysqli_close($con);
+		return $id[0];
+	}
 	
 	function onlyPowerType($sensors)
 	{
@@ -413,6 +438,28 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		return $curr[0];
 	}
+
+	function getCurrByName($sensorName,$username,$password,$serverHostName,$database )
+	{
+		
+		$con=mysqli_connect($serverHostName,$username,$password);
+		@mysqli_select_db($con, $database) or die( "Unable to select database");
+		
+		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
+		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
+		$result = mysqli_query($con,$query);
+		if($result === FALSE) 
+		{
+			die(mysql_error()); // TODO: better error handling
+		}
+
+		$curr   = mysqli_fetch_array($result);
+		mysqli_free_result($result);
+		mysqli_close($con);
+		
+		return $curr[0];
+	}
+	
 	
 	function scaleChange($factor, $valueArray)
 	{
