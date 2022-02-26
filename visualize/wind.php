@@ -22,7 +22,7 @@ do
    }
 
    // Create the graph.
-   $graph = new Graph(405,109);
+   $graph = new Graph(296,109);
    $graph->SetScale("datlin",0,10);
    $graph->yaxis->scale->ticks->Set(10,2);
    
