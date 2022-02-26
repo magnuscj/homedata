@@ -47,25 +47,16 @@ do
     $tickColor      = 'white';
 	$sensors 		= getSensorNames($username,$password,$database, $serverHostName); //From sensor configuration
 	
-	//Index names for the sensor configuration db table
-
+	
     $sensorNameToShow = "WiSDir";
-     
     $length     = 57.5;
     $ticLength  = 3;
     $length_M3  = ($length * 0.61);
-    $length_T   = ($length * 1.55);
-    $ticScaleL  = 1.09;
-	
+    $ticScaleL  = 1.09;	
     $baseLength = $length*0.1;
-    $Y_offset   = $length*1.64;
-    $X_offset   = $length*3.8/2.0;
-    $X_start    = $X_offset;
-    $Y_start    = $Y_offset+10;     
-    $X_stop     = $X_offset;        
-    $Y_stop     = $Y_offset - $length;
-    $canLength  = $X_offset*1.0;
-    $canHight   = $Y_offset*1.2;
+
+    $canLength  = $length*3.8/2.0*1.0;
+    $canHight   = $length*1.64*1.2;
     
 	$graph = new CanvasGraph($canLength,$canLength,'auto');
 	$graph->SetMargin(7,7,7,7);
@@ -74,7 +65,7 @@ do
 	
 	$sensorId = getSensorId($sensorNameToShow, $username,$password,$database,$serverHostName);
     $deg = 90+-1*getCurr($sensorId, $username, $password, $serverHostName, $database);
-    print(getCurr($sensorId, $username, $password, $serverHostName, $database));
+    
     $graph->InitFrame();
     $tmp_O = -0.043*$length;
 
