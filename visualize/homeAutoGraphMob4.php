@@ -35,7 +35,7 @@ do
                                 "orange",           /*Y-axix title color*/
                                 "orange",           /*Y-axix color */
                                  "xxxx"),
-                           array("darkslategray:1.2",/*Line color*/
+                           array("aquamarine1:0.9",/*Line color*/
                             "wh",               /*Y-axis name*/
                             "aquamarine3",      /*Y-axix title color*/
                             "aquamarine3",      /*Y-axix color */
@@ -108,7 +108,7 @@ do
          $lineplot = new LinePlot(floatAvg(10, $retXY[0]), $retXY[1]);              
          $lineplot->SetColor($configuration[$confNo][0]);
          $lineplot->SetWeight(2);
-         $lineplot->SetFillGradient('aquamarine1','black:1.1');
+         $lineplot->SetFillGradient('aquamarine1','aquamarine1:0.2');
 		}
       
 		if($sensors[$colName][$i]=="Ute")
