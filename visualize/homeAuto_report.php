@@ -61,14 +61,15 @@ do
 	$col_1			= 10;
 	$col_2          = 160;
 	$col_3          = 310;
-	$row_1			= 229;
-	$row_2			= 249;
-	$row_3			= 260;
+	$row_1			= 225;
+	$row_2			= 245;
+	$row_3			= 256;
 	$row_4			= 275;
 	$row_5			= 295;
 	$row_6			= 307;
     $windDir        = "";
     $windMax        = "";
+	$miniListDelta  = 0;
 
 	$sensorId = getSensorId("Skorst", $username,$password,$database,$serverHostName);
 	$skorstensTemp = getCurr($sensorId, $username, $password, $serverHostName, $database);
@@ -90,9 +91,29 @@ do
 	{
 		$infoStart_Y    = -56;
 		$name = $sensors[$colName][$senNo];
+
 		if($sensors[$colType][$senNo] == "temp")
 		{
-			$infoStart_Y    = 47;
+			if(    $name == "kylFrys"
+				|| $name == "Garage"
+				|| $name == "Sovrum" && $skorstensTemp >= 30
+				||($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database) < 30)))
+			{
+				$value = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),0);
+				$sensorName= $sensors[$colName][$senNo];
+				$t = new Text($sensorName.": ".$value,$col_3,$row_4 + $miniListDelta);
+				$t->SetFont(FF_ARIAL,FS_BOLD,12);
+				$t->SetColor($textColor);
+				$t->Align('left','bottom');	
+				$t->ParagraphAlign('left');	
+				$graph->AddText($t);
+				$miniListDelta = $miniListDelta + 15;
+			}
+		}
+
+		if($sensors[$colType][$senNo] == "temp")
+		{
+			$infoStart_Y    = 40;
 			if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
 				|| $name == "Inne" 
 				|| $name == "Ute" 
@@ -161,6 +182,7 @@ do
 			$toMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]+90);
 			$frMaxTime = date('Y-m-d H:i:s',$retXY_P[1][$maxPIndex]-90);
 			$avgMax = 60*60*getPowerAvg($frMaxTime,$toMaxTime,$sensorId,$username,$password,$serverHostName,$database)/1000;
+
 			//Get the min value
 			$minP = min($retXY_P[0]);
 			$minPIndex = array_search($minP,$retXY_P[0]);
