@@ -15,5 +15,6 @@ owd_EDS0065 Temperature
 owd_PI Wind
 owd_PI WindMax 
 owd_PI Direction
+owd_NUC Temperature 
 
 
