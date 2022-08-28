@@ -22,14 +22,29 @@ timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 macdata = subprocess.Popen("ip addr show | grep -m1 ether | awk {'print $2'}", shell=True, stdout=subprocess.PIPE)
 mac = macdata.stdout.read()
 id1 = mac.rstrip()+":1"
+id2 = mac.rstrip()+":2"
+id3 = mac.rstrip()+":3"
 
 while 1:
     pollCount+=1    
     start_time = time.time()
+    del tempSamples[:]
     temperatur = subprocess.Popen('curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"14\\".state.temperature', shell=True, stdout=subprocess.PIPE)
     temp = str(float(temperatur.stdout.read())/100)
+    tempSamples.append(temp)
+
+    temperatur = subprocess.Popen('curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"33\\".state.temperature', shell=True, stdout=subprocess.PIPE)
+    temp = str(float(temperatur.stdout.read())/100)
+    tempSamples.append(temp)
+
+    temperatur = subprocess.Popen('curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"36\\".state.temperature', shell=True, stdout=subprocess.PIPE)
+    temp = str(float(temperatur.stdout.read())/100)
+    tempSamples.append(temp)
+
+
+
+
     try:
-        tempSamples.append(temp)
         now = datetime.now()
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -37,10 +52,14 @@ while 1:
             data = file.read()
             file.close()
             data = data.replace("#TIME#", timestamp)
-            data = data.replace("#TEMP#", temp)
+            data = data.replace("#TEMP#", tempSamples[0])
+            data = data.replace("#TEMP2#", tempSamples[1])
+            data = data.replace("#TEMP3#", tempSamples[2])
             data = data.replace("#LOOPTIME#", str(time.time() - start_time))
             data = data.replace("#MAC#", mac)
-            data = data.replace("#ID1#", id1.rstrip())
+            data = data.replace("#ID1#",id1.rstrip())
+            data = data.replace("#ID2#",id2.rstrip())
+            data = data.replace("#ID3#",id3.rstrip())
             data = data.replace("#POLLCOUNT#", str(pollCount))
             data = data.replace("#ERRORS#", str(errors))
 
@@ -48,7 +67,6 @@ while 1:
             file.write(data) 
             file.close()
         success+=1
-        print(temp)
         time.sleep(600)
     except Exception as e:
         errors+=1

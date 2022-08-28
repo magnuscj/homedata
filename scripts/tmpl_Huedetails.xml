@@ -17,4 +17,16 @@
 <Temperature Units="deg">#TEMP#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
+<owd_NUC Description="Hue temperatures">
+<Name>Kyl1</Name>
+<ROMId>#ID2#</ROMId>
+<Temperature Units="deg">#TEMP2#</Temperature>
+<Version>1.04</Version>
+</owd_NUC>
+<owd_NUC Description="Hue temperatures">
+<Name>Kyl3</Name>
+<ROMId>#ID3#</ROMId>
+<Temperature Units="deg">#TEMP3#</Temperature>
+<Version>1.04</Version>
+</owd_NUC>
 </Devices-Detail-Response>
