@@ -1,6 +1,6 @@
 import subprocess
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 encoding = 'utf-8'
 i=1
@@ -18,12 +18,11 @@ success = 0
 
 now = datetime.now()
 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-
 macdata = subprocess.Popen("ip addr show | grep -m1 ether | awk {'print $2'}", shell=True, stdout=subprocess.PIPE)
-mac = macdata.stdout.read()
-id1 = mac.rstrip()+":1"
-id2 = mac.rstrip()+":2"
-id3 = mac.rstrip()+":3"
+mac = macdata.stdout.read().decode("utf-8")
+id1 = mac.strip()+":1"
+id2 = mac.strip()+":2"
+id3 = mac.strip()+":3"
 
 while 1:
     pollCount+=1    
@@ -42,11 +41,17 @@ while 1:
     tempSamples.append(temp)
 
 
+    sensorTime = subprocess.Popen('curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"14\\".state.lastupdated', shell=True, stdout=subprocess.PIPE)
 
+    battery = subprocess.Popen('curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"14\\".config.battery', shell=True, stdout=subprocess.PIPE)
 
+    batt = str(float(battery.stdout.read()))
     try:
         now = datetime.now()
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        sTime = sensorTime.stdout.read().decode("utf-8").replace('"\n','').replace('"','')
+        delta = now - datetime.strptime(sTime, "%Y-%m-%dT%H:%M:%S") - timedelta(hours=2)
+
 
         with open(r'tmpl_Huedetails.xml', 'r') as file:
             data = file.read()
@@ -57,6 +62,8 @@ while 1:
             data = data.replace("#TEMP3#", tempSamples[2])
             data = data.replace("#LOOPTIME#", str(time.time() - start_time))
             data = data.replace("#MAC#", mac)
+            data = data.replace("#BATT1#", batt)
+            data = data.replace("#UPDATE1#", str(delta).split('.')[0])
             data = data.replace("#ID1#",id1.rstrip())
             data = data.replace("#ID2#",id2.rstrip())
             data = data.replace("#ID3#",id3.rstrip())
