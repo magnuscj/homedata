@@ -114,8 +114,14 @@ do
         $t->SetColor($textColor);
         $t->Align('left','bottom');
         $t->ParagraphAlign('left');
-        $graph->AddText($t);        
+        $graph->AddText($t);
+
+        
+
     }
+
+    
+   
 
     $X_B_coord= (($baseLength*0.7)*cos(deg2rad(90-$deg)));
     $Y_B_coord= (($baseLength*0.7)*sin(deg2rad(90-$deg)));   
@@ -131,6 +137,19 @@ do
                 $length+ $tmp_O , $length ); 
     $graph->img->SetColor($needleColor);
     $graph->img->FilledPolygon($p);
+
+    print "\n".$Y_coord."\n";
+
+    $YO = $Y_coord*-1 < 24 ? 30 : 0;
+
+    $sensorId = getSensorId("WiSpeed", $username,$password,$database,$serverHostName);
+    $value = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1);
+    $te = new Text($value." m/s", 58, 48 + $YO);
+    $te->SetFont(FF_ARIAL,FS_BOLD,10);
+    $te->SetColor($textColor);
+    $te->Align('center','bottom');
+    $te->ParagraphAlign('left');
+    $graph->AddText($te);
 
 	if(isCli())
 	{

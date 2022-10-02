@@ -91,12 +91,23 @@ do
 	{
 		if($sensors[$colName][$i]=="WiSpeed")
 		{
+         $sensorId2 = getSensorId("WiSDir", $username,$password,$database,$serverHostName);
+         $deg = number_format(getCurr($sensorId2, $username, $password, $serverHostName, $database),0);
+
          $confNo = 1;
          $retXY = addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName));
          $lineplot = new LinePlot(floatAvg(10, $retXY[0]), $retXY[1]);              
          $lineplot->SetColor($configuration[$confNo][0]);
          $lineplot->SetWeight(2);
          $lineplot->SetFillGradient('cornflowerblue','black:1.1');
+
+         $value = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1);
+         $te = new Text($value."m/s"." (".$deg."°)", 270, 27);
+         $te->SetFont(FF_ARIAL,FS_BOLD,12);
+         $te->SetColor("white");
+         $te->Align('right','bottom');
+         $te->ParagraphAlign('left');
+         $graph->AddText($te);
 		}
       
 		$i++;
