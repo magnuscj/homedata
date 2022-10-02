@@ -22,12 +22,16 @@
 <owd_NUC Description="Hue temperatures">
 <Name>Kyl1</Name>
 <ROMId>#ID2#</ROMId>
+<SinceLastUpdate>#UPDATE2#</SinceLastUpdate>
+<Batt>#BATT2#</Batt>
 <Temperature Units="deg">#TEMP2#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="Hue temperatures">
 <Name>Kyl3</Name>
 <ROMId>#ID3#</ROMId>
+<SinceLastUpdate>#UPDATE3#</SinceLastUpdate>
+<Batt>#BATT3#</Batt>
 <Temperature Units="deg">#TEMP3#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
