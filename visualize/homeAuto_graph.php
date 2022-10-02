@@ -23,7 +23,6 @@ else
     $sleepTime = 60;
 }
 
-
 do 
 {
 	if(isCli())
@@ -40,7 +39,7 @@ do
    $graph->legend->SetFont(FF_VERDANA,FS_NORMAL,8);
    $graph->legend->SetFillColor('gray:0.43');
    $graph->legend->SetColumns(3);					// Set number of colums for legend
-   $graph->legend->Pos(0.5,0.03,"center","top");	
+   $graph->legend->Pos(0.47,0.03,"center","top");
    $graph->legend->SetColor('gray', 'gray');
 
    $graph->xaxis->SetPos("min");
