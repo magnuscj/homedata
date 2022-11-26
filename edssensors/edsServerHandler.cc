@@ -321,7 +321,7 @@ void edsServerHandler::connectToDatabase()
   const char* dbuser = "dbuser";
   const char* dbpwd  = "kmjmkm54C#";
 
-  dbConnection = mysql_init(NULL);
+  dbConnection = mysql_init(dbConnection);
 
   if(mysql_thread_safe()== 0)
 	  cout<<"Not safe\n";
@@ -332,7 +332,7 @@ void edsServerHandler::connectToDatabase()
      {
        //cout<<mysql_error(dbConnection);
        sleep(1);
-       dbConnection = mysql_init(NULL);
+       dbConnection = mysql_init(dbConnection);
 
        if(dbConnection != NULL)
        {

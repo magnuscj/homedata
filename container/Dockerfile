@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 LABEL org.containers.image.title="EDS data manager" \
       org.containers.image.description="Collects, stores and vizualise data from Embedded data systems" \
@@ -15,12 +15,12 @@ libcurl4-gnutls-dev \
 mysql-server \
 libmysqlclient-dev \
 iputils-ping \
-php8.1 \
-php8.1-cli \
-php8.1-common \
-php8.1-mysql \
-php8.1-mbstring \
-php8.1-gd \
+php7.4 \
+php7.4-cli \
+php7.4-common \
+php7.4-mysql \
+php7.4-mbstring \
+php7.4-gd \
 vim \
 cron
 
