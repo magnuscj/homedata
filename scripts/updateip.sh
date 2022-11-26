@@ -3,20 +3,22 @@
 #Retreive external IP
 ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
-echo "Current ip  : $EXTERNAL_IP"
-echo "Retreived ip: $ip"
-
-if [[ $ip != $EXTERNAL_IP ]]; then
-  if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] ; then
+  if [[ $ip != $EXTERNAL_IP ]] ; then
     export EXTERNAL_IP=$ip
-    echo "Current ip  : $EXTERNAL_IP"
-    if [[ -z $1 ]]; then
+  fi
+else
+  echo "Fail - no ip retreived"  
+fi
+
+if [[ -z $1 ]]; then
       echo "No template provided"
-    else
-      #Create file with new ip
-      sed "s/#IP#/$ip/g" "tmpl_$1" > $1
-    fi
+else
+  #Create file with new ip
+  if [[ $EXTERNAL_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] ; then
+    mkdir -p ~/tmpviz || true
+    sed "s/#IP#/$ip/g" "tmpl_$1" > ~/tmpviz/$1    
   else
-    echo "fail"
+    echo "The external IP $EXTERNAL_IP isn't a valid IP"
   fi
 fi

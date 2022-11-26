@@ -32,7 +32,6 @@ strx3 ='\\".state.temperature'
 sLastTime ='\\".state.lastupdated'
 sBatt ='\\".config.battery'
 
-
 while 1:
     pollCount+=1    
     start_time = time.time()

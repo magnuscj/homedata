@@ -15,12 +15,12 @@ libcurl4-gnutls-dev \
 mysql-server \
 libmysqlclient-dev \
 iputils-ping \
-php7.4 \
-php7.4-cli \
-php7.4-common \
-php7.4-mysql \
-php7.4-mbstring \
-php7.4-gd \
+php8.1 \
+php8.1-cli \
+php8.1-common \
+php8.1-mysql \
+php8.1-mbstring \
+php8.1-gd \
 vim \
 cron
 
@@ -46,8 +46,8 @@ RUN git clone https://github.com/magnuscj/homedata.git
 COPY start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
 
-COPY holken_backup.sh homedata/edssensors
-RUN chmod +x homedata/edssensors/holken_backup.sh
+COPY backup.sh homedata/edssensors
+RUN chmod +x homedata/edssensors/backup.sh
 
 COPY createSensorConfig.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/createSensorConfig.sh

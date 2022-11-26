@@ -91,7 +91,7 @@ do
         elseif ($resource == "Skorst")
         {
             $min=18.0;
-            $max=65.0;
+            $max=40.0;
         }
         else
         {
