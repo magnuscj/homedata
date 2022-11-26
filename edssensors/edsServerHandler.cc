@@ -340,7 +340,7 @@ void edsServerHandler::connectToDatabase()
        }
      }
    }
-  dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,0,0,0);
+  dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,3306,0,0);
   if(dbConnection == NULL)
   {
     cout<<"Mysql error"<<endl;
