@@ -60,5 +60,6 @@ RUN  tar -xf  jpgraph-4.3.5.tar.gz
 
 RUN cd homedata/edssensors; make 
 WORKDIR homedata/edssensors
+RUN git log
 ENTRYPOINT ["./start.sh"]
 
