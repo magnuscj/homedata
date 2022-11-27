@@ -31,4 +31,7 @@
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report_office.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_pedo_Bar.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_graph.php >> /var/log/cron.log 2>&1
+*/5 * * * * cd ../homedata/visualize/;php homeAuto_winddir.php >/dev/null 2>&1
+*/5 * * * * cd ../homedata/visualize/;php wind.php >/dev/null 2>&1
+
 #*/1 * * * * cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230 >> /tmp/foo.log 2>&1 
