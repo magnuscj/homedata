@@ -41,6 +41,7 @@ COPY verdana.ttf /usr/share/fonts/truetype/msttcorefonts
 COPY verdanab.ttf /usr/share/fonts/truetype/msttcorefonts
 
 RUN git clone https://github.com/leethomason/tinyxml2.git
+ARG CACHE_DATE=
 RUN git clone https://github.com/magnuscj/homedata.git
 
 COPY start.sh homedata/edssensors
@@ -60,6 +61,7 @@ RUN  tar -xf  jpgraph-4.3.5.tar.gz
 
 RUN cd homedata/edssensors; make 
 WORKDIR homedata/edssensors
+ARG CACHE_DATE=
 RUN git log
-ENTRYPOINT ["./start.sh"]
+#ENTRYPOINT ["./start.sh"]
 

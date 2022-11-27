@@ -330,11 +330,10 @@ void edsServerHandler::connectToDatabase()
        {
          i=10;
        }
+       else
+         sleep(1);
      }
-   }
-
-  if(dbConnection == NULL)
-  {
+     
      for(int i = 0;i<10;i++)
      {
         dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,3306,0,0);
@@ -342,6 +341,8 @@ void edsServerHandler::connectToDatabase()
         {
           i=10;
         }
+        else
+         sleep(1);
      }
    }
 
