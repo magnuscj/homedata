@@ -36,7 +36,7 @@ class edsServerHandler
     std::string ipAddress;
     char* dbIpAddress;
     CURL *curl;
-    MYSQL* dbConnection;
+    MYSQL* dbConnection=NULL;
     struct sensor
     {
       std::string type;

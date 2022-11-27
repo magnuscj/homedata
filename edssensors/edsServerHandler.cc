@@ -321,33 +321,35 @@ void edsServerHandler::connectToDatabase()
   const char* dbuser = "dbuser";
   const char* dbpwd  = "kmjmkm54C#";
 
-  dbConnection = mysql_init(dbConnection);
-
-  if(mysql_thread_safe()== 0)
-	  cout<<"Not safe\n";
-
   if(dbConnection == NULL)
   {
      for(int i = 0;i<10;i++)
      {
-       //cout<<mysql_error(dbConnection);
-       sleep(1);
        dbConnection = mysql_init(dbConnection);
-
        if(dbConnection != NULL)
        {
          i=10;
        }
      }
    }
-  dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,3306,0,0);
+
+  if(dbConnection == NULL)
+  {
+     for(int i = 0;i<10;i++)
+     {
+        dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,3306,0,0);
+        if(dbConnection != NULL)
+        {
+          i=10;
+        }
+     }
+   }
+
   if(dbConnection == NULL)
   {
     cout<<"Mysql error"<<endl;
-
     cout<<"Error:    "<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
     cout<<"Error no: "<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
-    
     exit(1);
   }
 }
