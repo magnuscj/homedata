@@ -2,6 +2,8 @@
 usermod -d /var/lib/mysql/ mysql
 service mysql start
 service mysql status
+service ssh start
+service ssh status
 service apache2 start
 echo "CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'kmjmkm54C#';" | mysql
 echo "GRANT ALL PRIVILEGES ON * . * TO 'dbuser'@'localhost';" | mysql
