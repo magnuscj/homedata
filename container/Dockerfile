@@ -61,7 +61,7 @@ RUN git clone https://github.com/leethomason/tinyxml2.git
 ARG CACHE_DATE=xx
 RUN git clone https://github.com/magnuscj/homedata.git
 
-COPY homedata/visualize/*.html /var/www/html
+COPY ../visualize/*.html /var/www/html
 
 COPY start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
