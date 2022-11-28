@@ -31,7 +31,7 @@ RUN groupadd sshgroup && useradd -ms /bin/bash -g sshgroup sshuser
 # Create sshuser directory in home
 RUN mkdir -p /home/sshuser/.ssh
 # Copy the ssh public key in the authorized_keys file. The idkey.pub below is a public key file you get from ssh-keygen. They are under ~/.ssh directory by default.
-COPY eds.pub /home/sshuser/.ssh/authorized_keys
+COPY container/eds.pub /home/sshuser/.ssh/authorized_keys
 # change ownership of the key file. 
 RUN chown sshuser:sshgroup /home/sshuser/.ssh/authorized_keys && chmod 600 /home/sshuser/.ssh/authorized_keys
 # Start SSH service
@@ -41,13 +41,13 @@ EXPOSE 22
 CMD ["/usr/sbin/sshd","-D"]
 
 
-COPY cron_eds /etc/cron.d/cron_eds
+COPY container/cron_eds /etc/cron.d/cron_eds
 RUN chmod 0644 /etc/cron.d/cron_eds
 RUN crontab /etc/cron.d/cron_eds  #Remove?
 RUN touch /var/log/cron.log
 #CMD cron && tail -f /var/log/cron.log
 
-COPY php.ini /etc/php/7.4/cli/php.ini
+COPY container/php.ini /etc/php/7.4/cli/php.ini
 RUN mkdir -p /var/www/html/picture
 
 ## Font workaround
