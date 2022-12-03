@@ -23,6 +23,7 @@ php7.4-mbstring \
 php7.4-gd \
 vim \
 cron \
+curl \
 iproute2 \
 jq \
 openssh-server
@@ -79,6 +80,9 @@ RUN chmod +x homedata/edssensors/restore.sh
 
 COPY container/jpgraph-4.3.5.tar.gz .
 RUN  tar -xf  jpgraph-4.3.5.tar.gz
+
+RUN mkdir /mnt/ramdisk
+RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 RUN cd homedata/edssensors; make 
 WORKDIR homedata/edssensors
