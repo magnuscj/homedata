@@ -22,10 +22,13 @@ php7.4-mysql \
 php7.4-mbstring \
 php7.4-gd \
 vim \
-cron
+cron \
+iproute2 \
+jq \
+openssh-server
 
 #SSH
-RUN apt update && apt install  openssh-server sudo -y
+#RUN apt update && apt install  openssh-server sudo -y
 # Create a user “sshuser” and group “sshgroup”
 RUN groupadd sshgroup && useradd -ms /bin/bash -g sshgroup sshuser
 # Create sshuser directory in home
@@ -39,7 +42,6 @@ RUN service ssh start
 # Expose docker port 22
 EXPOSE 22
 CMD ["/usr/sbin/sshd","-D"]
-
 
 COPY container/cron_eds /etc/cron.d/cron_eds
 RUN chmod 0644 /etc/cron.d/cron_eds
@@ -80,7 +82,8 @@ RUN  tar -xf  jpgraph-4.3.5.tar.gz
 
 RUN cd homedata/edssensors; make 
 WORKDIR homedata/edssensors
+COPY ../visualize/*.html /var/www/html
+
 ARG CACHE_DATE=
-RUN git log
-ENTRYPOINT ["./start.sh"]
+#ENTRYPOINT ["./start.sh"]
 
