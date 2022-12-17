@@ -76,7 +76,6 @@ while 1:
             data = data.replace("#ID3#",id3.rstrip())
             data = data.replace("#POLLCOUNT#", str(pollCount))
             data = data.replace("#ERRORS#", str(errors))
-
         with open(r'/mnt/ramdisk/details.xml', 'w') as file:
             file.write(data) 
             file.close()

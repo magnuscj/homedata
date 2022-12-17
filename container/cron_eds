@@ -23,14 +23,16 @@
 
 #@reboot /home/holken/mount.sh > /tmp/mnt.log 
 #@reboot cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/start_eds.sh
+@reboot cd /home/holken/repo/homedata/scripts/; python3 /home/holken/repo/homedata/scripts/hueTemps.py
 #10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
-0 0 * * * cd ../homedata/edssensors/; ./backup.sh
+#0 0 * * * cd ../homedata/edssensors/; ./backup.sh
 */5 * * * * cd ../homedata/visualize/;php homeAutoGraphMob4.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report_office.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_pedo_Bar.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_graph.php >> /var/log/cron.log 2>&1
+*/5 * * * * cd ../homedata/visualize/;php status.php >/dev/null 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_winddir.php >/dev/null 2>&1
 */5 * * * * cd ../homedata/visualize/;php wind.php >/dev/null 2>&1
 
