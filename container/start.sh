@@ -13,5 +13,8 @@ sleep 5s
 ./createSensorConfig.sh
 service cron start
 ./start_eds.sh
+cd ../scripts/
+python3 hueTemps.py
+cd -
 #./eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230
 
