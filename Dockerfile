@@ -71,6 +71,8 @@ RUN chmod +x homedata/edssensors/start.sh
 
 COPY container/backup.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/backup.sh
+RUN mkdir /usr/storage
+RUN touch /usr/storage/txt.txt
 
 COPY container/createSensorConfig.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/createSensorConfig.sh
