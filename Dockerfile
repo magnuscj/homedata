@@ -91,5 +91,5 @@ WORKDIR homedata/edssensors
 COPY ../visualize/*.html /var/www/html
 
 ARG CACHE_DATE=
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["start.sh"]
 
