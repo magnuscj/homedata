@@ -49,8 +49,10 @@ spec:
       containers:
       - name: eds
         image: magnuscj/eds:REPLACE
+        command: ["./start.sh"]
         ports:
           - containerPort: 80
+            name: eds-cont-port
         volumeMounts:
           - mountPath: "/usr/storage"
             name: eds-pv-storage
@@ -58,26 +60,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eds-service
+  name: eds-ext-nordenort-service
 spec:
   selector:
     app: eds
+  type: NodePort
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: eds-external-service
-spec:
-  selector:
-    app: eds
-  type: LoadBalancer
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30163
+      targetPort: eds-cont-port
+      nodePort: 30164
 
