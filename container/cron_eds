@@ -26,7 +26,7 @@
 @reboot cd ../homedata/scripts/; python3 hueTemps.py
 #10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
-05 11 * * * cd ../homedata/edssensors/; ./backup.sh
+0 */1 * * * cd ../homedata/edssensors/; ./backup.sh
 */5 * * * * cd ../homedata/visualize/;php homeAutoGraphMob4.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report_office.php >> /var/log/cron.log 2>&1

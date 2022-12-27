@@ -87,9 +87,9 @@ RUN mkdir /mnt/ramdisk
 RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 RUN cd homedata/edssensors; make 
-WORKDIR homedata/edssensors
 COPY ../visualize/*.html /var/www/html
 
 ARG CACHE_DATE=
-ENTRYPOINT ["start.sh"]
-
+WORKDIR homedata/edssensors
+RUN chmod +x start.sh
+ENTRYPOINT ["/bin/bash","./start.sh"]
