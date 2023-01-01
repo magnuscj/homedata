@@ -56,6 +56,13 @@ spec:
         volumeMounts:
           - mountPath: "/usr/storage"
             name: eds-pv-storage
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/bash", "-c", "echo Hello from the postStart handler > /usr/storage/message"]
+          preStop:
+             exec:
+               command: ["/bin/bash","-c","./backup.sh"]
 ---
 apiVersion: v1
 kind: Service
