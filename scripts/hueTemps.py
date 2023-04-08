@@ -26,7 +26,7 @@ id1 = mac.strip()+":1"
 id2 = mac.strip()+":2"
 id3 = mac.strip()+":3"
 
-strx1 ='curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"'
+strx1 ='curl -sX GET http://192.168.1.152/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"'
 strx2 =['14','33','36']
 strx3 ='\\".state.temperature'
 sLastTime ='\\".state.lastupdated'
