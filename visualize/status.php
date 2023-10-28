@@ -27,7 +27,7 @@ else
     $sleepTime = 60;
 }
 
-$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "kylFrys", "Sovrum", "Garage", "Skorst");
+$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "kylFrys", "Sovrum", "Garage", "Skorst", "vaxthus");
 
 do 
 {
@@ -93,6 +93,12 @@ do
             $min=18.0;
             $max=40.0;
         }
+        elseif ($resource == "vaxthus")
+        {
+            $min=30.0;
+            $max=38.0;
+        }
+
         else
         {
             $skip=1;

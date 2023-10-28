@@ -87,8 +87,8 @@ do
 	foreach($sensors[$colID] as $sensorId)
 	{
 		$ydata_temptot = array();
-		$xdata_timeTot = array();
-		
+    $xdata_timeTot = array();
+
 		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "temp")
 		{
 			$retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName);		
@@ -111,7 +111,7 @@ do
             }
 		}
 		
-		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "wind")
+		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "XXXwind")
 		{
 			$retXY = deltaChange(windAddMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)))	;
 			$retXY = windMilesTometers($retXY);
@@ -136,9 +136,9 @@ do
 		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "power")
 		{
 			$retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
-            $sum = sum($retXY[0], TRUE);
+      $sum = sum($retXY[0], TRUE);
             /*EXPERIMENT*/
-            $retXY = reduceData(sizeof($retXY[0])/1000, $retXY);
+      $retXY = reduceData(sizeof($retXY[0])/1000, $retXY);
 			$lineplot2=new LinePlot(floatAvg(5, $retXY[0]),$retXY[1] );
 			$lineplot2->SetColor($sensors[$colColor][$senNo]);
 			
@@ -154,21 +154,24 @@ do
 			$lineplot2->SetLegend($sensors[$colName][$senNo]." :  ".strval(number_format($sum/1000,1))." kwh" );
 					
 			if(!onlyPowerType($sensors))
-			{
-				$graph->AddY($noOf_Y_FlowGraphs + 1,$lineplot2);
-				$graph->SetYScale($noOf_Y_FlowGraphs + 1,'lin',0,300);
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetColor('teal');
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->Set('wh');
-                $graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->SetColor('orange');
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->title->SetMargin(11);
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->scale->ticks->Set(20,10); 
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetColor('orange');
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetPos('max');
-				$graph->ynaxis[$noOf_Y_FlowGraphs + 1]->SetTitleSide('right');	
-				$noOf_Y_FlowGraphs 		+= 1;
+      {
+				$noOf_Y_FlowGraphs 		= 0;
+        print "\n Sensor: ".$sensors[$colName][$senNo]." :  ".strval(number_format($sum/1000,1))." kwh"; 
+        print "Y-axis: ".strval(number_format($noOf_Y_FlowGraphs,1));
+				$graph->AddY($noOf_Y_FlowGraphs + 0,$lineplot2);
+				$graph->SetYScale($noOf_Y_FlowGraphs + 0,'lin',0,300);
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetColor('teal');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->Set('wh');
+        $graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->SetColor('orange');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->SetMargin(11);
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->scale->ticks->Set(20,10); 
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetColor('orange');
+				#$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetPos('max');
+				$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetTitleSide('right');	
+				#$noOf_Y_FlowGraphs 		+= 1;
 			}
 			else
-			{
+      {
 				$graph->Add($lineplot2);
 				$graph->SetScale('lin',0,300);
 				$graph->title->Set('wh');
@@ -181,34 +184,44 @@ do
 		
 		if(  $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "rain")
 		{
-			$retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
+      try 
+      {
+        $retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)));
 		
-            $lineplot2=new LinePlot($retXY[0],$retXY[1] );
-			$lineplot2->SetColor($sensors[$colColor][$senNo]);
-			$lineplot2->SetFillGradient('royalblue4','royalblue4');
-			$lineplot2->SetLegend($sensors[$colName][$senNo]." :   ".strval(number_format(sum($retXY[0], TRUE)*0.254,1))." mm" );
+        $lineplot2=new LinePlot($retXY[0],$retXY[1] );
+			  $lineplot2->SetColor($sensors[$colColor][$senNo]);
+			  $lineplot2->SetFillGradient('royalblue4','royalblue4');
+			  $lineplot2->SetLegend($sensors[$colName][$senNo]." :   ".strval(number_format(sum($retXY[0], TRUE)*0.254,1))." mm" );
 					
-			if($noOfFlowGraphs >= 0)
-			{		
-				$graph->AddY(0,$lineplot2);						
-				$graph->SetYScale(0,'lin',0,5);
-				$graph->ynaxis[0]->SetColor($sensors[$colColor][$senNo]);
-				$graph->ynaxis[0]->SetPos('max');
-				$graph->ynaxis[0]->title->Set('mm');
-				$graph->ynaxis[0]->title->SetMargin(25);
-				$graph->ynaxis[0]->title->SetColor($sensors[$colColor][$senNo]);
-				$noOfFlowGraphs += 1;
-			}
-			else
-			{
-				$graph->Add($lineplot2);					
-				$graph->yaxis->title->Set("mm" );
-				$graph->SetScale('lin',0,2);
-				$graph->title->SetMargin(11);
-				$graph->SetColor('khaki:1.5');
-				$noOfFlowGraphs += 1;	
-			}	
-		}	
+			  if($noOfFlowGraphs >= 0)
+			  {		
+				  $noOf_Y_FlowGraphs 		= 1;
+				  print "\n Sensor: ".$sensors[$colName][$senNo]."\n"; 
+          print "Y-axis: ".strval(number_format($noOf_Y_FlowGraphs,1));$graph->AddY($noOf_Y_FlowGraphs + 0,$lineplot2);						
+				  $graph->SetYScale($noOf_Y_FlowGraphs + 0,'lin',0,5);
+				  $graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetColor($sensors[$colColor][$senNo]);
+				  #$graph->ynaxis[$noOf_Y_FlowGraphs + 0]->SetPos('max');
+				  $graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->Set('mm');
+				  $graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->SetMargin(11);
+				  $graph->ynaxis[$noOf_Y_FlowGraphs + 0]->title->SetColor($sensors[$colColor][$senNo]);
+				  $noOfFlowGraphs += 1;
+#				  $noOf_Y_FlowGraphs 		+= 1;
+			  }
+			  else
+			  {
+				  $graph->Add($lineplot2);					
+				  $graph->yaxis->title->Set("mm" );
+				  $graph->SetScale('lin',0,2);
+				  $graph->title->SetMargin(11);
+				  $graph->SetColor('khaki:1.5');
+				  $noOfFlowGraphs += 1;	
+        }	
+      }
+      catch (Exception $e)
+      {
+         print "\n Meddelande ".$e->getMessage()."\n";
+      }
+	  }
 		$senNo++;
 	}
 	
