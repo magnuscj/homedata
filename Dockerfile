@@ -65,7 +65,7 @@ ARG CACHE_DATE=xx
 RUN git clone https://github.com/magnuscj/homedata.git
 
 COPY visualize/*.html /var/www/html/
-RUN rm -f /var/www/html/index.htm
+RUN rm -f /var/www/html/index.html
 
 COPY container/start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
