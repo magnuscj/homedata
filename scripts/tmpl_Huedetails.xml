@@ -15,39 +15,39 @@
 <Name>Frys Kok</Name>
 <ROMId>#ID1#</ROMId>
 <SinceLastUpdate>#UPDATE1#</SinceLastUpdate>
-<Batt>#BATT1#</Batt>
-<Temperature Units="deg">#TEMP#</Temperature>
+<Batt>#BATT0#</Batt>
+<Temperature Units="deg">#TEMP0#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="Hue temperatures">
 <Name>Kyl1</Name>
 <ROMId>#ID2#</ROMId>
 <SinceLastUpdate>#UPDATE2#</SinceLastUpdate>
-<Batt>#BATT2#</Batt>
-<Temperature Units="deg">#TEMP2#</Temperature>
+<Batt>#BATT1#</Batt>
+<Temperature Units="deg">#TEMP1#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="Hue temperatures">
 <Name>Kyl3</Name>
 <ROMId>#ID3#</ROMId>
 <SinceLastUpdate>#UPDATE3#</SinceLastUpdate>
-<Batt>#BATT3#</Batt>
-<Temperature Units="deg">#TEMP3#</Temperature>
+<Batt>#BATT2#</Batt>
+<Temperature Units="deg">#TEMP2#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="Hue temperatures">
 <Name>Vaxthus</Name>
 <ROMId>#ID4#</ROMId>
 <SinceLastUpdate>#UPDATE4#</SinceLastUpdate>
-<Batt>#BATT4#</Batt>
-<Temperature Units="deg">#TEMP4#</Temperature>
+<Batt>#BATT3#</Batt>
+<Temperature Units="deg">#TEMP3#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAMEX</Name>
     <ROMId>#ID5#</ROMId>
     <SinceLastUpdate>#UPDATEX#</SinceLastUpdate>
-    <Batt>#BATTX#</Batt>
+    <Batt>#BATT4#</Batt>
     <Temperature Units="deg">#HUMI0#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
@@ -71,7 +71,7 @@
     <Name>NAME6</Name>
     <ROMId>#ID8#</ROMId>
     <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <Batt>#BATT7#</Batt>
     <Temperature Units="deg">#HUMI3#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
@@ -79,7 +79,7 @@
     <Name>NAME9</Name>
     <ROMId>#ID9#</ROMId>
     <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <Batt>#BATT8#</Batt>
     <Temperature Units="deg">#HUMI4#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
@@ -87,7 +87,7 @@
     <Name>NAME6</Name>
     <ROMId>#ID10#</ROMId>
     <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <Batt>#BATT9#</Batt>
     <Temperature Units="deg">#HUMI5#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
@@ -95,7 +95,7 @@
     <Name>NAME6</Name>
     <ROMId>#ID11#</ROMId>
     <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <Batt>#BATT10#</Batt>
     <Temperature Units="deg">#HUMI6#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
@@ -103,7 +103,7 @@
     <Name>NAME6</Name>
     <ROMId>#ID12#</ROMId>
     <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <Batt>#BATT11#</Batt>
     <Temperature Units="deg">#HUMI7#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>

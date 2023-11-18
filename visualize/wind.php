@@ -6,6 +6,8 @@ include ("jpgraph_date.php");
 include ("jpgraph_regstat.php");
 include ("homeFunctions.php");
 
+sleep(30);
+
 $file = explode('.', __FILE__);
 $file = explode('/', $file[0]);
 $fileName = $file[sizeof($file)-1].".png";

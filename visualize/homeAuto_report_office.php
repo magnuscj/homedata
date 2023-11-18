@@ -9,6 +9,8 @@ require_once ("jpgraph_bar.php");
 require_once ('jpgraph_canvas.php');
 include ("homeFunctions.php");
 
+sleep(50);
+
 $file = explode('.', __FILE__);
 $file = explode('/', $file[0]);
 $fileName = $file[sizeof($file)-1].".png";

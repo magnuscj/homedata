@@ -9,6 +9,7 @@ require_once ("jpgraph_bar.php");
 require_once ('jpgraph_canvas.php');
 include ("homeFunctions.php");
 
+sleep(40);
 
 $file = explode(".php", __FILE__);
 $file = explode("/", $file[0]);

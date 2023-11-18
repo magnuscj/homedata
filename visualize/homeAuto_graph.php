@@ -7,6 +7,7 @@ require_once ("jpgraph_date.php");
 require_once ("jpgraph_regstat.php");
 include ("homeFunctions.php");
 
+sleep(80);
 
 $file = explode('.', __FILE__);
 $file = explode('/', $file[0]);

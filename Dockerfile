@@ -64,7 +64,8 @@ RUN git clone https://github.com/leethomason/tinyxml2.git
 ARG CACHE_DATE=xx
 RUN git clone https://github.com/magnuscj/homedata.git
 
-COPY visualize/*.html /var/www/html
+COPY visualize/*.html /var/www/html/
+RUN rm -f /var/www/html/index.htm
 
 COPY container/start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
@@ -87,7 +88,6 @@ RUN mkdir /mnt/ramdisk
 RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 RUN cd homedata/edssensors; make 
-COPY ../visualize/*.html /var/www/html/
 
 ARG CACHE_DATE=
 WORKDIR homedata/edssensors
