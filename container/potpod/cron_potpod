@@ -22,3 +22,4 @@
 # m h  dom mon dow   command
 
 @reboot cd /homedata/container/potpod; python3 humidity.py
+@reboot touch txt.txt
