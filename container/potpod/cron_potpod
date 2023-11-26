@@ -21,5 +21,4 @@
 # 
 # m h  dom mon dow   command
 
-@reboot python3 humidity.py
-
+@reboot cd /homedata/container/potpod; python3 humidity.py
