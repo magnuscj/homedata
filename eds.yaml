@@ -66,8 +66,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - pgrep
-            - eds
+            - bin/bash
+            - c
+            - ./liveness.sh
           initialDelaySeconds: 120
           periodSeconds: 10
 ---

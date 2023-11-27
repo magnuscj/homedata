@@ -70,6 +70,9 @@ RUN rm -f /var/www/html/index.html
 COPY container/start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
 
+COPY container/liveness.sh .
+RUN chmod +x liveness.sh
+
 COPY container/backup.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/backup.sh
 RUN mkdir /usr/storage
