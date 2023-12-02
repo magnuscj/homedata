@@ -67,8 +67,8 @@ spec:
           exec:
             command:
             - bin/bash
-            - c
-            - ./liveness.sh
+            - -c
+            - ../../liveness.sh
           initialDelaySeconds: 120
           periodSeconds: 10
 ---
