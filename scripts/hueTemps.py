@@ -47,14 +47,14 @@ timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 macdata = subprocess.Popen("ip addr show | grep -m1 ether | awk {'print $2'}", shell=True, stdout=subprocess.PIPE)
 mac = macdata.stdout.read().decode("utf-8")
 
-for x in range(1,13):
+for x in range(1,14):
     ids.append(mac.strip()+":"+str(x))
 logger.debug(ids)
 
 url = "http://192.168.1.237/get_livedata_info?"
 
 urlHue ='curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"'
-hueSensors =['14','33','36','80']
+hueSensors =['14','33','36','80','83']
 urlTemperature ='\\".state.temperature'
 sLastTime ='\\".state.lastupdated'
 sBatt ='\\".config.battery'
@@ -69,6 +69,7 @@ while 1:
        
     for sensor in hueSensors:
         getUrlData = urlHue + sensor + urlTemperature
+        print(getUrlData)
         temperatur = subprocess.Popen(getUrlData, shell=True, stdout=subprocess.PIPE)
         
         try:
@@ -125,7 +126,10 @@ while 1:
                 data = data.replace("#TEMP"+str(i)+"#", tempSamples[i])
             
             for i in range(len(humiSamples)):
-                data = data.replace("#HUMI"+str(i)+"#", humiSamples[i])
+                try:
+                    data = data.replace("#HUMI"+str(i)+"#", humiSamples[i])
+                except Exception as e:
+                    logger.error(e)
 
             data = data.replace("#LOOPTIME#", str(time.time() - start_time))
             data = data.replace("#MAC#", mac)
@@ -136,6 +140,7 @@ while 1:
             data = data.replace("#UPDATE2#", sensorTimeSamples[1])
             data = data.replace("#UPDATE3#", sensorTimeSamples[2])
             data = data.replace("#UPDATE4#", sensorTimeSamples[3])
+            data = data.replace("#UPDATE5#", sensorTimeSamples[4])
 
             for i in range(0,len(ids)):
                 data = data.replace("#ID"+str(i+1)+"#",ids[i].rstrip())

@@ -43,67 +43,75 @@
 <Temperature Units="deg">#TEMP3#</Temperature>
 <Version>1.04</Version>
 </owd_NUC>
+<owd_NUC Description="Hue temperatures">
+<Name>Frys</Name>
+<ROMId>#ID13#</ROMId>
+<SinceLastUpdate>#UPDATE5#</SinceLastUpdate>
+<Batt>#BATT4#</Batt>
+<Temperature Units="deg">#TEMP4#</Temperature>
+<Version>1.04</Version>
+</owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAMEX</Name>
     <ROMId>#ID5#</ROMId>
-    <SinceLastUpdate>#UPDATEX#</SinceLastUpdate>
-    <Batt>#BATT4#</Batt>
+    <SinceLastUpdate>#HUM_UPDATEX#</SinceLastUpdate>
+    <Batt>#HUM_BATT4#</Batt>
     <Temperature Units="deg">#HUMI0#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME5</Name>
     <ROMId>#ID6#</ROMId>
-    <SinceLastUpdate>#UPDATE5#</SinceLastUpdate>
-    <Batt>#BATT5#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE5#</SinceLastUpdate>
+    <Batt>#HUM_BATT5#</Batt>
     <Temperature Units="deg">#HUMI1#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME6</Name>
     <ROMId>#ID7#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT6#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT6#</Batt>
     <Temperature Units="deg">#HUMI2#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME6</Name>
     <ROMId>#ID8#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT7#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT7#</Batt>
     <Temperature Units="deg">#HUMI3#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME9</Name>
     <ROMId>#ID9#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT8#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT8#</Batt>
     <Temperature Units="deg">#HUMI4#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME6</Name>
     <ROMId>#ID10#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT9#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT9#</Batt>
     <Temperature Units="deg">#HUMI5#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME6</Name>
     <ROMId>#ID11#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT10#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT10#</Batt>
     <Temperature Units="deg">#HUMI6#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 <owd_NUC Description="humidity">
     <Name>NAME6</Name>
     <ROMId>#ID12#</ROMId>
-    <SinceLastUpdate>#UPDATE6#</SinceLastUpdate>
-    <Batt>#BATT11#</Batt>
+    <SinceLastUpdate>#HUM_UPDATE6#</SinceLastUpdate>
+    <Batt>#HUM_BATT11#</Batt>
     <Temperature Units="deg">#HUMI7#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
