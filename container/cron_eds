@@ -24,6 +24,7 @@
 #@reboot /home/holken/mount.sh > /tmp/mnt.log 
 #@reboot cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/start_eds.sh
 @reboot cd ../homedata/scripts/; python3 hueTemps.py
+@reboot cd ../homedata/scripts/; restartEds.sh
 #10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
 0 */1 * * * cd ../homedata/edssensors/; ./backup.sh
