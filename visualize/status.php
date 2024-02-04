@@ -85,8 +85,8 @@ do
         }
         elseif ($resource == "Garage")
         {
-            $min=2.0;
-            $max=15.0;
+            $min=0.5;
+            $max=3.0;
             $skift=1;
         }
         elseif ($resource == "Skorst")

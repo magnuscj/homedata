@@ -45,7 +45,7 @@ success = 0
 now = datetime.now()
 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 macdata = subprocess.Popen("ip addr show | grep -m1 ether | awk {'print $2'}", shell=True, stdout=subprocess.PIPE)
-mac = macdata.stdout.read().decode("utf-8")
+mac = "1c:69:7a:02:8c:4c"  #macdata.stdout.read().decode("utf-8")
 
 for x in range(1,14):
     ids.append(mac.strip()+":"+str(x))
