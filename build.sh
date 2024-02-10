@@ -11,4 +11,4 @@ else
   sed -i "s/REPLACE/$1/g" eds_deploy.yaml
   kubectl apply -f eds_deploy.yaml
 fi
-##kubectl port-forward --address 192.168.1.171 svc/eds-ext-nordenort-service  8181:80 &
+#kubectl port-forward --address 192.168.1.171 svc/eds-ext-nordenort-service  8181:80 &
