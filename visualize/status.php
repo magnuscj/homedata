@@ -28,7 +28,7 @@ else
     $sleepTime = 60;
 }
 
-$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "kylFrys", "Sovrum", "Garage", "Skorst", "vaxthus");
+$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "kylFrys", "Fry_ga", "Garage", "Skorst", "vaxthus");
 
 do 
 {
