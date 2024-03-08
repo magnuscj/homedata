@@ -1,4 +1,3 @@
 *.swp
-*.json
 *.o
 container/eds_deploy.yaml
