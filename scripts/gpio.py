@@ -5,6 +5,22 @@ from urllib.request import urlopen
 from itertools import islice
 import json
 import array
+import logging
+
+# Create a logger
+logger = logging.getLogger('logger')
+logger.setLevel(logging.ERROR)
+
+# Create a file handler
+fh = logging.FileHandler('sensorlog.log')
+fh.setLevel(logging.DEBUG)
+
+# Create
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+
+# Add handlers to the logger
+logger.addHandler(fh)
 
 potPin  = [11,13,15,19,21,23,37,29]
 potNo   = ["1","2","3","4","5","6","7","8"]
@@ -76,25 +92,30 @@ while(1):
     print("Pot dry level: ", potDry)
     print("Pot wet level: ", potWet)
     noOfPots =len(soilHumidity)
-
+    
+    print("Number of pots", noOfPots)
     #Act on humidity
-    for b in range(noOfPots):
-        if(potAct[b]):
-            if(int(soilHumidity[b]) < potDry[b] or hyst[b]==1):
-                GPIO.output(potPin[b], GPIO.HIGH)
-                hyst[b]=1
-                print("Vattnar kruka: " + potNo[b] + " ("+potNames[b]+")")
-            if(int(soilHumidity[b]) > potWet[b]):
-                hyst[b]=0
+    try:
+        for b in range(noOfPots):
+            if(potAct[b]):
+                if(int(soilHumidity[b]) < potDry[b] or hyst[b]==1):
+                    GPIO.output(potPin[b], GPIO.HIGH)
+                    hyst[b]=1
+                    print("Vattnar kruka: " + potNo[b] + " ("+potNames[b]+")")
+                if(int(soilHumidity[b]) > potWet[b]):
+                    hyst[b]=0
+                    GPIO.output(potPin[b], GPIO.LOW)
+                    print("Slutar vattnar kruka: " + potNo[b] + " ("+potNames[b]+")")
+                time.sleep(200/1000)
+        time.sleep(60)
+        if(i > 10):
+            for b in range(noOfPots):
                 GPIO.output(potPin[b], GPIO.LOW)
                 print("Slutar vattnar kruka: " + potNo[b] + " ("+potNames[b]+")")
             time.sleep(200/1000)
-    time.sleep(60)
-    if(i > 10):
-        for b in range(noOfPots):
-            GPIO.output(potPin[b], GPIO.LOW)
-            print("Slutar vattnar kruka: " + potNo[b] + " ("+potNames[b]+")")
-        time.sleep(200/1000)
-        i=0
-    i=i+1
+            i=0
+        i=i+1
+    except Exception as e:
+        logger.error(e)
+
 GPIO.cleanup()
