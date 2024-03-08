@@ -1,0 +1,51 @@
+{
+	"potConfig":	[{
+	"channel":	"1",
+	"name":	"CH1",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"2",
+	"name":	"CH2",
+	"potWet":	"40",
+	"potDry":	"32",
+	"potActive": "1"
+}, {
+	"channel":	"3",
+	"name":	"CH3",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"4",
+	"name":	"CH4",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"5",
+	"name":	"CH5",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"6",
+	"name":	"CH6",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"7",
+	"name":	"CH7",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}, {
+	"channel":	"8",
+	"name":	"CH8",
+	"potWet":	"40",
+	"potDry":	"35",
+	"potActive": "1"
+}]
+}
