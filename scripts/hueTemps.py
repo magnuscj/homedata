@@ -51,9 +51,9 @@ for x in range(1,14):
     ids.append(mac.strip()+":"+str(x))
 logger.debug(ids)
 
-url = "http://192.168.1.237/get_livedata_info?"
+url = "http://192.168.50.237/get_livedata_info?"
 
-urlHue ='curl -sX GET http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"'
+urlHue ='curl -sX GET http://192.168.50.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/sensors | jq .\\"'
 hueSensors =['14','33','36','80','83']
 urlTemperature ='\\".state.temperature'
 sLastTime ='\\".state.lastupdated'
