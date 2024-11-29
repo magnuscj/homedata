@@ -7,10 +7,10 @@ do
   if [[ $REACT == "false" ]];
   then
     echo "Restarted "$(date)
-    curl --request PUT --data '{"on":false}' http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/lights/18/state
+    curl --request PUT --data '{"on":false}' http://192.168.50.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/lights/18/state
     echo " "
     sleep 50
-    curl --request PUT --data '{"on":true}' http://192.168.1.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/lights/18/state
+    curl --request PUT --data '{"on":true}' http://192.168.50.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/lights/18/state
     echo " "
     sleep 3600
   fi
