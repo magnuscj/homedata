@@ -46,7 +46,7 @@ CMD ["/usr/sbin/sshd","-D"]
 
 COPY container/cron_eds /etc/cron.d/cron_eds
 RUN chmod 0644 /etc/cron.d/cron_eds
-#RUN crontab /etc/cron.d/cron_eds  #Remove?
+RUN crontab /etc/cron.d/cron_eds  #Remove?
 RUN touch /var/log/cron.log
 #CMD cron && tail -f /var/log/cron.log
 
