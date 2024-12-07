@@ -115,5 +115,21 @@
     <Temperature Units="deg">#HUMI7#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
+<owd_NUC Description="windspeed">
+    <Name>NAME6</Name>
+    <ROMId>#ID13#</ROMId>
+    <SinceLastUpdate>#H#</SinceLastUpdate>
+    <Batt>#WIND_SPEED#</Batt>
+    <Temperature Units="m/s">#SPEED1#</Temperature>
+    <Version>1.04</Version>
+</owd_NUC>
+<owd_NUC Description="windDir">
+    <Name>NAME6</Name>
+    <ROMId>#ID14#</ROMId>
+    <SinceLastUpdate>#H#</SinceLastUpdate>
+    <Batt>#WIND_DIR#</Batt>
+    <Temperature Units="m/s">#DIR1#</Temperature>
+    <Version>1.04</Version>
+</owd_NUC>
 
 </Devices-Detail-Response>
