@@ -1,0 +1,31 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+
+#@reboot /home/holken/mount.sh > /tmp/mnt.log 
+#@reboot cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/start_eds.sh
+@reboot python3 rain.py
+#10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
+#* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
+
+
+#*/1 * * * * cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230 >> /tmp/foo.log 2>&1 

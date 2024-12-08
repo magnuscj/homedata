@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rain-deployment
+  labels:
+    app: rain
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: rain
+  template:
+    metadata:
+      labels:
+        app: rain
+    spec:
+      containers:
+      - name: rain
+        image: magnuscj/rain:prod_1
+          #command: ["./start.sh"]
+        ports:
+          - containerPort: 80
+            name: rain-cont-port
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/bash", "-c", "ls -l"]
+          preStop:
+             exec:
+               command: ["/bin/bash","-c","ls -l"]
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ./rainLiveness.sh  
+          initialDelaySeconds: 120
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rain-ext-nordenort-service
+spec:
+  selector:
+    app: rain
+  type: NodePort 
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: rain-cont-port
+      nodePort: 30166
+
