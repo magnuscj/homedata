@@ -118,7 +118,7 @@ do
 			if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
 				|| $name == "Inne" 
 				|| $name == "Ute" 
-				|| $name == "Sovrum" && $skorstensTemp < 30
+				|| $name == "Skorst"
 				||($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database) >= 30)))
 			{
 				$sensorName= $sensors[$colName][$senNo];
