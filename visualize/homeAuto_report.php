@@ -299,7 +299,8 @@ do
 			$t->ParagraphAlign('left');	// How should the paragraph be aligned?
 			$graph->AddText($t);	// Stroke the text
 
-			$t = new Text($day,$col_2 ,$row_5);
+			$rainNow =  number_format(getCurr($sensorId, $username, $password, $serverHostName, $database),1).'';
+			$t = new Text($rainNow,$col_2 ,$row_5);
 			$t->SetFont(FF_ARIAL,FS_BOLD,18);
 			$t->SetColor($textColor);
 			$t->Align('left','bottom');	// How should the text box interpret the coordinates?
