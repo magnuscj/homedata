@@ -462,22 +462,26 @@ date_default_timezone_set('Europe/Stockholm');
 
 	function getCurrByName($sensorName,$username,$password,$serverHostName,$database )
 	{
-		
 		$con=mysqli_connect($serverHostName,$username,$password);
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
-		
-		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
-		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
+
+		$query = "SELECT sensorid FROM mydb.sensorconfig WHERE sensorname='".$sensorName."'";
 		$result = mysqli_query($con,$query);
-		if($result === FALSE) 
+		$sensor = mysqli_fetch_array($result);
+
+		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
+		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor[0]."' ORDER BY id DESC LIMIT 1";
+		print($query);
+		$result = mysqli_query($con,$query);
+		if($result === FALSE)
 		{
-			die(mysql_error()); // TODO: better error handling
+				die(mysql_error()); // TODO: better error handling
 		}
 
 		$curr   = mysqli_fetch_array($result);
 		mysqli_free_result($result);
 		mysqli_close($con);
-		
+		print($curr[0]);
 		return $curr[0];
 	}
 	
