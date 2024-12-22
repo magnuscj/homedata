@@ -11,13 +11,28 @@
 <HostName>NUC_SERVER1</HostName>
 <MACAddress>#MAC#</MACAddress>
 <DateTime>#TIME#</DateTime>
-<owd_NUC Description="windspeed">
-    <Name>NAME6</Name>
+<owd_NUC Description="Rain now">
+    <Name>NAME16</Name>
     <ROMId>#ID16#</ROMId>
     <SinceLastUpdate>#H#</SinceLastUpdate>
     <Batt>#R#</Batt>
-    <Temperature Units="m/s">#RAIN1#</Temperature>
+    <Temperature Units="mm">#RAIN1#</Temperature>
+    <Version>1.04</Version>
+</owd_NUC>
+<owd_NUC Description="Rain week">
+    <Name>NAME17</Name>
+    <ROMId>#ID17#</ROMId>
+    <SinceLastUpdate>#H#</SinceLastUpdate>
+    <Batt>#R#</Batt>
+    <Temperature Units="mm">#RAINW1#</Temperature>
+    <Version>1.04</Version>
+</owd_NUC>
+<owd_NUC Description="Rain month">
+    <Name>NAME18</Name>
+    <ROMId>#ID18#</ROMId>
+    <SinceLastUpdate>#H#</SinceLastUpdate>
+    <Batt>#R#</Batt>
+    <Temperature Units="mm">#RAINM1#</Temperature>
     <Version>1.04</Version>
 </owd_NUC>
 </Devices-Detail-Response>
-

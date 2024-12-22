@@ -57,14 +57,39 @@ def parse_sensor_data(data):
             rain = value
     return rain 
 
+def parse_weekly_sensor_data(data):
+    rain = None
+    for item in data:
+        values = list(islice(item.values(), 0, 4))
+        if len(values) < 2:
+            continue
+        name, value = values[0], values[1].replace('mm', '').strip()
+        if name == "0x11":
+            rain = value
+    return rain
 
-def update_template_file(template_file, output_file, rain, ids):
+def parse_monthly_sensor_data(data):
+    rain = None
+    for item in data:
+        values = list(islice(item.values(), 0, 4))
+        if len(values) < 2:
+            continue
+        name, value = values[0], values[1].replace('mm', '').strip()
+        if name == "0x12":
+            rain = value
+    return rain
+
+def update_template_file(template_file, output_file, rain, rainWeek, rainMonth, ids):
     try:
         with open(template_file, 'r') as file:
             template = file.read()
 
         updated_data = template.replace("#RAIN1#", rain or "0")
         updated_data = updated_data.replace(f"#ID16#", "1c:69:7a:02:8c:4c:16")
+        updated_data = updated_data.replace("#RAINW1#", rainWeek or "0")
+        updated_data = updated_data.replace(f"#ID17#", "1c:69:7a:02:8c:4c:17")
+        updated_data = updated_data.replace("#RAINM1#", rainMonth or "0")
+        updated_data = updated_data.replace(f"#ID18#", "1c:69:7a:02:8c:4c:18")
         
         with open(output_file, 'w') as file:
             file.write(updated_data)
@@ -72,6 +97,8 @@ def update_template_file(template_file, output_file, rain, ids):
         logger.debug("Template file updated successfully.")
     except Exception as e:
         logger.error(f"Error updating template file: {e}")
+        with open('details.xml', 'w') as file:
+            file.write(updated_data)
 
 
 def main():
@@ -89,7 +116,13 @@ def main():
         rain = parse_sensor_data(sensor_data)
         logger.debug(f"Rain: {rain}")
 
-        update_template_file(INPUT_FILE, OUTPUT_FILE, rain, IDS)
+        rainWeek = parse_weekly_sensor_data(sensor_data)
+        logger.debug(f"Weekly rain: {rainWeek}")
+
+        rainMonth = parse_monthly_sensor_data(sensor_data)
+        logger.debug(f"Monthly rain: {rainMonth}")
+
+        update_template_file(INPUT_FILE, OUTPUT_FILE, rain, rainWeek, rainMonth, IDS)
 
         success_count += 1
         elapsed_time = time.time() - start_time
