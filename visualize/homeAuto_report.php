@@ -291,7 +291,10 @@ do
 			$avg  = strval(number_format(sum($retXY[0], TRUE)*0.254,1));
 			$month  = number_format($avg,1);
 
-			$t = number_format($month,1)."/".number_format($week,1);
+			$weeklyRain  = getCurrByName("regnW",$username,$password,$serverHostName,$database);
+			$monthlyRain = getCurrByName("regnM",$username,$password,$serverHostName,$database);
+
+			$t = number_format($weeklyRain,1)."/".number_format($monthlyRain,1);
 			$t = new Text($t,$col_2 ,$row_6);
 			$t->SetFont(FF_ARIAL,FS_BOLD,9);
 			$t->SetColor($textColor);
