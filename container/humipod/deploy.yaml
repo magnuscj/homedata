@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wind-deployment
+  labels:
+    app: wind
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: wind
+  template:
+    metadata:
+      labels:
+        app: wind
+    spec:
+      containers:
+      - name: wind
+        image: magnuscj/wind:prod_2
+          #command: ["./start.sh"]
+        ports:
+          - containerPort: 80
+            name: wind-cont-port
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/bash", "-c", "ls -l"]
+          preStop:
+             exec:
+               command: ["/bin/bash","-c","ls -l"]
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ./windLiveness.sh  
+          initialDelaySeconds: 120
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wind-ext-nordenort-service
+spec:
+  selector:
+    app: wind
+  type: NodePort 
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: wind-cont-port
+      nodePort: 30165
+
