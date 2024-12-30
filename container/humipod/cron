@@ -23,7 +23,7 @@
 
 #@reboot /home/holken/mount.sh > /tmp/mnt.log 
 #@reboot cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/start_eds.sh
-@reboot python3 wind.py
+@reboot python3 humi.py
 #10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
 

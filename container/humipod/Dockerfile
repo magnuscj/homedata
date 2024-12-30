@@ -44,18 +44,18 @@ RUN service ssh start
 EXPOSE 22
 CMD ["/usr/sbin/sshd","-D"]
 
-COPY cron_wind /etc/cron.d/cron_wind
-RUN chmod 0644 /etc/cron.d/cron_wind
-RUN crontab /etc/cron.d/cron_wind  #Remove?
+COPY cron /etc/cron.d/cron
+RUN chmod 0644 /etc/cron.d/cron
+RUN crontab /etc/cron.d/cron
 RUN touch /var/log/cron.log
 #CMD cron && tail -f /var/log/cron.log
 
-COPY wind.py wind.py
+COPY humi.py humi.py
 COPY start.sh start.sh
 RUN chmod +x start.sh
 COPY tmpl_details.xml tmpl_details.xml
-COPY windLiveness.sh windLiveness.sh 
-RUN chmod +x windLiveness.sh
+COPY liveness.sh liveness.sh 
+RUN chmod +x liveness.sh
 RUN ls -l
 
 RUN rm -f /var/www/html/index.html
