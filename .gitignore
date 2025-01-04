@@ -1,3 +1,8 @@
 *.swp
 *.o
 container/eds_deploy.yaml
+.vs
+/container/jpgraph-4.3.5.tar.gz
+/eds_deploy.yaml
+/scripts/humidity.py
+/scripts/__pycache__
