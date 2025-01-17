@@ -8,10 +8,7 @@ include ("jpgraph_regstat.php");
 $fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")));
 $datay = file($fileName.".txt");
 
-
 $time = time();
-print date('H:i:s',$time).", ".$fileName;
-   
 
 // Create the graph.
 $graph = new Graph(296,109);
