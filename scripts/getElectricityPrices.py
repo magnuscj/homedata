@@ -22,9 +22,8 @@ def get_electricity_prices():
         if not os.path.exists(file_name):
             with open(file_name, 'w') as file:
                 file.write(prices_string)
-            print(f"Prices written to {file_name}")
         else:
-            print(f"File {file_name} already exists")
+            #print(f"File {file_name} already exists")
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
 
