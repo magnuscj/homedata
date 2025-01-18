@@ -5,8 +5,21 @@ require_once ("jpgraph_line.php");
 include ("jpgraph_date.php"); 
 include ("jpgraph_regstat.php");
 
-$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")));
-$datay = file($fileName.".txt");
+$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y"))).".txt";
+
+$timestamps = [];
+$prices = [];
+
+if (($handle = fopen($fileName, "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        if (count($data) == 2) {
+            $timestamps[] = trim($data[0]);
+            $prices[] = floatval(trim($data[1]));
+        }
+    }
+    fclose($handle);
+}
+
 
 $time = time();
 
@@ -30,8 +43,7 @@ $graph->yaxis->SetTitleSide(SIDE_LEFT);
 $graph->yaxis->title->SetColor('red');
 $graph->yaxis->title->SetMargin(0);
    
-
-$p1 = new LinePlot(array_map('floatval',$datay));
+$p1 = new LinePlot(array_map('floatval',$prices));
 $p1->SetColor('yellow');
 $p1->SetStepStyle();
 $graph->Add($p1);
