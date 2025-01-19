@@ -52,11 +52,11 @@ $graph->Add($p1);
 $bplot = new BarPlot($prices);
 $graph->Add($bplot);
 
-foreach ($prices as $datayvalue) {
-	    if ($datayvalue < '0.3') $barcolors[]='green';
-	    elseif ($datayvalue >= '0.3' && $datayvalue < '0.4') $barcolors[]='yellow';
-	    elseif ($datayvalue >= '0.4' && $datayvalue < '0.6') $barcolors[]='orange';
-	    elseif ($datayvalue >= '0.6') $barcolors[]='red';
+foreach ($prices as $price) {
+	    if ($price < '0.3') $barcolors[]='green';
+	    elseif ($price >= '0.3' && $price < '0.4') $barcolors[]='yellow';
+	    elseif ($price >= '0.4' && $price < '0.6') $barcolors[]='orange';
+	    elseif ($price >= '0.6') $barcolors[]='red';
 }
 
 $bplot->SetFillColor($barcolors);
