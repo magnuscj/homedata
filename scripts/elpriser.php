@@ -2,10 +2,11 @@
 date_default_timezone_set('Europe/Stockholm');
 require_once ("jpgraph.php");
 require_once ("jpgraph_line.php");
+require_once ('jpgraph_bar.php');
 include ("jpgraph_date.php"); 
 include ("jpgraph_regstat.php");
 
-$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")));
+$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+0,date("Y")));
 
 $timestamps = [];
 $prices = [];
@@ -25,7 +26,7 @@ $time = time();
 
 // Create the graph.
 $graph = new Graph(500,300);
-$graph->SetScale("intlin",0,5);
+$graph->SetScale("intlin",0,1);
 $graph->ClearTheme();
 $graph->SetBox(false);
 $graph->SetColor('gray:0.43');
@@ -51,6 +52,15 @@ $graph->Add($p1);
 $bplot = new BarPlot($prices);
 $graph->Add($bplot);
 
+foreach ($prices as $datayvalue) {
+	    if ($datayvalue < '0.3') $barcolors[]='green';
+	    elseif ($datayvalue >= '0.3' && $datayvalue < '0.4') $barcolors[]='yellow';
+	    elseif ($datayvalue >= '0.4' && $datayvalue < '0.6') $barcolors[]='orange';
+	    elseif ($datayvalue >= '0.6') $barcolors[]='red';
+}
+
+$bplot->SetFillColor($barcolors);
+$bplot->SetWidth(1);
 
 $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
 $graph->img->Stream($fileName.".png");
