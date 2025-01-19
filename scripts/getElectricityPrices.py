@@ -19,8 +19,9 @@ def get_electricity_prices():
         data = response.json()  # Parse the JSON data
         
         prices = [item['SEK_per_kWh'] for item in data if 'SEK_per_kWh' in item]
-        times = [datetime.fromisoformat(item['time_start']).strftime("%Y-%m-%d %H:%M:%S") for item in data if 'time_start' in item]
-        combined = [f"{time}, {price}" for time, price in zip(times, prices)]
+        dates = [datetime.fromisoformat(item['time_start']).strftime("Y-%m-%d %H:%M:%S") for item in data if 'time_start' in item]
+        hours = [datetime.fromisoformat(item['time_start']).strftime("%H") for item in data if 'time_start' in item]
+        combined = [f"{time}, {price}" for time, price in zip(hours, prices)]
         combined_string = '\n'.join(combined)  # Join the list into a single string with each item on a new line
 
         file_name = f"prices_{year}_{month}_{day}.txt"
