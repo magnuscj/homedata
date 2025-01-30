@@ -6,7 +6,7 @@ require_once ('jpgraph_bar.php');
 include ("jpgraph_date.php"); 
 include ("jpgraph_regstat.php");
 
-$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+0,date("Y")));
+$fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")));
 
 $timestamps = [];
 $prices = [];
@@ -23,10 +23,10 @@ if (($handle = fopen($fileName.".txt", "r")) !== FALSE) {
 
 $time = time();
 
-
+$MAX=max($prices);
 // Create the graph.
 $graph = new Graph(500,300);
-$graph->SetScale("intlin",0,1);
+$graph->SetScale("intlin",0,ceil(max($prices)));
 $graph->ClearTheme();
 $graph->SetBox(false);
 $graph->SetColor('gray:0.43');
@@ -53,10 +53,10 @@ $bplot = new BarPlot($prices);
 $graph->Add($bplot);
 
 foreach ($prices as $price) {
-	    if ($price < '0.3') $barcolors[]='green';
-	    elseif ($price >= '0.3' && $price < '0.4') $barcolors[]='yellow';
-	    elseif ($price >= '0.4' && $price < '0.6') $barcolors[]='orange';
-	    elseif ($price >= '0.6') $barcolors[]='red';
+	    if ($price < '0.3'*$MAX) $barcolors[]='green';
+	    elseif ($price >= '0.3'*$MAX && $price < '0.5'*$MAX) $barcolors[]='yellow';
+	    elseif ($price >= '0.5'*$MAX && $price < '0.75'*$MAX) $barcolors[]='orange';
+	    elseif ($price >= '0.75'*$MAX) $barcolors[]='red';
 }
 
 $bplot->SetFillColor($barcolors);
