@@ -63,6 +63,6 @@ $bplot->SetFillColor($barcolors);
 $bplot->SetWidth(1);
 
 $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
-$graph->img->Stream($fileName.".png");
+$graph->img->Stream("/var/www/html/picture/".$fileName.".png");
    
 ?>
