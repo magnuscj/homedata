@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: humi-deployment
+  name: hue-deployment
   labels:
-    app: humi
+    app: hue
 spec:
   replicas: 1 
   selector:
     matchLabels:
-      app: humi
+      app: hue
   template:
     metadata:
       labels:
-        app: humi
+        app: hue
     spec:
       containers:
-      - name: humi
-        image: magnuscj/humi:prod_1
+      - name: hue
+        image: magnuscj/hue:prod_1
           #command: ["./start.sh"]
         ports:
           - containerPort: 80
-            name: humi-cont-port
+            name: hue-cont-port
         lifecycle:
           postStart:
             exec:
@@ -40,14 +40,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: humi-ext-nordenort-service
+  name: hue-ext-nordenort-service
 spec:
   selector:
-    app: humi
+    app: hue
   type: NodePort 
   ports:
     - protocol: TCP
       port: 80
-      targetPort: humi-cont-port
+      targetPort: hue-cont-port
       nodePort: 30165
 
