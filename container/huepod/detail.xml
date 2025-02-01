@@ -1,0 +1,9 @@
+<owd_NUC Description="#DESCRIPTION#">
+    <Name>#NAME#</Name>
+    <ROMId>#ID#</ROMId>
+    <SinceLastUpdate>#DATE#</SinceLastUpdate>
+    <Batt>#BATT#</Batt>
+    <Temperature Units="deg">#DATA#</Temperature>
+    <Version>1.04</Version>
+</owd_NUC>
+
