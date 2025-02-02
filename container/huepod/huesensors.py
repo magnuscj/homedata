@@ -9,7 +9,7 @@ from urllib.request import urlopen
 from itertools import islice
 import os  # Import os module
 
-PATH = '/container/huepod/'
+PATH = '' #'/container/huepod/'
 TEMPLATE_ITEM_FILE = 'detail.xml'
 TEMPLATE_FILE = 'detailes.xml'
 OUTPUT_FILE = '/mnt/ramdisk/detailes.xml'
