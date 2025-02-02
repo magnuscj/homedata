@@ -26,4 +26,3 @@
 #10 * * * * /home/holken/mount.sh > /tmp/mnt.log 
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
 
-#*/1 * * * * cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230 >> /tmp/foo.log 2>&1 

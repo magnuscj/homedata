@@ -53,7 +53,8 @@ RUN touch /var/log/cron.log
 COPY huesensors.py huesensors.py
 COPY start.sh start.sh
 RUN chmod +x start.sh
-COPY tmpl_details.xml tmpl_details.xml
+COPY detail.xml detail.xml
+COPY details.xml details.xml
 COPY liveness.sh liveness.sh 
 RUN chmod +x liveness.sh
 RUN ls -l
