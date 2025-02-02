@@ -50,7 +50,7 @@ RUN crontab /etc/cron.d/cron
 RUN touch /var/log/cron.log
 #CMD cron && tail -f /var/log/cron.log
 
-COPY humi.py humi.py
+COPY huesensors.py huesensors.py
 COPY start.sh start.sh
 RUN chmod +x start.sh
 COPY tmpl_details.xml tmpl_details.xml
