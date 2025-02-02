@@ -36,7 +36,7 @@ now = datetime.now()
 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 start_time = time.time()
 
-def create_detail():
+def create_details():
     
     try:
         response = requests.get(URL)
@@ -72,8 +72,10 @@ def create_detail():
     return  details
 
 def main():
-    details = create_detail()
-    print(details)
+    while 1:
+        details = create_details()
+        print(details)
+        sleep(60)
 
 def get_template(template_file):
     try:
