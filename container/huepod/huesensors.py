@@ -7,7 +7,6 @@ import requests
 from datetime import datetime, timedelta
 from urllib.request import urlopen
 from itertools import islice
-from tabulate import tabulate
 import os  # Import os module
 
 PATH = '/container/huepod/'
