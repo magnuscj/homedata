@@ -49,5 +49,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: hue-cont-port
-      nodePort: 30165
+      nodePort: 30167
 
