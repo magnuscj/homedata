@@ -74,6 +74,14 @@ def create_details():
 def main():
     while 1:
         details = create_details()
+        try:
+            with open(OUTPUT_FILE, 'w') as file:
+                file.write(details)
+        except Exception as e:
+            logger.error(f"Error updating template file: {e}")
+            with open('detailes.xml', 'w') as file:
+                file.write(details)
+        
         print(details)
         sleep(60)
 
