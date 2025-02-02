@@ -12,7 +12,7 @@ import os  # Import os module
 PATH = '' #'/container/huepod/'
 TEMPLATE_ITEM_FILE = 'detail.xml'
 TEMPLATE_FILE = 'detailes.xml'
-OUTPUT_FILE = '/mnt/ramdisk/detailes.xml'
+OUTPUT_FILE = '/mnt/ramdisk/details.xml'
 URL = 'http://192.168.50.151/api/HTymPjBT0g1JdTwXFdYe-N26G9IQ8MDQ8quVIkr1/'
 
 # Create a logger
@@ -79,7 +79,7 @@ def main():
                 file.write(details)
         except Exception as e:
             logger.error(f"Error updating template file: {e}")
-            with open('detailes.xml', 'w') as file:
+            with open('details.xml', 'w') as file:
                 file.write(details)
         
         print(details)
