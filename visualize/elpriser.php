@@ -11,15 +11,25 @@ $fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")
 $timestamps = [];
 $prices = [];
 
-if (($handle = fopen($fileName.".txt", "r")) !== FALSE) {
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        if (count($data) == 2) {
-            $timestamps[] = trim($data[0]);
-            $prices[] = floatval(trim($data[1]));
-        }
-    }
-    fclose($handle);
-}
+//if (($handle = fopen($fileName.".txt", "r")) !== FALSE) {
+//    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+//       if (count($data) == 2) {
+//            $timestamps[] = trim($data[0]);
+//            $prices[] = floatval(trim($data[1]));
+//        }
+//    }
+//    fclose($handle);
+//}
+
+$fdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d")-1,date("Y")));
+$tdate          = date("Y-m-d", mktime(0,0,0,date("m"),date("d"),date("Y")));
+$ttime = $ftime = date('H:i',time());
+$username       = getConfig("DBUSN");
+$password       = getConfig('DBPSW');
+$database       = getConfig('DBNAME');
+$serverHostName = getConfig('DBIP');
+$retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, "electricityprice", $serverHostName);
+$prices[] = floatval($retXY[0]);
 
 $time = time();
 
