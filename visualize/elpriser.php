@@ -5,6 +5,7 @@ require_once ("jpgraph_line.php");
 require_once ('jpgraph_bar.php');
 include ("jpgraph_date.php"); 
 include ("jpgraph_regstat.php");
+include ("homeFunctions.php");
 
 $fileName = "prices_".date("Y_m_d", mktime(0,0,0,date("m"),date("d")+1,date("Y")));
 
