@@ -31,7 +31,7 @@ def get_electricity_prices():
             connection = mysql.connector.connect(
                 host='127.0.0.1',
                 user='dbuser',
-                password='kmjmkm54C',
+                password='kmjmkm54C#',
                 database='mydb'
             )
             cursor = connection.cursor()
