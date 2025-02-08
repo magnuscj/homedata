@@ -26,7 +26,10 @@ cron \
 curl \
 iproute2 \
 jq \
-openssh-server
+openssh-server \
+python3-pip
+
+RUN pip install mysql-connector-python
 
 #SSH
 #RUN apt update && apt install  openssh-server sudo -y

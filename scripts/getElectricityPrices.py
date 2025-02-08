@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime, timedelta
 import os
+import mysql.connector
 
 def get_electricity_prices():
     now = datetime.now()
@@ -21,22 +22,26 @@ def get_electricity_prices():
             data = response.json()  # Parse the JSON data
         
             prices = [item['SEK_per_kWh'] for item in data if 'SEK_per_kWh' in item]
-            dates = [datetime.fromisoformat(item['time_start']).strftime("Y-%m-%d %H:%M:%S") for item in data if 'time_start' in item]
+            dates = [datetime.fromisoformat(item['time_start']).strftime("%Y-%m-%d %H:%M:%S") for item in data if 'time_start' in item]
             hours = [datetime.fromisoformat(item['time_start']).strftime("%H") for item in data if 'time_start' in item]
             combined = [f"{time}, {price}" for time, price in zip(hours, prices)]
             combined_string = '\n'.join(combined)  # Join the list into a single string with each item on a new line
 
             # Connect to the MySQL database
-            #connection = mysql.connector.connect(
-            #    host='your_host',
-            #    user='your_username',
-            #    password='your_password',
-            #    database='mydb'
-            #)
-            #cursor = connection.cursor()
-            #for date, price in zip(dates, prices):
-            #    query =[f"INSERT INTO mydb.table{year}{month} (sensorid, data, curr_timestamp) VALUES ('electricityprice','{price}', '{date}');"]
-            #    cursor.execute(query)
+            connection = mysql.connector.connect(
+                host='127.0.0.1',
+                user='dbuser',
+                password='kmjmkm54C',
+                database='mydb'
+            )
+            cursor = connection.cursor()
+            for date, price in zip(dates, prices):
+                query =str(f"INSERT INTO mydb.table{year}{month} (sensorid, data, curr_timestamp) VALUES ('electricityprice','{price}', '{date}');")
+                cursor.execute(query)
+
+            connection.commit()
+            cursor.close()
+            connection.close()
             
             with open(file_name, 'w') as file:
                 file.write(combined_string)
