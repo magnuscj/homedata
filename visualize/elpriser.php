@@ -29,15 +29,21 @@ $username       = getConfig("DBUSN");
 $password       = getConfig('DBPSW');
 $database       = getConfig('DBNAME');
 $serverHostName = getConfig('DBIP');
-$retXY = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, "electricityprice", $serverHostName);
-$prices[] = floatval($retXY[0]);
+$prices = getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, "electricityprice", $serverHostName);
+
+$dta = array();
+$i=0;
+foreach($prices[1] as $dt) {
+        $dta[$i] = date('H', $dt);
+        $i++;
+}
 
 $time = time();
 
-$MAX=max($prices);
+$MAX=max($prices[0]);
 // Create the graph.
 $graph = new Graph(500,300);
-$graph->SetScale("intlin",0,ceil(max($prices)));
+$graph->SetScale("intlin",0,ceil(max($prices[0])));
 $graph->ClearTheme();
 $graph->SetBox(false);
 $graph->SetColor('gray:0.43');
@@ -47,6 +53,7 @@ $graph->SetMargin(40,22,10,35);
 // Configure the x-axis
 $graph->xgrid->Show(true);
 $graph->xaxis->SetColor('black:1.5','gray');   
+$graph->xaxis->SetTickLabels($dta);
 
 // Configure the y-axis
 $graph->yaxis->SetTitleMargin(18);
@@ -55,15 +62,10 @@ $graph->yaxis->SetTitleSide(SIDE_LEFT);
 $graph->yaxis->title->SetColor('red');
 $graph->yaxis->title->SetMargin(0);
    
-$p1 = new LinePlot(array_map('floatval',$prices));
-$p1->SetColor('yellow');
-$p1->SetStepStyle();
-$graph->Add($p1);
-
-$bplot = new BarPlot($prices);
+$bplot = new BarPlot($prices[0]);
 $graph->Add($bplot);
 
-foreach ($prices as $price) {
+foreach ($prices[0] as $price) {
 	    if ($price < '0.3'*$MAX) $barcolors[]='green';
 	    elseif ($price >= '0.3'*$MAX && $price < '0.5'*$MAX) $barcolors[]='yellow';
 	    elseif ($price >= '0.5'*$MAX && $price < '0.75'*$MAX) $barcolors[]='orange';
