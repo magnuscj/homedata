@@ -41,8 +41,8 @@
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report_tmp.php >/dev/null 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_humidity.php >/dev/null 2>&1
 */5 * * * * cd ../homedata/visualize/;php humidity.php >/dev/null 2>&1
-* */1 * * * cd ../homedata/scripts; python3 getElectricityPrices.py; php elpriser.php
-* */1 * * * cd ../homedata/visualize; php elpriser.php
+*/5 * * * * cd ../homedata/scripts; python3 getElectricityPrices.py
+*/5 * * * * cd ../homedata/visualize; php elpriser.php
 
 
 #*/1 * * * * cd /home/holken/repo/homedata/edssensors/; /home/holken/repo/homedata/edssensors/eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230 >> /tmp/foo.log 2>&1 

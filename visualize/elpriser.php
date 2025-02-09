@@ -63,7 +63,7 @@ $graph->yaxis->title->SetColor('red');
 $graph->yaxis->title->SetMargin(0);
    
 $bplot = new BarPlot($prices[0]);
-$graph->Add($bplot);
+
 
 foreach ($prices[0] as $price) {
 	    if ($price < '0.3'*$MAX) $barcolors[]='green';
@@ -74,6 +74,35 @@ foreach ($prices[0] as $price) {
 
 $bplot->SetFillColor($barcolors);
 $bplot->SetWidth(1);
+$graph->Add($bplot);
+
+$retXY = deltaChange(addMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime,'11502682451740542577', $serverHostName)));
+
+$H_tot = array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+$i=0;
+$j=0;
+$hour1 = $hour2 = (int)(date('H', $retXY[1][$i]));
+
+foreach($retXY[0] as $x_valX) {
+        
+        if ($hour1 == $hour2) {
+                $H_tot[$j] = $H_tot[$j] + $x_valX/20000;
+        }
+        else {
+                $hour1 = $hour2;
+                $j++;
+        }
+        $i++;
+        $hour2 = (int)(date('H', $retXY[1][$i]));
+}
+print_r($H_tot);
+
+
+$bplot2 = new BarPlot($H_tot);
+$bplot2->SetFillColor('azure4');
+$bplot2->SetWidth(1);
+$bplot2->SetColor('gray3');
+$bplot2->SetWeight(2);
 
 $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
 $graph->img->Stream("/var/www/html/picture/".$fileName.".png");
