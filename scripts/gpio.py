@@ -23,7 +23,7 @@ fh.setFormatter(formatter)
 # create console handler and set level to debug
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
-ch.setLevel(logging.INFO)
+ch.setLevel(logging.DEBUG)
 
 # Add handlers to the logger
 logger.addHandler(fh)
@@ -34,7 +34,7 @@ potNo   = ["1","2","3","4","5","6","7","8"]
 potWet  = [45,45,45,45,45,45,45,45]
 potDry  = [35,35,35,35,35,35,35,35]
 potAct  = [1,1,1,1,1,1,1,1]
-watDur  = [60,60,60,60,60,60,60,60]
+watDur  = [180,180,180,180,180,180,180,180]
 potNames= ["name1","name2","name3","name4","name5","name6","name7","name8",]
 hyst    = [0,0,0,0,0,0,0,0]
 soilHumidity = []
@@ -84,7 +84,7 @@ def measureHumidity(url):
     data = []
     logger.debug("Collect soil moisture measurements.")
     try:
-        response = urlopen(url)
+        response = urlopen(url,timeout=10)
         data_json = json.loads(response.read())
         data  = data_json['ch_soil']
     except  Exception as e:
@@ -94,7 +94,7 @@ def measureHumidity(url):
     #Check the humidity
     for x in data:
         values = x.values()
-        humVal = list(islice(values,0,4))[3].replace('%','')
+        humVal = list(islice(values,0,5))[4].replace('%','')
         soilHumidity.append(humVal)
     return soilHumidity
 
@@ -125,10 +125,10 @@ def setupBoard():
 
     logger.info("Test watering mechanics")
     for b in range(8):
-        #GPIO.output(potPin[b], GPIO.HIGH)
+        GPIO.output(potPin[b], GPIO.HIGH)
         time.sleep(100/1000)
-
-    time.sleep(2)
+        time.sleep(5)
+        GPIO.output(potPin[b], GPIO.LOW)
 
     for b in range(8):
         GPIO.output(potPin[b], GPIO.LOW)
@@ -163,32 +163,40 @@ while(1):
     logger.debug("Pot humidity:  {}".format('  '.join(map(str, soilHumidity))))
     logger.debug("Pot dry level: {}".format('  '.join(map(str, potDry))))
     logger.debug("Pot wet level: {}".format('  '.join(map(str, potWet))))
-    noOfPots =len(soilHumidity)
+    if len(soilHumidity) > 8:
+        noOfPots = 8
+    else:
+        noOfPots = len(soilHumidity)
     
     #Act on humidity
     try:
-        if ((int(datetime.datetime.now().minute) % 59) == 0 or measure):
+        if (1 or measure):
+            wateringCycle=1440
             measure = 0
             logger.info("Time for watering")
             for b in range(noOfPots):
+                if(str(soilHumidity[b]) == "--"):
+                    soilHumidity[b] = 99
                 if(potAct[b]):
-                    if(int(soilHumidity[b]) < potDry[b] or hyst[b]==1):
+                    if(int(soilHumidity[b]) <= potDry[b] or hyst[b]==1):
                         GPIO.output(potPin[b], GPIO.HIGH)
                         hyst[b]=1
                         logger.info("Watering pot: " + potNo[b] + " (" + potNames[b] + " - Humidity: " + str(soilHumidity[b]) + "(" + str(potDry[b]) + "/" + str(potWet[b]) + ")")
                         time.sleep(watDur[b])
+                        wateringCycle=wateringCycle-watDur[b]
                         GPIO.output(potPin[b], GPIO.LOW)
                         time.sleep(1/3)
-                    if(int(soilHumidity[b]) > potWet[b]):
+                    if(int(soilHumidity[b]) >= potWet[b] and int(soilHumidity[b]) != 99):
                         hyst[b]=0
                         GPIO.output(potPin[b], GPIO.LOW)
                         logger.info("The pot is too wet: " + potNo[b] + " ("+potNames[b]+" - Humidity: " + str(soilHumidity[b]) + "(" + str(potDry[b]) + "/" + str(potWet[b]) + ")")
             logger.info("Watering done")
-            time.sleep(61)
-        time.sleep(55)
+            logger.info("Let's sleep for " + str(wateringCycle) + " seconds.")
+            time.sleep(wateringCycle)
     except Exception as e:
         logger.error("Couldn't act on humidity properly")
         logger.error(e)
-        GPIO.cleanup()
+        logger.error("Number of pots" + str(noOfPots))
+        time.sleep(60)
 
 GPIO.cleanup()
