@@ -56,10 +56,10 @@ def fetch_sensor_data(url):
 def parse_sensor_data(data):
     humidity = []
     for item in data:
-        values = list(islice(item.values(), 0, 4))
+        values = list(islice(item.values(), 0, 5))
         if len(values) < 2:
             continue
-        humidity.append(values[3].replace('%', '').strip())
+        humidity.append(values[4].replace('%', '').strip())
     return humidity 
 
 
