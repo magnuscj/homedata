@@ -1,6 +1,8 @@
 import subprocess
+import os
 import time
 import json
+import requests
 import logging
 from datetime import datetime
 from urllib.request import urlopen
@@ -25,65 +27,57 @@ def setup_logger():
     logger.addHandler(console_handler)
     return logger
 
-
 logger = setup_logger()
 
 # Configuration
 POLL_INTERVAL = 60  # Seconds between polls
 URL = "http://192.168.50.237/get_livedata_info?"
-MAC_ADDRESS = "1c:69:7a:02:8c:4c"
+MAC_ADDRESS = "1c:69:7a:02:8c:humi"
 IDS = [f"{MAC_ADDRESS}:{x}" for x in range(1, 14)]
 #TEMPLATE_FILE = 'tmpl_Huedetails.xml'
-INPUT_FILE = 'tmpl_details.xml'
+TEMPLATE_ITEM_FILE = 'detail_t.xml'
+TEMPLATE_FILE = 'detailes_t.xml'
 OUTPUT_FILE = '/mnt/ramdisk/details.xml'
-mac = "1c:69:7a:02:8c:4c"
-ids = []
-
-for x in range(1,14):
-        ids.append(mac.strip()+":"+str(x))
-
-logger.debug(ids)
 
 def fetch_sensor_data(url):
     try:
-        response = urlopen(url)
-        return json.loads(response.read()).get('ch_soil', [])
+        re = requests.get(url)
+        re.raise_for_status()
+        data = re.json()
+        return data
     except Exception as e:
         logger.error(f"Error fetching sensor data: {e}")
         return []
 
-
-def parse_sensor_data(data):
-    humidity = []
-    for item in data:
-        values = list(islice(item.values(), 0, 5))
-        if len(values) < 2:
-            continue
-        humidity.append(values[4].replace('%', '').strip())
-    return humidity 
-
-
-def update_template_file(template_file, output_file, humi, ids):
+def update_template_file(template_item, template_file, output_file, data):
     try:
+        with open(template_item, 'r') as file:
+            detail_t = file.read()
         with open(template_file, 'r') as file:
-            template = file.read()
+            details = file.read()
 
-        for i in range(len(humi)):
-            try:
-                template = template.replace("#HUMI"+str(i)+"#", humi[i])
-                template = template.replace("#ID"+str(i)+"#", ids[i])
-                print(ids[i])
-            except Exception as e:
-                logger.error(e)
+        for key, value in data.items():
+            if key == "ch_soil":
+                    for val in value:
+                        try:
+                            detail = detail_t.replace("#DATA#", val["humidity"])
+                            detail = detail.replace("#NAME#", val["name"])
+                            detail = detail.replace("#BATT#", val["voltage"])
+                            detail = detail.replace("#ID#", MAC_ADDRESS + val["channel"])
+                            detail = detail.replace("#DATE#", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                            details = details.replace("</Devices-Detail-Response>", detail)
+                            details += "\n</Devices-Detail-Response>"
+                        except Exception as e:
+                            logger.error(e)
 
         with open(output_file, 'w') as file:
-            file.write(template)
+            file.write(details)
 
         logger.debug("Template file updated successfully.")
     except Exception as e:
         logger.error(f"Error updating template file: {e}")
         with open('detailes.xml', 'w') as file:
-            file.write(template)
+            file.write(details)
 
 
 def main():
@@ -98,10 +92,7 @@ def main():
         start_time = time.time()
         sensor_data = fetch_sensor_data(URL)
 
-        humidity = parse_sensor_data(sensor_data)
-        logger.debug(f"Humidity: {humidity}")
-
-        update_template_file(INPUT_FILE, OUTPUT_FILE, humidity, IDS)
+        update_template_file(TEMPLATE_ITEM_FILE, TEMPLATE_FILE, OUTPUT_FILE, sensor_data)
 
         success_count += 1
         elapsed_time = time.time() - start_time
