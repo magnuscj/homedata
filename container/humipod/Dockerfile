@@ -53,7 +53,7 @@ RUN touch /var/log/cron.log
 COPY humi.py humi.py
 COPY start.sh start.sh
 RUN chmod +x start.sh
-COPY details_t.xml details_t.xml
+COPY detailes_t.xml detailes_t.xml
 COPY detail_t.xml detail_t.xml
 COPY liveness.sh liveness.sh 
 RUN chmod +x liveness.sh
