@@ -60,7 +60,7 @@ def update_template_file(template_item, template_file, output_file, data):
             if key == "ch_soil":
                     for val in value:
                         try:
-                            detail = detail_t.replace("#DATA#", val["humidity"])
+                            detail = detail_t.replace("#DATA#", val["humidity"].replace("%", ""))
                             detail = detail.replace("#NAME#", val["name"])
                             detail = detail.replace("#BATT#", val["voltage"])
                             detail = detail.replace("#ID#", MAC_ADDRESS + val["channel"])
