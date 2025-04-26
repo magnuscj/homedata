@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: humi
-        image: magnuscj/humi:prod_1
+        image: magnuscj/humi:prod_5
           #command: ["./start.sh"]
         ports:
           - containerPort: 80
