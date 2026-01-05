@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+ARG CACHE_DATE=2026-01-05
+
 LABEL org.containers.image.title="EDS data manager" \
       org.containers.image.description="Collects, stores and vizualise data from Embedded data systems" \
       org.containers.image.authors="Magnus"
@@ -8,6 +10,7 @@ ENV TZ=Europe/Stockholm
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt -y update && apt-get -y install \
+entr \
 g++ \
 git \
 make \
@@ -64,11 +67,16 @@ COPY container/verdana.ttf /usr/share/fonts/truetype/msttcorefonts
 COPY container/verdanab.ttf /usr/share/fonts/truetype/msttcorefonts
 
 RUN git clone https://github.com/leethomason/tinyxml2.git
-ARG CACHE_DATE=xx
 RUN git clone https://github.com/magnuscj/homedata.git
 
 COPY visualize/*.html /var/www/html/
 RUN rm -f /var/www/html/index.html
+
+#IP configuration
+RUN mkdir -p /usr/storage/ips
+COPY ips.txt /usr/storage/ips/ips.txt
+COPY create_ips.php /var/www/html/
+RUN chown www-data:www-data /usr/storage/ips/ips.txt
 
 COPY container/start.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/start.sh
@@ -78,7 +86,7 @@ RUN chmod +x liveness.sh
 
 COPY container/backup.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/backup.sh
-RUN mkdir /usr/storage
+#RUN mkdir /usr/storage
 RUN touch /usr/storage/txt.txt
 
 COPY container/createSensorConfig.sh homedata/edssensors
@@ -86,6 +94,9 @@ RUN chmod +x homedata/edssensors/createSensorConfig.sh
 
 COPY container/restore.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/restore.sh
+
+RUN chown www-data:www-data /homedata/edssensors/start_eds.sh
+RUN chmod +x /homedata/edssensors/start_eds.sh
 
 COPY container/jpgraph-4.3.5.tar.gz .
 RUN  tar -xf  jpgraph-4.3.5.tar.gz
@@ -95,7 +106,6 @@ RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 RUN cd homedata/edssensors; make 
 
-ARG CACHE_DATE=
 WORKDIR homedata/edssensors
 RUN chmod +x start.sh
 ENTRYPOINT ["/bin/bash","./start.sh"]

@@ -8,7 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Skriv till filen (en IP per rad)
     file_put_contents($filename, implode(PHP_EOL, $ips));
-    $message = "Filen har uppdaterats!";
+    shell_exec('/bin/bash /homedata/edssensors/start_eds.sh');
+
+    $message = "Filen har uppdaterats och skriptet har startats!";
 }
 
 // Läs in befintliga IP-adresser
