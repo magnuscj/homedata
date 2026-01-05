@@ -1,5 +1,6 @@
 <?php
 $filename = '/usr/storage/ips/ips.txt';
+$debug_info = ""; // Variabel för att hålla debug-text
 
 // Om formuläret har skickats (Spara-knappen)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -8,9 +9,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Skriv till filen (en IP per rad)
     file_put_contents($filename, implode(PHP_EOL, $ips));
-    shell_exec('/bin/bash /homedata/edssensors/start_eds.sh');
+
+    // DEBUG-VERSION:
+    // 2>&1 gör att även felmeddelanden (stderr) hamnar i $output
+    $script_path = '/homedata/edssensors/start_eds.sh';
+    exec("sudo $script_path 2>&1", $output, $return_var);
 
     $message = "Filen har uppdaterats och skriptet har startats!";
+    // Samla ihop debug-info
+    $debug_info = "<strong>Debug Info:</strong><br>";
+    $debug_info .= "Kommando: /bin/bash $script_path<br>";
+    $debug_info .= "Returkod: " . $return_var . " (0 betyder succé)<br>";
+    $debug_info .= "Output:<pre>" . implode("\n", $output) . "</pre>";
 }
 
 // Läs in befintliga IP-adresser
@@ -24,6 +34,14 @@ if (empty($ip_list)) {
     $ip_list = [''];
 }
 ?>
+
+<?php if (isset($message)) echo "<p class='msg'>$message</p>"; ?>
+
+<?php if (!empty($debug_info)): ?>
+    <div style="background: #eee; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; font-size: 0.8em;">
+        <?php echo $debug_info; ?>
+    </div>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="sv">

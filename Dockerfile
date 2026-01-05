@@ -11,6 +11,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt -y update && apt-get -y install \
 entr \
+sudo \
 g++ \
 git \
 make \
@@ -97,6 +98,8 @@ RUN chmod +x homedata/edssensors/restore.sh
 
 RUN chown www-data:www-data /homedata/edssensors/start_eds.sh
 RUN chmod +x /homedata/edssensors/start_eds.sh
+# Ge användaren www-data rätt att köra start_eds.sh som root utan lösenord
+RUN echo "www-data ALL=(ALL) NOPASSWD: /homedata/edssensors/start_eds.sh" >> /etc/sudoers
 
 COPY container/jpgraph-4.3.5.tar.gz .
 RUN  tar -xf  jpgraph-4.3.5.tar.gz
