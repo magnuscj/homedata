@@ -77,6 +77,7 @@ RUN rm -f /var/www/html/index.html
 RUN mkdir -p /usr/storage/ips
 COPY ips.txt /usr/storage/ips/ips.txt
 COPY create_ips.php /var/www/html/
+COPY sensorcfg.php /var/www/html/
 RUN chown www-data:www-data /usr/storage/ips/ips.txt
 
 COPY container/start.sh homedata/edssensors
