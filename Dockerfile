@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG CACHE_DATE=2026-01-05
 
@@ -19,12 +19,12 @@ libcurl4-gnutls-dev \
 mysql-server \
 libmysqlclient-dev \
 iputils-ping \
-php7.4 \
-php7.4-cli \
-php7.4-common \
-php7.4-mysql \
-php7.4-mbstring \
-php7.4-gd \
+php8.3 \
+php8.3-cli \
+php8.3-common \
+php8.3-mysql \
+php8.3-mbstring \
+php8.3-gd \
 vim \
 cron \
 curl \
@@ -33,7 +33,7 @@ jq \
 openssh-server \
 python3-pip
 
-RUN pip install mysql-connector-python
+RUN pip install --break-system-packages mysql-connector-python
 
 #SSH
 #RUN apt update && apt install  openssh-server sudo -y
@@ -57,7 +57,7 @@ RUN crontab /etc/cron.d/cron_eds  #Remove?
 RUN touch /var/log/cron.log
 #CMD cron && tail -f /var/log/cron.log
 
-COPY container/php.ini /etc/php/7.4/cli/php.ini
+COPY container/php.ini /etc/php/8.3/cli/php.ini
 RUN mkdir -p /var/www/html/picture
 
 ## Font workaround
@@ -69,6 +69,8 @@ COPY container/verdanab.ttf /usr/share/fonts/truetype/msttcorefonts
 
 RUN git clone https://github.com/leethomason/tinyxml2.git
 RUN git clone https://github.com/magnuscj/homedata.git
+COPY edssensors/communication.cc homedata/edssensors/communication.cc
+COPY edssensors/communication.h homedata/edssensors/communication.h
 
 COPY visualize/*.html /var/www/html/
 RUN rm -f /var/www/html/index.html

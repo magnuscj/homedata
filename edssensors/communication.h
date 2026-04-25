@@ -3,6 +3,7 @@
 
 #include <curl/curl.h>
 #include <string.h>
+#include <string>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdio.h>
