@@ -46,6 +46,14 @@ spec:
           persistentVolumeClaim:
             claimName: eds-pv-claim
 
+      initContainers:
+      - name: seed-ips
+        image: magnuscj/eds:REPLACE
+        command: ["/bin/bash", "-c", "mkdir -p /usr/storage/ips && [ ! -f /usr/storage/ips/ips.txt ] && cp /img/ips.txt /usr/storage/ips/ips.txt || true"]
+        volumeMounts:
+          - mountPath: "/usr/storage"
+            name: eds-pv-storage
+
       containers:
       - name: eds
         image: magnuscj/eds:REPLACE

@@ -3,9 +3,12 @@ docker image build --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) -t magnuscj
 
 kubectl get deployments | grep -q eds-deployment  && DEP="true" || DEP="false"
 
-if [[ "$DEP" -eq "true" ]]
+if [[ "$DEP" == "true" ]]
 then 
   kubectl set image deployments/eds-deployment  eds=magnuscj/eds:$1
+  cp eds.yaml eds_deploy.yaml
+  sed -i "s/REPLACE/$1/g" eds_deploy.yaml
+
 else
   cp eds.yaml eds_deploy.yaml
   sed -i "s/REPLACE/$1/g" eds_deploy.yaml
