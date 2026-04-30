@@ -12,6 +12,7 @@ sleep 5s
 ./restore.sh
 ./createSensorConfig.sh
 service cron start
+until mysql -u root -e "SELECT 1" &>/dev/null; do sleep 1; done
 ./start_eds.sh
 cd ../scripts/
 python3 hueTemps.py
