@@ -68,7 +68,7 @@ COPY container/verdana.ttf /usr/share/fonts/truetype/msttcorefonts
 COPY container/verdanab.ttf /usr/share/fonts/truetype/msttcorefonts
 
 RUN git clone https://github.com/leethomason/tinyxml2.git
-RUN git clone https://github.com/magnuscj/homedata.git
+RUN git clone https://github.com/magnuscj/homedata.git && cd homedata && git checkout WIP
 COPY edssensors/communication.cc homedata/edssensors/communication.cc
 COPY edssensors/communication.h homedata/edssensors/communication.h
 
