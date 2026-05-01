@@ -139,7 +139,12 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		$con = mysqli_connect($serverHostName,$username,$password);
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
-		$result = mysqli_query($con, $query." ORDER BY curr_timestamp ASC");
+		$parts = array_filter(explode(" UNION ", $query), function($part) use ($con) {
+			preg_match("/FROM (\\w+)/", $part, $m);
+			return $m && mysqli_num_rows(mysqli_query($con, "SHOW TABLES LIKE '".$m[1]."'")) > 0;
+		});
+		if(empty($parts)) return array(array(), array());
+		$result = mysqli_query($con, implode(" UNION ", $parts)." ORDER BY curr_timestamp ASC");
 		
 		if($result != false)
 			$myrow=mysqli_fetch_array($result);
