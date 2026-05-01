@@ -434,7 +434,7 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
 		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
 		if($result === FALSE) 
 		{
 			die(mysql_error()); // TODO: better error handling
@@ -455,7 +455,7 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
 		$query  = "SELECT curr_timestamp FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
 		if($result === FALSE) 
 		{
 			die(mysql_error()); // TODO: better error handling
@@ -474,13 +474,13 @@ date_default_timezone_set('Europe/Stockholm');
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
 
 		$query = "SELECT sensorid FROM mydb.sensorconfig WHERE sensorname='".$sensorName."'";
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
 		$sensor = mysqli_fetch_array($result);
 
 		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
 		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor[0]."' ORDER BY id DESC LIMIT 1";
 		print($query);
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
 		if($result === FALSE)
 		{
 				die(mysql_error()); // TODO: better error handling
@@ -555,7 +555,7 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		$con=mysqli_connect($serverHostName,$username,$password);
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
         
         if($result)
         {
@@ -563,7 +563,7 @@ date_default_timezone_set('Europe/Stockholm');
         }
         else
         {
-            return null;
+            return 0;
         }
         
         $ydata  = $myrow[0];  
@@ -852,7 +852,7 @@ date_default_timezone_set('Europe/Stockholm');
 		
 		$con=mysqli_connect($serverHostName,$username,$password);
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
-		$_q = filterUnionQuery($con, $query); if($_q === null) return array(array(), array()); $result = mysqli_query($con, $_q);
+		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
         
 		$myrow = mysqli_fetch_array($result);     
         $ydata  = $myrow[0];  
