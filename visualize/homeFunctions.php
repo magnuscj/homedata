@@ -433,12 +433,8 @@ date_default_timezone_set('Europe/Stockholm');
 		@mysqli_select_db($con, $database) or die( "Unable to select database");
 		
 		$tdate = date("Ym", mktime(0,0,0,date("m"),date("d"),date("Y")));
-		$query  = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
-		$_q = filterUnionQuery($con, $query); if($_q === null) return 0; $result = mysqli_query($con, $_q);
-		if($result === FALSE) 
-		{
-			die(mysql_error()); // TODO: better error handling
-		}
+		$query = "SELECT data FROM ".$database.".table".$tdate." WHERE sensorid='".$sensor."' ORDER BY id DESC LIMIT 1";
+		$result = mysqli_query($con, $query);
 
 		$curr   = mysqli_fetch_array($result);
 		mysqli_free_result($result);
