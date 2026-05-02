@@ -1,30 +1,54 @@
 <html>
-    <meta http-equiv="refresh" content="300;url=android_F_S.html">
     <head>
     </head>
     
     <body bgcolor="#100A00"> 
     
 	   <div style="position: absolute; left: 5px; top: 3px;">
-              <img src='picture//homeAuto_report.png' align ="top"/>
+              <img id="p1" src='picture//homeAuto_report.png' align ="top"/>
 	   </div>
 	   <div style="position: absolute; left: 5px; top: 318px;">
-              <img src='picture//wind.png' align ="top"/>
+              <img id="p2" src='picture//wind.png' align ="top"/>
 	   </div>
            <div style="position: absolute; left: 297px; top: 210px;">
-              <img src='picture//status.png' align ="top"/>
+              <img id="p3" src='picture//status.png' align ="top"/>
 	   </div>
 	   <div style="position: absolute; left: 297px; top: 318px;">   
-	     <img src='picture//homeAuto_winddir.png' align ="top"/>
+	     <img id="p4" src='picture//homeAuto_winddir.png' align ="top"/>
 	   </div> 
 
 
     	<div style="position: absolute; left: 405px; top: 3px;">
-         <img src='picture//homeAutoGraphMob4.png' align ="top"/>
+         <img id="p5" src='picture//homeAutoGraphMob4.png' align ="top"/>
     	</div>
 
     	<div style="position: absolute; left: 405px; top: 222px;">
-         <img src='picture//homeAuto_pedo_Bar.png' align ="top"/>
+         <img id="p6" src='picture//homeAuto_pedo_Bar.png' align ="top"/>
     	</div>
+
+<script>
+const imgs = [
+  [p1, 'picture/homeAuto_report.png'],
+  [p2, 'picture/wind.png'],
+  [p3, 'picture/status.png'],
+  [p4, 'picture/homeAuto_winddir.png'],
+  [p5, 'picture/homeAutoGraphMob4.png'],
+  [p6, 'picture/homeAuto_pedo_Bar.png'],
+];
+
+async function refresh() {
+  const ts = '?t=' + Date.now();
+  const blobs = await Promise.all(
+    imgs.map(([, src]) => fetch(src + ts).then(r => r.blob()))
+  );
+  const urls = blobs.map(b => URL.createObjectURL(b));
+  imgs.forEach(([el], i) => {
+    URL.revokeObjectURL(el.src);
+    el.src = urls[i];
+  });
+}
+
+setInterval(refresh, 300000);
+</script>
     </body>
 </html>

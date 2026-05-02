@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<title>Humidity</title>
+<style>
+  body { background: #111; margin: 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  img { width: 100%; }
+</style>
+<body>
+<div class="grid">
+  <img id="i1" src="../picture/CH1humidity.png">
+  <img id="i2" src="../picture/CH2humidity.png">
+  <img id="i3" src="../picture/CH3humidity.png">
+  <img id="i4" src="../picture/CH4humidity.png">
+  <img id="i5" src="../picture/CH5humidity.png">
+  <img id="i6" src="../picture/CH6humidity.png">
+  <img id="i7" src="../picture/CH7humidity.png">
+  <img id="i8" src="../picture/CH8humidity.png">
+</div>
+<script>
+const imgs = [
+  [i1, '../picture/CH1humidity.png'],
+  [i2, '../picture/CH2humidity.png'],
+  [i3, '../picture/CH3humidity.png'],
+  [i4, '../picture/CH4humidity.png'],
+  [i5, '../picture/CH5humidity.png'],
+  [i6, '../picture/CH6humidity.png'],
+  [i7, '../picture/CH7humidity.png'],
+  [i8, '../picture/CH8humidity.png'],
+];
+
+async function refresh() {
+  const ts = '?t=' + Date.now();
+  const blobs = await Promise.all(
+    imgs.map(([, src]) => fetch(src + ts).then(r => r.blob()))
+  );
+  const urls = blobs.map(b => URL.createObjectURL(b));
+  imgs.forEach(([el], i) => {
+    URL.revokeObjectURL(el.src);
+    el.src = urls[i];
+  });
+}
+
+setInterval(refresh, 300000);
+</script>
+</body>
+</html>
