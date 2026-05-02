@@ -440,7 +440,7 @@ date_default_timezone_set('Europe/Stockholm');
 		mysqli_free_result($result);
 		mysqli_close($con);
 		
-		return $curr[0];
+		return $curr ? $curr[0] : null;
   }
 
   function getLatestTime($sensor,$username,$password,$serverHostName,$database )
@@ -461,7 +461,7 @@ date_default_timezone_set('Europe/Stockholm');
 		mysqli_free_result($result);
 		mysqli_close($con);
 		
-		return $curr[0];
+		return $curr ? $curr[0] : null;
   }
 
 	function getCurrByName($sensorName,$username,$password,$serverHostName,$database )
@@ -485,8 +485,8 @@ date_default_timezone_set('Europe/Stockholm');
 		$curr   = mysqli_fetch_array($result);
 		mysqli_free_result($result);
 		mysqli_close($con);
-		print($curr[0]);
-		return $curr[0];
+		if ($curr) print($curr[0]);
+		return $curr ? $curr[0] : null;
 	}
 	
 	
@@ -910,8 +910,8 @@ date_default_timezone_set('Europe/Stockholm');
 		$ydata2_temptot         = $retXY[0]; //Data, accumulative 
 		$xdata2_timeTot         = $retXY[1]; //Time
 				
-		$xdata2_timeTotRobust[]   = $xdata2_timeTot[0];
-		$ydata2_calcTotAvRobust[] = $ydata2_temptot[0];
+		if (!empty($xdata2_timeTot)) $xdata2_timeTotRobust[]   = $xdata2_timeTot[0];
+		if (!empty($ydata2_temptot)) $ydata2_calcTotAvRobust[] = $ydata2_temptot[0];
 		//------------ Robust Start--------------
 		
 		for($i=1;$i<(sizeof($ydata2_temptot));$i++)
@@ -949,8 +949,8 @@ date_default_timezone_set('Europe/Stockholm');
 		$ydata2_temptot         = $retXY[0]; //Data, accumulative 
 		$xdata2_timeTot         = $retXY[1]; //Time
         
-		$xdata2_timeTotRobust[]   = $xdata2_timeTot[0];
-		$ydata2_calcTotAvRobust[] = $ydata2_temptot[0];
+		if (!empty($xdata2_timeTot)) $xdata2_timeTotRobust[]   = $xdata2_timeTot[0];
+		if (!empty($ydata2_temptot)) $ydata2_calcTotAvRobust[] = $ydata2_temptot[0];
 		//------------ Robust Start--------------
 		
 		for($i=1;$i<(sizeof($ydata2_temptot));$i++)
