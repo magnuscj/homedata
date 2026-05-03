@@ -71,6 +71,7 @@ RUN git clone https://github.com/leethomason/tinyxml2.git
 RUN git clone https://github.com/magnuscj/homedata.git && cd homedata && git checkout WIP
 COPY edssensors/communication.cc homedata/edssensors/communication.cc
 COPY edssensors/communication.h homedata/edssensors/communication.h
+COPY visualize/homeAuto_winddir.php homedata/visualize/homeAuto_winddir.php
 
 COPY visualize/*.html /var/www/html/
 RUN rm -f /var/www/html/index.html

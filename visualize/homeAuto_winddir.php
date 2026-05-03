@@ -65,7 +65,8 @@ do
 	$graph->SetColor($backGroundClr);
 	
 	$sensorId = getSensorId($sensorNameToShow, $username,$password,$database,$serverHostName);
-    $deg = 90+-1*getCurr($sensorId, $username, $password, $serverHostName, $database);
+    $deg_raw = getCurr($sensorId, $username, $password, $serverHostName, $database);
+    $deg = 90+-1*$deg_raw;
     
     $graph->InitFrame();
     $tmp_O = -0.043*$length;
@@ -156,6 +157,8 @@ do
 	{
 		$gdImgHandler = $graph->Stroke(_IMG_HANDLER);
         $graph->img->Stream($path2);		
+        file_put_contents("/var/www/html/picture/winddir.txt", $deg_raw);
+        file_put_contents("/var/www/html/picture/windspeed.txt", $value);
 		$utr = time()-$time;
 		print ", "."$utr"."s sleep "."$sleepTime"."s\n";
         exit(1);

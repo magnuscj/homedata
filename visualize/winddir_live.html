@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Wind Direction</title>
+<style>body{background:#000;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}</style>
+</head>
+<body>
+<canvas id="c" width="220" height="220"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const cx = 110, cy = 110, R = 95;
+
+let currentAngle = 0, targetAngle = 0, speed = '';
+
+function drawCompass() {
+  ctx.clearRect(0, 0, 220, 220);
+
+  // Background
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, 220, 220);
+
+  // Compass face
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+
+  // Tick marks and cardinal labels
+  // PHP convention: deg_M=0→O(East), 90→N(North), 180→V(West), 270→S(South)
+  // In PHP: X = cx + r*cos(deg_M), Y = cy - r*sin(deg_M)
+  // So deg_M=90 → top = North. We map: canvas_angle = 90 - deg_M (standard math→screen)
+  const labels = { 0: 'N', 90: 'O', 180: 'S', 270: 'V' };
+  for (let deg_M = 0; deg_M < 360; deg_M += 18) {
+    const rad = (90 - deg_M) * Math.PI / 180; // convert PHP convention to canvas
+    const isCardinal = deg_M % 90 === 0;
+    const r1 = isCardinal ? R * 0.72 : R * 0.78;
+    const r2 = R * 0.92;
+    if (!isCardinal) {
+      ctx.beginPath();
+      ctx.moveTo(cx + r1 * Math.cos(rad), cy - r1 * Math.sin(rad));
+      ctx.lineTo(cx + r2 * Math.cos(rad), cy - r2 * Math.sin(rad));
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      const lx = cx + (R * 0.82) * Math.cos(rad);
+      const ly = cy - (R * 0.82) * Math.sin(rad);
+      ctx.font = 'bold 26px Arial';
+      ctx.fillStyle = '#bbbbbb';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labels[deg_M], lx, ly);
+    }
+  }
+
+  // Needle — PHP uses $deg = 90 + -1*deg_raw, then:
+  //   needle tip: angle=$deg in PHP coords → canvas rad = (90-$deg)*PI/180 = deg_raw*PI/180
+  // So needle points at deg_raw degrees in standard compass (0=East in PHP, but sensor gives
+  // meteorological degrees where 0=North). We just point at currentAngle directly.
+  const needleRad = currentAngle * Math.PI / 180; // sensor degrees → canvas
+  const tipR = R * 0.78;
+  const baseR = R * 0.12;
+  const perpRad = needleRad + Math.PI / 2;
+
+  const tip = { x: cx + tipR * Math.cos(needleRad), y: cy - tipR * Math.sin(needleRad) };
+  const base1 = { x: cx + baseR * Math.cos(perpRad), y: cy - baseR * Math.sin(perpRad) };
+  const base2 = { x: cx - baseR * Math.cos(perpRad), y: cy + baseR * Math.sin(perpRad) };
+  const tail = { x: cx - baseR * 0.5 * Math.cos(needleRad), y: cy + baseR * 0.5 * Math.sin(needleRad) };
+
+  ctx.beginPath();
+  ctx.moveTo(base1.x, base1.y);
+  ctx.lineTo(tip.x, tip.y);
+  ctx.lineTo(base2.x, base2.y);
+  ctx.lineTo(tail.x, tail.y);
+  ctx.closePath();
+  ctx.fillStyle = '#6495ED';
+  ctx.fill();
+
+  // Speed text
+  if (speed) {
+    ctx.font = 'bold 28px Arial';
+    ctx.fillStyle = '#aaaaaa';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(speed + ' m/s', cx, cy + R * 0.35);
+  }
+}
+
+function shortestArc(from, to) {
+  let diff = ((to - from) % 360 + 360) % 360;
+  if (diff > 180) diff -= 360;
+  return diff;
+}
+
+function animate() {
+  const diff = shortestArc(currentAngle, targetAngle);
+  if (Math.abs(diff) > 0.5) {
+    currentAngle += Math.sign(diff) * Math.min(0.5, Math.abs(diff));
+    currentAngle = ((currentAngle % 360) + 360) % 360;
+  }
+  drawCompass();
+  requestAnimationFrame(animate);
+}
+
+async function poll() {
+  try {
+    const [dRes, sRes] = await Promise.all([
+      fetch('/picture/winddir.txt?t=' + Date.now()),
+      fetch('/picture/windspeed.txt?t=' + Date.now())
+    ]);
+    const deg = parseFloat(await dRes.text());
+    const spd = (await sRes.text()).trim();
+    if (!isNaN(deg)) {
+      // Convert sensor degrees to canvas angle:
+      // PHP: deg_M=90→North, sensor 0=North → sensor_deg maps to deg_M = 90 - sensor_deg
+      // canvas rad = (90 - deg_M)*PI/180 = sensor_deg * PI/180
+      // So targetAngle in "canvas math degrees" = sensor_deg directly works if we treat
+      // 0°=East. But sensor 0°=North means we rotate: canvas_angle = 90 - deg
+      targetAngle = ((90 - deg) % 360 + 360) % 360;
+    }
+    speed = spd;
+  } catch (e) { /* ignore fetch errors */ }
+}
+
+animate();
+poll();
+setInterval(poll, 10000);
+</script>
+</body>
+</html>
