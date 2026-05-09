@@ -62,7 +62,7 @@ def update_template_file(template_item, template_file, output_file, data):
                         try:
                             detail = detail_t.replace("#DATA#", val["humidity"].replace("%", ""))
                             detail = detail.replace("#NAME#", val["name"])
-                            #detail = detail.replace("#BATT#", val["voltage"])
+                            detail = detail.replace("#BATT#", val["battery"])
                             detail = detail.replace("#ID#", MAC_ADDRESS + val["channel"])
                             detail = detail.replace("#DATE#", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                             details = details.replace("</Devices-Detail-Response>", detail)
