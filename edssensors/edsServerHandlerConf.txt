@@ -1,4 +1,10 @@
 dbip 127.0.0.1
+dbuser dbuser
+dbpwd kmjmkm54C#
+smtp_user magnus.c.johansson@gmail.com
+smtp_pwd kmjmkm54C
+smtp_from magnus.c.johansson@gmail.com
+smtp_to magnus.c.johansson@gmail.com
 owd_DS18B20 Temperature
 XXowd_DS18B20 Resolution
 owd_DS18S20 Temperature

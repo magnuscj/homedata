@@ -55,6 +55,18 @@ edsServerHandler::edsServerHandler(std::string ip)
          dbIpAddress = new char[value.length() + 1];
          strcpy( dbIpAddress, value.c_str());
       }
+      else if(item=="dbuser")
+      {
+        dbUser = value;
+      }
+      else if(item=="dbpwd")
+      {
+        dbPwd = value;
+      }
+      else if(item=="smtp_user" || item=="smtp_pwd" || item=="smtp_from" || item=="smtp_to")
+      {
+        // smtp credentials are read by communication class
+      }
       else
       {
         sensorTypes.push_back(std::make_pair(item,value));
@@ -318,9 +330,6 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
 void edsServerHandler::connectToDatabase()
 {
-  const char* dbuser = "dbuser";
-  const char* dbpwd  = "kmjmkm54C#";
-
   if(dbConnection == NULL)
   {
      for(int i = 0;i<10;i++)
@@ -336,7 +345,7 @@ void edsServerHandler::connectToDatabase()
      
      for(int i = 0;i<10;i++)
      {
-        dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbuser,dbpwd,0,3306,0,0);
+        dbConnection = mysql_real_connect(dbConnection,dbIpAddress,dbUser.c_str(),dbPwd.c_str(),0,3306,0,0);
         if(dbConnection != NULL)
         {
           i=10;

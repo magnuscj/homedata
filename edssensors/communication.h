@@ -14,15 +14,6 @@
 #include <memory>
 #define BUFLEN 512
 #define PORT 9930
-//#include <cstring>
-
-#define FROM_ADDR    "magnus.c.johansson@gmail.com"
-#define TO_ADDR      "magnus.c.johansson@gmail.com"
-#define CC_ADDR      "magnus.c.johansson@gmail.com"
- 
-#define FROM_MAIL "Sender Person " FROM_ADDR
-#define TO_MAIL   "A Receiver " TO_ADDR
-#define CC_MAIL   "John CC Smith " CC_ADDR
 
 
 
@@ -41,10 +32,17 @@ class communication
       struct upload_status
       {
         int lines_read;
+        const char* to_mail;
+        const char* from_mail;
+        const char* cc_mail;
       };
 
       struct curl_slist *recipients = NULL;
       std::string msg = "";
+      std::string smtpUser;
+      std::string smtpPwd;
+      std::string smtpFrom;
+      std::string smtpTo;
 
       struct sockaddr_in my_addr, cli_addr;
       int sockfd, i;

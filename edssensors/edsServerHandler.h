@@ -35,6 +35,8 @@ class edsServerHandler
   private:
     std::string ipAddress;
     char* dbIpAddress;
+    std::string dbUser;
+    std::string dbPwd;
     CURL *curl;
     MYSQL* dbConnection=NULL;
     struct sensor
