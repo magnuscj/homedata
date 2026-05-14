@@ -48,7 +48,7 @@ class edsServerHandler
     } sensorData;
 
     std::vector<std::shared_ptr<sensor>> sensors;
-    std::vector <std::pair <std::string, std::string>> sensorTypes;
+    std::vector<std::pair<std::string, std::string>> sensorTypes;
     std::map<std::string,std::shared_ptr<std::vector<std::string>>> sensorConfigurations;
     std::shared_ptr<std::chrono::system_clock::time_point> startTime;
     std::shared_ptr<std::chrono::system_clock::time_point> stopTime;

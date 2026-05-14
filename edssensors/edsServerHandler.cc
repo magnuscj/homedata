@@ -69,7 +69,7 @@ edsServerHandler::edsServerHandler(std::string ip)
       }
       else
       {
-        sensorTypes.push_back(std::make_pair(item,value));
+        sensorTypes.push_back(std::make_pair(item, value));
       }
     }
   }
@@ -126,55 +126,31 @@ void edsServerHandler::decodeServerData()
   }
   else
   {
-    XMLElement* root    = doc.RootElement();       //Devices-Detail-Response
-    XMLNode* rootchild  = root->FirstChild();      //PollCount
-    XMLNode* firstChild = root->FirstChild();      //PollCount
-    XMLNode *siblingNode= rootchild->NextSibling();//DevicesConnected
-    for(auto a : sensorTypes)
-    {
-      while(rootchild != NULL)
-      {
-        bool supported = false;
-        string metricType = "";
-
-        if(a.first.compare(rootchild->Value()) == 0)
-        {
-          supported = true;
-          metricType = a.second;
-        }
-        
-        if(supported)
-        {
-          std::shared_ptr<sensor> sens = std::make_shared<sensor>();
-          siblingNode = rootchild->FirstChild();
-          sens->type = rootchild->Value();
-
-          while(siblingNode != NULL)
-          {
-            if(!siblingNode->NoChildren() && (strcmp(siblingNode->Value(), "ROMId") == 0))
-            {
-              sens->id = siblingNode->FirstChild()->Value();
-            }
-
-            if(!siblingNode->NoChildren()&&(strcmp(siblingNode->Value(),metricType.c_str()) == 0))
-            {
-              sens->value = siblingNode->FirstChild()->Value();
-            }
-            siblingNode=siblingNode->NextSibling();
+    XMLElement* root = doc.RootElement();
+    XMLNode* node = root->FirstChild();
+    while (node != nullptr) {
+      for (const auto& st : sensorTypes) {
+        if (st.first != node->Value()) continue;
+        const string& metricType = st.second;
+        auto sens = std::make_shared<sensor>();
+        sens->type = node->Value();
+        XMLNode* child = node->FirstChild();
+        while (child != nullptr) {
+          if (!child->NoChildren()) {
+            const char* val = child->FirstChild()->Value();
+            if (strcmp(child->Value(), "ROMId") == 0)
+              sens->id = val;
+            else if (strcmp(child->Value(), metricType.c_str()) == 0)
+              sens->value = val;
           }
-          
-          sens->id = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
-          sens->unit = metricType;
-
-          if(!sensorConfigurations[sens->id])
-          {
-            this->writeSensorConfiguration(sens->id);
-          }
-          sensors.push_back(std::move(sens));
+          child = child->NextSibling();
         }
-        rootchild = rootchild->NextSibling();
+        sens->id   = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
+        sens->unit = metricType;
+        if (!sensorConfigurations[sens->id]) this->writeSensorConfiguration(sens->id);
+        sensors.push_back(std::move(sens));
       }
-      rootchild = firstChild;
+      node = node->NextSibling();
     }
   }
   doc.Clear();
