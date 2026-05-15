@@ -6,15 +6,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Hämta alla inskickade IP-adresser, rensa bort tomma rader
     $ips = isset($_POST['ips']) ? array_filter(array_map('trim', $_POST['ips'])) : [];
     
-    // Skriv till filen (en IP per rad)
-    file_put_contents($filename, implode(PHP_EOL, $ips));
+    // Skapa katalogen om den inte finns
+    if (!is_dir(dirname($filename))) {
+        mkdir(dirname($filename), 0755, true);
+    }
 
+    // Skriv till filen (en IP per rad)
+    $result = file_put_contents($filename, implode(PHP_EOL, $ips));
+
+    if ($result === false) {
+        $message = "FEL: Kunde inte skriva till filen. Kontrollera rättigheter för " . dirname($filename);
+    } else {
     // DEBUG-VERSION:
     // 2>&1 gör att även felmeddelanden (stderr) hamnar i $output
     $script_path = '/homedata/edssensors/start_eds.sh';
     exec("nohup sudo $script_path > /tmp/eds_debug.log 2>&1 &");
 
     $message = "Filen har uppdaterats och skriptet har startats!";
+    }
 }
 
 // Läs in befintliga IP-adresser
@@ -40,20 +49,25 @@ if (empty($ip_list)) {
         input[type="text"] { padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
         button { padding: 8px 15px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 4px; }
         .add-btn { background: #007bff; margin-bottom: 20px; }
+        .del-btn { background: #dc3545; margin-left: 8px; }
         .msg { color: green; font-weight: bold; }
+        .err { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>Hantera IP-adresser</h1>
 
-    <?php if (isset($message)) echo "<p class='msg'>$message</p>"; ?>
+
+
+    <?php if (isset($message)) echo "<p class='" . (str_starts_with($message, 'FEL') ? 'err' : 'msg') . "'>$message</p>"; ?>
 
     <form method="post">
         <div id="ip-container">
             <?php foreach ($ip_list as $ip): ?>
                 <div class="ip-row">
                     <input type="text" name="ips[]" value="<?php echo htmlspecialchars($ip); ?>" placeholder="T.ex. 192.168.1.1">
+                    <button type="button" class="del-btn" onclick="this.parentElement.remove()">Ta bort</button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -69,7 +83,7 @@ if (empty($ip_list)) {
             const container = document.getElementById('ip-container');
             const div = document.createElement('div');
             div.className = 'ip-row';
-            div.innerHTML = '<input type="text" name="ips[]" placeholder="T.ex. 192.168.1.1">';
+            div.innerHTML = '<input type="text" name="ips[]" placeholder="T.ex. 192.168.1.1"><button type="button" class="del-btn" onclick="this.parentElement.remove()">Ta bort</button>';
             container.appendChild(div);
         }
     </script>
