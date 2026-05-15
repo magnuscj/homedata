@@ -17,3 +17,7 @@ communication.o: communication.cc communication.h
 
 clean:
 	rm *.o eds
+
+test: edsServerHandler.o tinyxml2.o
+	g++ -g -Wl,--no-as-needed -lpthread `mysql_config --cflags --libs` -lcurl test_decodeXml.cc edsServerHandler.o tinyxml2.o -o test_decodeXml
+	./test_decodeXml

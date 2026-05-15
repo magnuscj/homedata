@@ -19,9 +19,20 @@
 class edsServerHandler
 {
   public:
+    struct sensor
+    {
+      std::string type;
+      std::string id;
+      std::string value;
+      std::string unit;
+    };
+
     edsServerHandler(std::string ip);
+    edsServerHandler(std::vector<std::pair<std::string,std::string>> types);
     ~edsServerHandler();
     void decodeServerData();
+    void decodeXml(const std::string& xmldoc);
+    const std::vector<std::shared_ptr<sensor>>& getSensors() const { return sensors; }
     void storeServerData();
     void printServerData();
     void printIdValue(std::string id);
@@ -34,18 +45,12 @@ class edsServerHandler
 
   private:
     std::string ipAddress;
-    char* dbIpAddress;
+    char* dbIpAddress = nullptr;
     std::string dbUser;
     std::string dbPwd;
     CURL *curl;
     MYSQL* dbConnection=NULL;
-    struct sensor
-    {
-      std::string type;
-      std::string id;
-      std::string value;
-      std::string unit;
-    } sensorData;
+    sensor sensorData;
 
     std::vector<std::shared_ptr<sensor>> sensors;
     std::vector<std::pair<std::string, std::string>> sensorTypes;

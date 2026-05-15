@@ -31,6 +31,9 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
   return size * nmemb;
 }
 
+edsServerHandler::edsServerHandler(std::vector<std::pair<std::string,std::string>> types)
+  : sensorTypes(std::move(types)) {}
+
 edsServerHandler::edsServerHandler(std::string ip)
 {
   startTime = std::make_shared<std::chrono::system_clock::time_point>
@@ -113,49 +116,46 @@ std::shared_ptr<std::string> edsServerHandler::retreivexml(std::string ipaddr)
 
 void edsServerHandler::decodeServerData()
 {
-  string sensorid = "";
-  tinyxml2::XMLDocument doc;
   std::shared_ptr<string> xmldocstr = this->retreivexml(ipAddress);
-  const char* xmldoc = xmldocstr->c_str();
-  XMLError err = doc.Parse(xmldoc);
+  decodeXml(*xmldocstr);
+}
+
+void edsServerHandler::decodeXml(const std::string& xmldoc)
+{
+  tinyxml2::XMLDocument doc;
+  XMLError err = doc.Parse(xmldoc.c_str());
 
   if(err)
-  {
-	  //printf("Error %d \n", err);
-	  return;
-  }
-  else
-  {
-    XMLElement* root = doc.RootElement();
-    XMLNode* node = root->FirstChild();
-    while (node != nullptr) {
-      for (const auto& st : sensorTypes) {
-        if (st.first != node->Value()) continue;
-        const string& metricType = st.second;
-        auto sens = std::make_shared<sensor>();
-        sens->type = node->Value();
-        XMLNode* child = node->FirstChild();
-        while (child != nullptr) {
-          if (!child->NoChildren()) {
-            const char* val = child->FirstChild()->Value();
-            if (strcmp(child->Value(), "ROMId") == 0)
-              sens->id = val;
-            else if (strcmp(child->Value(), metricType.c_str()) == 0)
-              sens->value = val;
-          }
-          child = child->NextSibling();
+    return;
+
+  XMLElement* root = doc.RootElement();
+  XMLNode* node = root->FirstChild();
+  while (node != nullptr) {
+    for (const auto& st : sensorTypes) {
+      if (st.first != node->Value()) continue;
+      const string& metricType = st.second;
+      auto sens = std::make_shared<sensor>();
+      sens->type = node->Value();
+      XMLNode* child = node->FirstChild();
+      while (child != nullptr) {
+        if (!child->NoChildren()) {
+          const char* val = child->FirstChild()->Value();
+          if (strcmp(child->Value(), "ROMId") == 0)
+            sens->id = val;
+          else if (strcmp(child->Value(), metricType.c_str()) == 0)
+            sens->value = val;
         }
-        sens->id   = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
-        sens->unit = metricType;
-        if (!sensorConfigurations[sens->id]) this->writeSensorConfiguration(sens->id);
-        sensors.push_back(std::move(sens));
+        child = child->NextSibling();
       }
-      node = node->NextSibling();
+      sens->id   = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
+      sens->unit = metricType;
+      if (!sensorConfigurations[sens->id]) this->writeSensorConfiguration(sens->id);
+      sensors.push_back(std::move(sens));
     }
+    node = node->NextSibling();
   }
   doc.Clear();
   std::sort(sensors.begin(), sensors.end(), [](std::shared_ptr<sensor>a, std::shared_ptr<sensor> b) {return a->id > b->id;});
-  
 }
 
 void edsServerHandler::storeServerData()
@@ -287,8 +287,7 @@ void edsServerHandler::readSensorConfiguration()
 
 void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  if(dbConnection == NULL) return;
   int state;
   string dbName   = "mydb";
   string tbName   = "sensorconfig";
@@ -306,6 +305,7 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
 void edsServerHandler::connectToDatabase()
 {
+  if(dbIpAddress == nullptr) return;
   if(dbConnection == NULL)
   {
      for(int i = 0;i<10;i++)
@@ -333,9 +333,7 @@ void edsServerHandler::connectToDatabase()
 
   if(dbConnection == NULL)
   {
-    cout<<"Mysql error"<<endl;
-    cout<<"Error:    "<<mysql_error(dbConnection)<<endl; //TODO Why no error on fault?
-    cout<<"Error no: "<<mysql_errno(dbConnection)<<endl; //TODO Why no error on fault?
-    exit(1);
+    cout<<"Mysql error: could not connect to database"<<endl;
+    return;
   }
 }
