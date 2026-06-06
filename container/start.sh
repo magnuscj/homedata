@@ -1,6 +1,7 @@
 #!/bin/bash
 usermod -d /var/lib/mysql/ mysql
 service mysql start
+until mysql -u root -e "SELECT 1" &>/dev/null; do sleep 1; done
 service mysql status
 service ssh start
 service ssh status
@@ -10,15 +11,12 @@ chown www-data:www-data /usr/storage
 echo "CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'kmjmkm54C#';" | mysql
 echo "GRANT ALL PRIVILEGES ON * . * TO 'dbuser'@'localhost';" | mysql
 echo "FLUSH PRIVILEGES;" | mysql
-sleep 5s
 ./restore.sh
 ./createSensorConfig.sh
 service cron start
-until mysql -u root -e "SELECT 1" &>/dev/null; do sleep 1; done
 ./start_eds.sh
 python3 /homedata/edssensors/eds_web.py &
 cd ../scripts/
 python3 hueTemps.py
 cd -
-#./eds 192.168.1.87 192.168.1.84 192.168.1.172 192.168.1.128 192.168.1.230
 
