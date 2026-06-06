@@ -6,6 +6,7 @@ service ssh start
 service ssh status
 service apache2 start
 chown -R www-data:www-data /usr/storage/ips/
+chown www-data:www-data /usr/storage
 echo "CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'kmjmkm54C#';" | mysql
 echo "GRANT ALL PRIVILEGES ON * . * TO 'dbuser'@'localhost';" | mysql
 echo "FLUSH PRIVILEGES;" | mysql

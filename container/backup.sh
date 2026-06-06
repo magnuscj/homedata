@@ -1,4 +1,5 @@
 #!/bin/bash
+mysqldump -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig > /usr/storage/sensorconfig.sql
 
 N_O_FILES=`ls /usr/storage/*.tar | wc -w` 
 ARR=($(ls -tr /usr/storage/*.tar))

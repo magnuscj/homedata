@@ -13,6 +13,8 @@ if (isset($_GET['delete'])) {
     $stmt = $conn->prepare("DELETE FROM sensorconfig WHERE id = ?");
     $stmt->bind_param("i", $_GET['delete']);
     $stmt->execute();
+    $dump_result = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
+    file_put_contents('/usr/storage/sensorconfig.sql', $dump_result);
     header("Location: sensorcfg.php"); // Ladda om sidan för att rensa URL:en
     exit;
 }
@@ -29,6 +31,8 @@ if (isset($_POST['save'])) {
         $_POST['id']
     );
     $stmt->execute();
+    $dump_result = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
+    file_put_contents('/usr/storage/sensorconfig.sql', $dump_result);
     header("Location: sensorcfg.php");
     exit;
 }
