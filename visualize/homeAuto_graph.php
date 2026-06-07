@@ -111,7 +111,7 @@ do
 		if( $sensors[$colVisible][$senNo] == "True" && $sensors[$colType][$senNo] == "XXXwind")
 		{
 			$retXY = deltaChange(windAddMissingTime(getDataFromDb($username, $password, $database, $fdate." ".$ftime, $tdate." ".$ttime, $sensorId, $serverHostName)))	;
-			$retXY = windMilesTometers($retXY);
+			$retXY = windMilesToMeters($retXY);
 			$retXY[0] = floatAvg(15, $retXY[0]);
 					
 			$lineplot2=new LinePlot($retXY[0], $retXY[1]);

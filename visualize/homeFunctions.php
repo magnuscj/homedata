@@ -45,7 +45,7 @@ function buildMonthlyUnion($select, $fromyear, $toyear, $frommonth, $tomonth,
     return $query;
 }
 
-function UnixTime($mysql_timestamp) {
+function toUnixTime($mysql_timestamp) {
     if (preg_match('/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/', $mysql_timestamp, $pieces)
         || preg_match('/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/', $mysql_timestamp, $pieces)) {
         $unix_time = mktime($pieces[4], $pieces[5], $pieces[6], $pieces[2], $pieces[3], $pieces[1]);
@@ -74,9 +74,6 @@ function getDataFromDb($username, $password, $database, $fdate, $tdate, $sensor,
     return getPower($fromyear, $toyear, $frommonth, $tomonth, $username, $password, $database, $fdate, $tdate, $sensor, $serverHostName);
 }
 
-function zeroAdjust($no) {
-    return sprintf('%02d', $no);
-}
 
 function getPower($fromyear, $toyear, $frommonth, $tomonth, $username, $password, $database, $fdate, $tdate, $sensor, $serverHostName) {
     $ydata    = array();
@@ -193,7 +190,7 @@ function getSensorId($name, $username, $password, $database, $serverHostName) {
 
 function onlyPowerType($sensors) {
     for ($i = 0; $i < sizeof($sensors[0]); $i++) {
-        if ($sensors[4][$i] == "temp" && $sensors[3][$i] == "True") {
+        if (strcasecmp($sensors[4][$i], "temp") === 0 && strcasecmp($sensors[3][$i], "true") === 0) {
             return false;
         }
     }
@@ -433,7 +430,7 @@ function getPowerAvg($fdate, $tdate, $sensor, $username, $password, $serverHostN
     }
     while ($myrow = mysqli_fetch_array($result)) {
         $ydata[]    = $myrow['MAX(data)'];
-        $UNIXdata[] = UnixTime($myrow['MAX(curr_timestamp)']);
+        $UNIXdata[] = toUnixTime($myrow['MAX(curr_timestamp)']);
     }
     mysqli_free_result($result);
 
@@ -444,7 +441,7 @@ function getPowerAvg($fdate, $tdate, $sensor, $username, $password, $serverHostN
     }
     while ($myrow = mysqli_fetch_array($result)) {
         $ydata[]    = $myrow['MIN(data)'];
-        $UNIXdata[] = UnixTime($myrow['MIN(curr_timestamp)']);
+        $UNIXdata[] = toUnixTime($myrow['MIN(curr_timestamp)']);
     }
     mysqli_free_result($result);
 
@@ -648,7 +645,7 @@ function isCli() {
     return defined('STDIN');
 }
 
-function getSwichStatus($serverHostName, $username, $password, $database, $swichname) {
+function getSwitchStatus($serverHostName, $username, $password, $database, $swichname) {
     $sensors = array();
 
     $con  = mysqli_connect($serverHostName, $username, $password);
@@ -674,7 +671,7 @@ function getSwichStatus($serverHostName, $username, $password, $database, $swich
     return $sensors;
 }
 
-function getSwiches($serverHostName, $username, $password, $database) {
+function getSwitches($serverHostName, $username, $password, $database) {
     $con    = mysqli_connect($serverHostName, $username, $password);
     mysqli_select_db($con, $database) or die("Unable to select database");
     $result = mysqli_query($con, "SELECT DISTINCT switchname FROM switchstatus");
@@ -691,7 +688,7 @@ function getSwiches($serverHostName, $username, $password, $database) {
     return $names;
 }
 
-function windMilesTometers($retXY) {
+function windMilesToMeters($retXY) {
     $ydata2_floatingAverage = array();
     $xdata2_floatingAverage = array();
     $valueArray             = $retXY[0];
@@ -715,14 +712,22 @@ function windMilesTometers($retXY) {
 }
 
 function waitDbAlive($serverHostName, $username, $password, $database) {
-    try {
-        $con = mysqli_connect("127.0.0.1", $username, $password, $database);
-    } catch (Exception $e) {
-        print($e);
-    }
+    $con     = null;
+    $retries = 0;
+    $maxRetries = 12; // give up after 1 minute (12 * 5s)
 
-    while (!@mysqli_select_db($con, $database)) {
+    while ($retries < $maxRetries) {
+        try {
+            $con = mysqli_connect($serverHostName, $username, $password, $database);
+        } catch (Exception $e) {
+            // connection failed, will retry
+        }
+        if ($con && @mysqli_select_db($con, $database)) {
+            return;
+        }
+        $retries++;
         sleep(5);
     }
+    die("Database unavailable after " . ($maxRetries * 5) . " seconds.\n");
 }
 ?>
