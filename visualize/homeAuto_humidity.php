@@ -32,7 +32,6 @@ do
 	if(isCli())
 	{
 		$time = time();
-		print date('H:i:s',$time).", ".$fileName;
 	}
 	$debug          = false;
 	$username		= getConfig("DBUSN");
@@ -116,7 +115,6 @@ do
             $frdate = date('Y-m-d H:i:s',$time-180);
             $todate = date('Y-m-d H:i:s',$time);
             $avg = getCurr($sensorId,$username,$password,$serverHostName,$database);
-            print($avg."  ");
             
             //Get all data with a give time range
             $ttimeP = $ftimeP = date('H:i',time());
@@ -262,7 +260,6 @@ do
             $graph->img->FilledCircle($X_start,$Y_start,$baseLength-0);
             
             $path2="/var/www/html/picture/"."CH".strval($channel).$fileName;
-            print("\n".$path2."\n");
 
             if(isCli())
             {

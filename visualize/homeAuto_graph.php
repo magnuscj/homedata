@@ -26,12 +26,8 @@ else
 
 do 
 {
-	if(isCli())
-	{
-		$time = time();
-		print date('H:i:s',$time).", ".$fileName;
-	}
-	// Create the graph.
+   $time = time();
+   // Create the graph.
    $graph = new Graph(998,700);
    $graph->SetScale("datint");
    $graph->ClearTheme();	

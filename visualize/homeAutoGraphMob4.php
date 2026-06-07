@@ -122,8 +122,8 @@ do
 		$i++;
 	}
    
-   $graph->Add($lineplot);
-   $graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
+   if(isset($lineplot)) $graph->Add($lineplot);
+   if(isset($lineplot2)) $graph->AddY($noOf_Y_FlowGraphs,$lineplot2);
 
 	if(isCli())
 	{

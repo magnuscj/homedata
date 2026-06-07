@@ -30,11 +30,7 @@ else
 
 do 
 {
-	if(isCli())
-	{
-		$time = time();
-		print date('H:i:s',$time).", ".$fileName;
-	}
+	$time = time();
 	$debug          = false;
 	$username		= getConfig("DBUSN");
 	$password		= getConfig('DBPSW');
@@ -96,6 +92,8 @@ do
     $t2->ParagraphAlign('right');
 	$graph->AddText($t2);
 	
+    $avgMin = 27;
+    $avgMax = 32;
     $i=0;
 	foreach($sensors[$colID] as $sensorId)
 	{

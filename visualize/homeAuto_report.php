@@ -9,23 +9,21 @@ require_once("jpgraph_bar.php");
 require_once('jpgraph_canvas.php');
 include("homeFunctions.php");
 
-sleep(20);
 $file     = explode('.', __FILE__);
 $file     = explode('/', $file[0]);
 $fileName = $file[sizeof($file) - 1] . ".png";
 
 $path2     = "/var/www/html/picture/" . $fileName;
 
-do {
-    $username       = getConfig("DBUSN");
-    $password       = getConfig('DBPSW');
-    $database       = getConfig('DBNAME');
-    $serverHostName = getConfig('DBIP');
-    waitDbAlive($serverHostName, $username, $password, $database);
-    $textColor     = 'gray:2.7';
-    $frameColor    = 'black:1.1';
-    $backGroundClr = 'gray:0.43';
-    $sensors       = getSensorNames($username, $password, $database, $serverHostName);
+$username       = getConfig("DBUSN");
+$password       = getConfig('DBPSW');
+$database       = getConfig('DBNAME');
+$serverHostName = getConfig('DBIP');
+waitDbAlive($serverHostName, $username, $password, $database);
+$textColor     = 'gray:2.7';
+$frameColor    = 'black:1.1';
+$backGroundClr = 'gray:0.43';
+$sensors       = getSensorNames($username, $password, $database, $serverHostName);
     // Index names for the sensor configuration db table
     $colID          = 0;
     $colName        = 1;
@@ -73,14 +71,15 @@ do {
     foreach ($sensors[$colID] as $sensorId) {
         $infoStart_Y = -56;
         $name        = $sensors[$colName][$senNo];
+        $currValue   = getCurr($sensorId, $username, $password, $serverHostName, $database);
 
         if ($sensors[$colType][$senNo] == "temp") {
             if (
                 $name == "kylFrys"
                 || $name == "Garage"
-                || ($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database) >= 30))
+                || ($name == "Skorst" && ($currValue >= 30))
             ) {
-                $value      = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 0);
+                $value      = number_format($currValue, 0);
                 $sensorName = $sensors[$colName][$senNo];
                 $t          = new Text($sensorName . ": " . $value, $col_3, $row_4 + $miniListDelta);
                 $t->SetFont(FF_ARIAL, FS_BOLD, 12);
@@ -95,10 +94,10 @@ do {
         if ($sensors[$colType][$senNo] == "temp") {
             $infoStart_Y = 40;
             if (
-                ($name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database) > -15))
+                ($name == "kylFrys" && ($currValue > -15))
                 || $name == "Inne"
                 || $name == "Ute"
-                || ($name == "Skorst" && (getCurr($sensorId, $username, $password, $serverHostName, $database) >= 30))
+                || ($name == "Skorst" && ($currValue >= 30))
             ) {
                 $sensorName = $sensors[$colName][$senNo];
                 $t          = new Text($sensorName, 10, $infoStart_Y + $i * 70 - 30);
@@ -108,7 +107,7 @@ do {
                 $t->ParagraphAlign('left');
                 $graph->AddText($t);
 
-                $sensorValue = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 1) . '°';
+                $sensorValue = number_format($currValue, 1) . '°';
                 $t           = new Text($sensorValue, 240, $infoStart_Y - 32 + $i * 70);
                 $t->SetFont(FF_ARIAL, FS_BOLD, 50);
                 $t->SetColor($textColor);
@@ -219,7 +218,7 @@ do {
             $time   = time();
             $frdate = date('Y-m-d H:i:s', $time - 180);
             $todate = date('Y-m-d H:i:s', $time);
-            $avg    = strval(getCurr($sensorId, $username, $password, $serverHostName, $database));
+            $avg    = strval($currValue);
             $txt    = number_format($avg, 1);
 
             $t = new Text($txt, $col_2, $row_2);
@@ -273,7 +272,7 @@ do {
             $t->ParagraphAlign('left');
             $graph->AddText($t);
 
-            $rainNow = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 1) . '';
+            $rainNow = number_format($currValue, 1) . '';
             $t       = new Text($rainNow, $col_2, $row_5);
             $t->SetFont(FF_ARIAL, FS_BOLD, 18);
             $t->SetColor($textColor);
@@ -298,7 +297,7 @@ do {
                 $t->ParagraphAlign('left');
                 $graph->AddText($t);
 
-                $sensorValue = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 1) . '';
+                $sensorValue = number_format($currValue, 1) . '';
                 $t           = new Text($sensorValue, $col_3, $row_2);
                 $t->SetFont(FF_ARIAL, FS_BOLD, 18);
                 $t->SetColor($textColor);
@@ -315,20 +314,16 @@ do {
             }
 
             if ($sensors[$colName][$senNo] == "WiSMax") {
-                $windMax = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 1);
+                $windMax = number_format($currValue, 1);
             }
 
             if ($sensors[$colName][$senNo] == "WiSDir") {
-                $DirStr      = "";
-                $sensorValue = number_format(getCurr($sensorId, $username, $password, $serverHostName, $database), 0);
-                if ($sensorValue >= 0  && $sensorValue <= 45)  $DirStr = "N";
-                if ($sensorValue > 45  && $sensorValue <= 90)  $DirStr = "NO";
-                if ($sensorValue > 90  && $sensorValue <= 135) $DirStr = "O";
-                if ($sensorValue > 135 && $sensorValue <= 180) $DirStr = "SO";
-                if ($sensorValue > 180 && $sensorValue <= 225) $DirStr = "S";
-                if ($sensorValue > 225 && $sensorValue <= 270) $DirStr = "SV";
-                if ($sensorValue > 270 && $sensorValue <= 315) $DirStr = "V";
-                if ($sensorValue > 315 && $sensorValue <= 360) $DirStr = "NV";
+                $sensorValue = number_format($currValue, 0);
+                $dirMap = [45=>'N', 90=>'NO', 135=>'O', 180=>'SO', 225=>'S', 270=>'SV', 315=>'V', 360=>'NV'];
+                $DirStr = '';
+                foreach ($dirMap as $limit => $label) {
+                    if ($sensorValue <= $limit) { $DirStr = $label; break; }
+                }
                 $windDir = $sensorValue . '° ' . $DirStr;
             }
 
@@ -352,5 +347,5 @@ do {
     } else {
         $gdImgHandler = $graph->Stroke(_IMG_HANDLER);
         $graph->img->Stream($path2);
+        exit(0);
     }
-} while (true);
