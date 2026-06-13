@@ -49,5 +49,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: rain-cont-port
-      nodePort: 30166
+      nodePort: 30168
 
