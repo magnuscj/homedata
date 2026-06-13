@@ -33,7 +33,7 @@ jq \
 openssh-server \
 python3-pip
 
-RUN pip install --break-system-packages mysql-connector-python
+RUN pip install --break-system-packages mysql-connector-python requests
 
 #SSH
 #RUN apt update && apt install  openssh-server sudo -y
