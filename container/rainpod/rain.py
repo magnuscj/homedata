@@ -1,8 +1,10 @@
+import os
+import sys
 import time
 import json
 import logging
+import urllib.error
 from urllib.request import urlopen
-from itertools import islice
 
 # Logger setup
 def setup_logger():
@@ -32,70 +34,94 @@ URL = "http://192.168.50.237/get_livedata_info?"
 INPUT_FILE = 'tmpl_details.xml'
 OUTPUT_FILE = '/mnt/ramdisk/details.xml'
 
+# Sensor keys
+RAIN_EVENT_KEY = "0x0D"
+RAIN_WEEK_KEY  = "0x11"
+RAIN_MONTH_KEY = "0x12"
+
+# Device MAC addresses
+MAC_ID16 = "1c:69:7a:02:8c:4c:16"
+MAC_ID17 = "1c:69:7a:02:8c:4c:17"
+MAC_ID18 = "1c:69:7a:02:8c:4c:18"
+
+
+def validate_environment():
+    if not os.path.isfile(INPUT_FILE):
+        logger.error(f"Template file not found: {INPUT_FILE}")
+        sys.exit(1)
+    out_dir = os.path.dirname(OUTPUT_FILE) or '.'
+    if not os.access(out_dir, os.W_OK):
+        logger.error(f"Output directory not writable: {out_dir}")
+        sys.exit(1)
+
+
 def fetch_sensor_data(url):
-    try:
-        response = urlopen(url, timeout=10)
-        return json.loads(response.read()).get('rain', [])
-    except Exception as e:
-        logger.error(f"Error fetching sensor data: {e}")
-        return []
+    for attempt in range(2):
+        try:
+            response = urlopen(url, timeout=10)
+            return json.loads(response.read()).get('rain', [])
+        except (urllib.error.URLError, json.JSONDecodeError, OSError) as e:
+            if attempt == 0:
+                logger.warning(f"Fetch attempt 1 failed: {e}. Retrying in 5s...")
+                time.sleep(5)
+            else:
+                logger.error(f"Fetch attempt 2 failed: {e}. Skipping poll cycle.")
+    return []
 
 
 def parse_rain_value(data, key):
     for item in data:
-        values = list(islice(item.values(), 0, 4))
-        if len(values) < 2:
-            continue
-        name, value = values[0], values[1].replace('mm', '').strip()
-        if name == key:
-            return value
+        if item.get("id") == key:
+            return item.get("val", "").replace("mm", "").strip()
     return None
 
 
-def update_template_file(template_file, output_file, rain, rainWeek, rainMonth):
+def update_template_file(template_file, output_file, rain, rain_week, rain_month):
     try:
-        with open(template_file, 'r') as file:
-            template = file.read()
+        with open(template_file, 'r') as f:
+            template = f.read()
 
-        updated_data = template.replace("#RAIN1#", rain or "0")
-        updated_data = updated_data.replace("#ID16#", "1c:69:7a:02:8c:4c:16")
-        updated_data = updated_data.replace("#RAINW1#", rainWeek or "0")
-        updated_data = updated_data.replace("#ID17#", "1c:69:7a:02:8c:4c:17")
-        updated_data = updated_data.replace("#RAINM1#", rainMonth or "0")
-        updated_data = updated_data.replace("#ID18#", "1c:69:7a:02:8c:4c:18")
+        updated = (template
+                   .replace("#RAIN1#",  rain       or "0")
+                   .replace("#ID16#",   MAC_ID16)
+                   .replace("#RAINW1#", rain_week  or "0")
+                   .replace("#ID17#",   MAC_ID17)
+                   .replace("#RAINM1#", rain_month or "0")
+                   .replace("#ID18#",   MAC_ID18))
 
-        with open(output_file, 'w') as file:
-            file.write(updated_data)
+        tmp_path = output_file + ".tmp"
+        with open(tmp_path, 'w') as f:
+            f.write(updated)
+        os.replace(tmp_path, output_file)
 
         logger.debug("Template file updated successfully.")
-    except Exception as e:
+    except OSError as e:
         logger.error(f"Error updating template file: {e}")
 
 
 def main():
-    poll_count = 0
+    validate_environment()
 
     while True:
-        poll_count += 1
-        logger.debug(f"Polling iteration {poll_count} started.")
-
         start_time = time.time()
         sensor_data = fetch_sensor_data(URL)
 
-        rain = parse_rain_value(sensor_data, "0x0D")
-        logger.debug(f"Rain: {rain}")
+        rain = parse_rain_value(sensor_data, RAIN_EVENT_KEY)
+        if rain is None:
+            logger.warning(f"Value for {RAIN_EVENT_KEY} not found in sensor data")
 
-        rainWeek = parse_rain_value(sensor_data, "0x11")
-        logger.debug(f"Weekly rain: {rainWeek}")
+        rain_week = parse_rain_value(sensor_data, RAIN_WEEK_KEY)
+        if rain_week is None:
+            logger.warning(f"Value for {RAIN_WEEK_KEY} not found in sensor data")
 
-        rainMonth = parse_rain_value(sensor_data, "0x12")
-        logger.debug(f"Monthly rain: {rainMonth}")
+        rain_month = parse_rain_value(sensor_data, RAIN_MONTH_KEY)
+        if rain_month is None:
+            logger.warning(f"Value for {RAIN_MONTH_KEY} not found in sensor data")
 
-        update_template_file(INPUT_FILE, OUTPUT_FILE, rain, rainWeek, rainMonth)
+        logger.debug(f"Rain event={rain} week={rain_week} month={rain_month}")
+        update_template_file(INPUT_FILE, OUTPUT_FILE, rain, rain_week, rain_month)
 
-        elapsed_time = time.time() - start_time
-        sleep_time = max(0, POLL_INTERVAL - elapsed_time)
-        logger.debug(f"Polling iteration {poll_count} completed. Sleeping for {sleep_time:.2f} seconds.")
+        sleep_time = max(0, POLL_INTERVAL - (time.time() - start_time))
         time.sleep(sleep_time)
 
 
