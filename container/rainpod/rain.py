@@ -39,7 +39,7 @@ OUTPUT_FILE = '/mnt/ramdisk/details.xml'
 
 def fetch_sensor_data(url):
     try:
-        response = urlopen(url)
+        response = urlopen(url, timeout=10)
         return json.loads(response.read()).get('rain', [])
     except Exception as e:
         logger.error(f"Error fetching sensor data: {e}")
