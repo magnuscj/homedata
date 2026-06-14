@@ -142,7 +142,18 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
                 $graph->img->SetColor('gray:0.47');
                 $graph->img->FilledPolygon($p);
 
-                $i++;
+		$i++;
+		$next = 68 * $i;
+                $p    = [
+                    10,  $infoStart_Y + 28 + $next,
+                    10,  $infoStart_Y + 30 + $next,
+                    385, $infoStart_Y + 30 + $next,
+                    385, $infoStart_Y + 28 + $next,
+                    10,  $infoStart_Y + 28 + $next,
+                ];
+                $graph->img->SetColor('gray:0.47');
+                $graph->img->FilledPolygon($p);
+
             }
         }
 
