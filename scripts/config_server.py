@@ -36,11 +36,13 @@ button:hover { background: #0c0; }
 <body>
 <h1>Watering Configuration</h1>
 <div id="pots"></div>
+<div id="extras"></div>
 <button onclick="save()">Save</button>
 <span class="msg" id="msg"></span>
 <script>
 var config = __CONFIG__;
 var humidity = __HUMIDITY__;
+var sensors = __SENSORS__;
 
 function render() {
   var html = '';
@@ -69,6 +71,17 @@ function render() {
     html += '</div>';
   });
   document.getElementById('pots').innerHTML = html;
+  // Render extra sensors (display only)
+  var extra = '';
+  for (var i = config.length; i < sensors.length; i++) {
+    var s = sensors[i];
+    var hum = s.humidity ? s.humidity.replace('%', '') : '--';
+    extra += '<div class="pot">';
+    extra += '<h3>' + (s.name || '') + ' (CH' + s.channel + ') <span style="color:#888;font-size:0.85em">Current: ' + hum + '%</span></h3>';
+    extra += '<div class="row" style="color:#888">Monitor only — not connected to watering</div>';
+    extra += '</div>';
+  }
+  document.getElementById('extras').innerHTML = extra;
 }
 
 function setDry(i, v) {
@@ -130,6 +143,12 @@ setInterval(function() {
         if (labels[i]) { labels[i].style.left = pos; labels[i].textContent = hum + '%'; }
       }
     });
+    // Update extra sensors
+    for (var i = config.length; i < humidity.length; i++) {
+      sensors[i] = sensors[i] || {channel: ''+(i+1), name: ''};
+      sensors[i].humidity = humidity[i] + '%';
+    }
+    render();
   });
 }, 10000);
 </script>
@@ -142,8 +161,10 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/' or self.path == '':
             config = self.load_config()
             humidity = self.get_humidity()
+            sensors = self.get_sensors()
             page = HTML_PAGE.replace('__CONFIG__', json.dumps(config))
             page = page.replace('__HUMIDITY__', json.dumps(humidity))
+            page = page.replace('__SENSORS__', json.dumps(sensors))
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
@@ -204,6 +225,14 @@ class Handler(BaseHTTPRequestHandler):
             response = urlopen(SENSOR_URL, timeout=5)
             data = json.loads(response.read())
             return [ch['humidity'].replace('%', '') for ch in data.get('ch_soil', [])]
+        except Exception:
+            return []
+
+    def get_sensors(self):
+        try:
+            response = urlopen(SENSOR_URL, timeout=5)
+            data = json.loads(response.read())
+            return data.get('ch_soil', [])
         except Exception:
             return []
 
