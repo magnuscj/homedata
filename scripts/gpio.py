@@ -94,7 +94,7 @@ def measureHumidity(url):
     #Check the humidity
     for x in data:
         values = x.values()
-        humVal = list(islice(values,0,5))[4].replace('%','')
+        humVal = list(islice(values,0,4))[3].replace('%','')
         soilHumidity.append(humVal)
     return soilHumidity
 
