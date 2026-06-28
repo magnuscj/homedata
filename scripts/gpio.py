@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import RPi.GPIO as GPIO
 import time
+import os
 from urllib.request import urlopen
 import json
 import logging
@@ -43,6 +44,14 @@ ACTIVE = 4
 DURATION = 5
 
 MAX_WATERING_PER_CYCLE = 600  # seconds, safety cap per pot
+STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
+
+def write_status(active_pots, testing=False):
+    try:
+        with open(STATUS_PATH, 'w') as f:
+            json.dump({"watering": active_pots, "testing": testing}, f)
+    except Exception:
+        pass
 
 logger.debug("Init done")
 
@@ -126,10 +135,13 @@ def setupBoard():
 
     logger.info("Test watering mechanics")
     for b in range(8):
+        write_status([b], testing=True)
         GPIO.output(potPin[b], GPIO.HIGH)
         time.sleep(0.1)
         time.sleep(5)
         GPIO.output(potPin[b], GPIO.LOW)
+
+    write_status([], testing=False)
 
     for b in range(8):
         GPIO.output(potPin[b], GPIO.LOW)
@@ -189,6 +201,7 @@ while True:
             duration = min(watDur[b], MAX_WATERING_PER_CYCLE)
             try:
                 GPIO.output(potPin[b], GPIO.HIGH)
+                write_status([b])
                 hyst[b] = 1
                 logger.info("Watering pot: {} ({} - Humidity: {}({}/{}))".format(
                     potNo[b], potNames[b] if b < len(potNames) else "?",
@@ -197,6 +210,7 @@ while True:
                 wateringCycle -= duration
             finally:
                 GPIO.output(potPin[b], GPIO.LOW)
+                write_status([])
             time.sleep(1/3)
 
         if humidity >= potWet[b] and humidity != 99:

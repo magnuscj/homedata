@@ -5,6 +5,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.request import urlopen
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
 SENSOR_URL = "http://ws-gateway/get_livedata_info?"
 PORT = 8080
 
@@ -16,9 +17,14 @@ HTML_PAGE = """<!DOCTYPE html>
 <title>Pot Config</title>
 <style>
 body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 1em; background: #000; color: #eee; }
-.pot { border: 1px solid #555; border-radius: 8px; padding: 1em; margin-bottom: 1em; }
+.pot { border: 1px solid #555; border-radius: 8px; padding: 1em; margin-bottom: 1em; position: relative; }
 .pot.inactive { opacity: 0.5; }
 .pot h3 { margin: 0 0 0.5em 0; color: #0f0; }
+.battery { position: absolute; top: 1em; right: 1em; width: 24px; height: 12px; border: 1px solid #888; border-radius: 2px; }
+.battery::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: #888; border-radius: 0 1px 1px 0; }
+.battery .level { position: absolute; left: 1px; top: 1px; bottom: 1px; border-radius: 1px; }
+.water-icon { font-size: 1.2em; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 .row { display: flex; align-items: center; margin: 0.4em 0; }
 .row label { width: 120px; }
 .row .slider-wrap { flex: 1; position: relative; }
@@ -43,6 +49,15 @@ button:hover { background: #0c0; }
 var config = __CONFIG__;
 var humidity = __HUMIDITY__;
 var sensors = __SENSORS__;
+var pumpStatus = __STATUS__;
+
+function batteryHtml(level) {
+  if (level === null || level === undefined) return '';
+  var l = parseInt(level);
+  var pct = l * 20;
+  var color = pct <= 20 ? '#f00' : pct <= 40 ? '#fa0' : '#0a0';
+  return '<div class="battery"><div class="level" style="width:' + (pct > 100 ? 100 : pct) + '%;background:' + color + '"></div></div>';
+}
 
 function render() {
   var html = '';
@@ -50,13 +65,12 @@ function render() {
     var active = parseInt(p.potActive);
     var hum = (i < humidity.length) ? humidity[i] : null;
     var humPct = (hum !== null && hum !== '--') ? parseInt(hum) : null;
-    var lineStyle = '';
-    if (humPct !== null) {
-      var pct = (humPct / 100) * 100;
-      lineStyle = '<div class="hum-line" style="left:calc(120px + ' + pct + '% * (100% - 120px - 50px) / 100)"></div>';
-    }
     html += '<div class="pot ' + (active ? '' : 'inactive') + '">';
-    html += '<h3>' + p.name + ' (CH' + p.channel + ')' + (humPct !== null ? ' <span style="color:#888;font-size:0.85em">Current: ' + humPct + '%</span>' : '') + '</h3>';
+    var bat = (i < sensors.length) ? sensors[i].battery : null;
+    var isWatering = pumpStatus.watering && pumpStatus.watering.indexOf(i) >= 0;
+    var isTesting = pumpStatus.testing && isWatering;
+    html += batteryHtml(bat);
+    html += '<h3>' + p.name + ' (CH' + p.channel + ')' + (humPct !== null ? ' <span style="color:#888;font-size:0.85em">Current: ' + humPct + '%</span>' : '') + (isWatering ? ' <span class="water-icon">' + (isTesting ? '🔧' : '💧') + '</span>' : '') + '</h3>';
     html += '<div class="row"><label>Active</label><input type="checkbox" ' + (active ? 'checked' : '') + ' onchange="toggle(' + i + ', this.checked)"></div>';
     html += '<div class="levels">';
     if (humPct !== null) {
@@ -77,6 +91,7 @@ function render() {
     var s = sensors[i];
     var hum = s.humidity ? s.humidity.replace('%', '') : '--';
     extra += '<div class="pot">';
+    extra += batteryHtml(s.battery);
     extra += '<h3>' + (s.name || '') + ' (CH' + s.channel + ') <span style="color:#888;font-size:0.85em">Current: ' + hum + '%</span></h3>';
     extra += '<div class="row" style="color:#888">Monitor only — not connected to watering</div>';
     extra += '</div>';
@@ -132,22 +147,9 @@ render();
 
 setInterval(function() {
   fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
-    humidity = data;
-    var lines = document.querySelectorAll('.hum-line');
-    var labels = document.querySelectorAll('.hum-label');
-    lines.forEach(function(el, i) {
-      var hum = (i < humidity.length) ? parseInt(humidity[i]) : null;
-      if (hum !== null && !isNaN(hum)) {
-        var pos = 'calc(120px + (100% - 120px - 50px) * ' + hum + ' / 100)';
-        el.style.left = pos;
-        if (labels[i]) { labels[i].style.left = pos; labels[i].textContent = hum + '%'; }
-      }
-    });
-    // Update extra sensors
-    for (var i = config.length; i < humidity.length; i++) {
-      sensors[i] = sensors[i] || {channel: ''+(i+1), name: ''};
-      sensors[i].humidity = humidity[i] + '%';
-    }
+    humidity = data.humidity;
+    sensors = data.sensors;
+    pumpStatus = data.status;
     render();
   });
 }, 10000);
@@ -162,19 +164,23 @@ class Handler(BaseHTTPRequestHandler):
             config = self.load_config()
             humidity = self.get_humidity()
             sensors = self.get_sensors()
+            status = self.get_status()
             page = HTML_PAGE.replace('__CONFIG__', json.dumps(config))
             page = page.replace('__HUMIDITY__', json.dumps(humidity))
             page = page.replace('__SENSORS__', json.dumps(sensors))
+            page = page.replace('__STATUS__', json.dumps(status))
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
             self.wfile.write(page.encode())
         elif self.path == '/humidity':
-            humidity = self.get_humidity()
+            sensors = self.get_sensors()
+            humidity = [ch.get('humidity', '--').replace('%', '') for ch in sensors]
+            status = self.get_status()
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps(humidity).encode())
+            self.wfile.write(json.dumps({"humidity": humidity, "sensors": sensors, "status": status}).encode())
         else:
             self.send_response(404)
             self.end_headers()
@@ -235,6 +241,13 @@ class Handler(BaseHTTPRequestHandler):
             return data.get('ch_soil', [])
         except Exception:
             return []
+
+    def get_status(self):
+        try:
+            with open(STATUS_PATH, 'r') as f:
+                return json.load(f)
+        except Exception:
+            return {"watering": [], "testing": False}
 
     def log_message(self, format, *args):
         print("[{}] {}".format(self.client_address[0], format % args))
