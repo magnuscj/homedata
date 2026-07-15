@@ -16,8 +16,8 @@ HTML_PAGE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pot Config</title>
 <style>
-body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 1em; background: #000; color: #eee; }
-.pot { border: 1px solid #555; border-radius: 8px; padding: 1em; margin-bottom: 1em; position: relative; }
+body { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 1em; background: #000; color: #eee; }
+.pot { border: 1px solid #555; border-radius: 8px; padding: 0.5em; margin-bottom: 0.5em; position: relative; font-size: 0.85em; }
 .pot.inactive { opacity: 0.5; }
 .pot h3 { margin: 0 0 0.5em 0; color: #0f0; }
 .battery { position: absolute; top: 1em; right: 1em; width: 24px; height: 12px; border: 1px solid #888; border-radius: 2px; }
@@ -26,9 +26,22 @@ body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 1em; 
 .water-icon { font-size: 1.2em; animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 .row { display: flex; align-items: center; margin: 0.4em 0; }
-.row label { width: 120px; }
+.row label { width: 80px; }
 .row .slider-wrap { flex: 1; position: relative; }
 .row .slider-wrap input[type=range] { width: 100%; accent-color: #0a0; }
+.dual-range { position: relative; height: 30px; margin-top: 14px; }
+.hum-marker { position: absolute; top: -14px; transform: translateX(-50%); font-size: 0.7em; color: #0f0; pointer-events: none; white-space: nowrap; }
+.hum-marker::after { content: '▼'; display: block; text-align: center; }
+.dual-range input[type=range] { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; height: 30px; margin: 0; }
+.dual-range input[type=range]::-webkit-slider-thumb { pointer-events: all; -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; }
+.dual-range input[type=range]::-moz-range-thumb { pointer-events: all; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: none; }
+.dual-range .range-dry::-webkit-slider-thumb { background: #f80; }
+.dual-range .range-dry::-moz-range-thumb { background: #f80; }
+.dual-range .range-wet::-webkit-slider-thumb { background: #08f; }
+.dual-range .range-wet::-moz-range-thumb { background: #08f; }
+.dual-range .range-track { position: absolute; top: 13px; height: 4px; background: #333; width: 100%; border-radius: 2px; pointer-events: none; }
+.dual-range .range-fill { position: absolute; top: 13px; height: 4px; background: linear-gradient(to right, #f80, #08f); border-radius: 2px; pointer-events: none; }
+.dual-labels { display: flex; justify-content: space-between; font-size: 0.75em; color: #888; margin-top: -4px; }
 .row input[type=checkbox] { accent-color: #0a0; width: 20px; height: 20px; }
 .row .val { width: 40px; text-align: right; margin-left: 0.5em; }
 .levels { position: relative; }
@@ -41,8 +54,9 @@ button:hover { background: #0c0; }
 </head>
 <body>
 <h1>Watering Configuration</h1>
-<div id="pots"></div>
-<div id="extras"></div>
+<div id="countdown" style="color:#888;margin-bottom:1em"></div>
+<div id="pots" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em"></div>
+<div id="extras" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em"></div>
 <button onclick="save()">Save</button>
 <span class="msg" id="msg"></span>
 <script>
@@ -70,17 +84,9 @@ function render() {
     var isWatering = pumpStatus.watering && pumpStatus.watering.indexOf(i) >= 0;
     var isTesting = pumpStatus.testing && isWatering;
     html += batteryHtml(bat);
-    html += '<h3>' + p.name + ' (CH' + p.channel + ')' + (humPct !== null ? ' <span style="color:#888;font-size:0.85em">Current: ' + humPct + '%</span>' : '') + (isWatering ? ' <span class="water-icon">' + (isTesting ? '🔧' : '💧') + '</span>' : '') + '</h3>';
+    html += '<h3>' + p.name + ' (CH' + p.channel + ')' + (isWatering ? ' <span class="water-icon">' + (isTesting ? '🔧' : '💧') + '</span>' : '') + '</h3>';
     html += '<div class="row"><label>Active</label><input type="checkbox" ' + (active ? 'checked' : '') + ' onchange="toggle(' + i + ', this.checked)"></div>';
-    html += '<div class="levels">';
-    if (humPct !== null) {
-      var leftPos = 'calc(120px + (100% - 120px - 50px) * ' + humPct + ' / 100)';
-      html += '<div class="hum-line" style="left:' + leftPos + '"></div>';
-      html += '<div class="hum-label" style="left:' + leftPos + '">' + humPct + '%</div>';
-    }
-    html += '<div class="row"><label>Dry level</label><div class="slider-wrap"><input type="range" min="0" max="99" value="' + p.potDry + '" oninput="setDry(' + i + ', this.value)"></div><span class="val">' + p.potDry + '</span></div>';
-    html += '<div class="row"><label>Wet level</label><div class="slider-wrap"><input type="range" min="1" max="100" value="' + p.potWet + '" oninput="setWet(' + i + ', this.value)"></div><span class="val">' + p.potWet + '</span></div>';
-    html += '</div>';
+    html += '<div class="row"><label>Dry / Wet</label><div class="slider-wrap"><div class="dual-range" id="dr' + i + '">' + (humPct !== null ? '<div class="hum-marker" id="hmark' + i + '" style="left:' + humPct + '%">' + humPct + '%</div>' : '') + '<div class="range-track"></div><div class="range-fill" id="fill' + i + '"></div><input type="range" class="range-dry" id="rdry' + i + '" min="0" max="99" value="' + p.potDry + '" oninput="setDry(' + i + ', this.value)"><input type="range" class="range-wet" id="rwet' + i + '" min="1" max="100" value="' + p.potWet + '" oninput="setWet(' + i + ', this.value)"></div><div class="dual-labels"><span id="ldry' + i + '">' + p.potDry + '% dry</span><span id="lwet' + i + '">' + p.potWet + '% wet</span></div></div></div>';
     html += '<div class="row"><label>Duration (s)</label><div class="slider-wrap"><input type="range" min="1" max="300" value="' + p.watering_duration + '" oninput="setDur(' + i + ', this.value)"></div><span class="val" id="dur' + i + '">' + p.watering_duration + '</span></div>';
     html += '</div>';
   });
@@ -104,8 +110,12 @@ function setDry(i, v) {
   config[i].potDry = '' + v;
   if (v >= parseInt(config[i].potWet)) {
     config[i].potWet = '' + (v + 1);
+    var wetEl = document.getElementById('rwet' + i);
+    if (wetEl) wetEl.value = v + 1;
   }
-  render();
+  document.getElementById('ldry' + i).textContent = v + '% dry';
+  document.getElementById('lwet' + i).textContent = config[i].potWet + '% wet';
+  updateFills();
 }
 
 function setWet(i, v) {
@@ -113,8 +123,12 @@ function setWet(i, v) {
   config[i].potWet = '' + v;
   if (v <= parseInt(config[i].potDry)) {
     config[i].potDry = '' + (v - 1);
+    var dryEl = document.getElementById('rdry' + i);
+    if (dryEl) dryEl.value = v - 1;
   }
-  render();
+  document.getElementById('ldry' + i).textContent = config[i].potDry + '% dry';
+  document.getElementById('lwet' + i).textContent = v + '% wet';
+  updateFills();
 }
 
 function setDur(i, v) {
@@ -145,12 +159,39 @@ function save() {
 
 render();
 
+function updateFills() {
+  config.forEach(function(p, i) {
+    var fill = document.getElementById('fill' + i);
+    if (fill) {
+      var dry = parseInt(p.potDry);
+      var wet = parseInt(p.potWet);
+      fill.style.left = dry + '%';
+      fill.style.width = (wet - dry) + '%';
+    }
+  });
+}
+updateFills();
+
+function updateCountdown() {
+  var el = document.getElementById('countdown');
+  if (!pumpStatus.next_measure) { el.textContent = 'Waiting for next measurement...'; return; }
+  var now = Date.now() / 1000;
+  var diff = Math.max(0, Math.round(pumpStatus.next_measure - now));
+  if (diff <= 0) { el.textContent = 'Measuring soon...'; return; }
+  var min = Math.floor(diff / 60);
+  var sec = diff % 60;
+  el.textContent = 'Next measurement in ' + min + 'm ' + (sec < 10 ? '0' : '') + sec + 's';
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
 setInterval(function() {
   fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
     humidity = data.humidity;
     sensors = data.sensors;
     pumpStatus = data.status;
     render();
+    updateFills();
   });
 }, 10000);
 </script>
@@ -247,7 +288,7 @@ class Handler(BaseHTTPRequestHandler):
             with open(STATUS_PATH, 'r') as f:
                 return json.load(f)
         except Exception:
-            return {"watering": [], "testing": False}
+            return {"watering": [], "testing": False, "next_measure": None}
 
     def log_message(self, format, *args):
         print("[{}] {}".format(self.client_address[0], format % args))
