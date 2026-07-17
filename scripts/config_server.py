@@ -91,7 +91,7 @@ HTML_PAGE = """<!DOCTYPE html>
 <title>Pot Config</title>
 <style>
 body { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 1em; background: #000; color: #eee; }
-.pot { border: 1px solid #555; border-radius: 8px; padding: 0.5em; margin-bottom: 0.5em; position: relative; font-size: 0.85em; cursor: pointer; user-select: none; min-height: 120px; }
+.pot { border: 1px solid #555; border-radius: 8px; padding: 0.5em; position: relative; font-size: 0.85em; cursor: pointer; user-select: none; height: 130px; overflow: hidden; }
 .pot.inactive { opacity: 0.5; }
 .pot h3 { margin: 0 0 0.5em 0; color: #0f0; }
 .battery { position: absolute; top: 1em; right: 1em; width: 24px; height: 12px; border: 1px solid #888; border-radius: 2px; }
@@ -127,7 +127,7 @@ button:hover { background: #0c0; }
 .chart-box { border: 1px solid #555; border-radius: 8px; padding: 0.5em; cursor: pointer; user-select: none; }
 .chart-box canvas { width: 100%; height: 100%; display: block; }
 .chart-box h3 { margin: 0 0 0.3em 0; color: #0f0; font-size: 0.85em; }
-.pot-chart { overflow: hidden; }
+.pot-chart { overflow: hidden; height: 100px; }
 </style>
 </head>
 <body>
@@ -146,7 +146,6 @@ var pumpStatus = __STATUS__;
 var cpuTemp = __CPU_TEMP__;
 var uptime = __UPTIME__;
 var chartVisible = {};
-var chartHeight = {};
 
 function batteryHtml(level) {
   if (level === null || level === undefined) return '';
@@ -195,15 +194,10 @@ function showChart(i) {
   var cfg = document.getElementById('pcfg' + i);
   var chart = document.getElementById('pchart' + i);
   if (!cfg || !chart) return;
-  // If chart is already visible, hide it instead (toggle)
   if (chartVisible[i]) { hideChart(i); return; }
-  var pot = cfg.parentElement;
-  var h = pot.offsetHeight - 30;
   cfg.style.display = 'none';
   chart.style.display = 'block';
-  chart.style.height = h + 'px';
   chartVisible[i] = true;
-  chartHeight[i] = h;
   fetchAndDrawChart(i);
 }
 
@@ -213,7 +207,6 @@ function hideChart(i) {
   if (!cfg || !chart) return;
   cfg.style.display = '';
   chart.style.display = 'none';
-  chart.style.height = '';
   chartVisible[i] = false;
 }
 
@@ -223,11 +216,8 @@ function restoreCharts() {
       var cfg = document.getElementById('pcfg' + i);
       var chart = document.getElementById('pchart' + i);
       if (cfg && chart) {
-        var pot = cfg.parentElement;
-        var h = chartHeight[i] || (pot.offsetHeight - 30);
         cfg.style.display = 'none';
         chart.style.display = 'block';
-        chart.style.height = h + 'px';
         fetchAndDrawChart(parseInt(i));
       }
     }
