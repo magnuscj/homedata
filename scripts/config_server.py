@@ -6,6 +6,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.request import urlopen
 
+THERMAL_PATH = "/sys/class/thermal/thermal_zone0/temp"
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
 STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
 HISTORY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "history.json")
@@ -13,6 +14,29 @@ SENSOR_URL = "http://ws-gateway/get_livedata_info?"
 PORT = 8080
 HISTORY_INTERVAL = 600  # 10 minutes
 HISTORY_MAX_AGE = 7 * 24 * 3600  # 7 days in seconds
+
+def get_cpu_temp():
+    try:
+        with open(THERMAL_PATH, 'r') as f:
+            return round(int(f.read().strip()) / 1000, 1)
+    except Exception:
+        return None
+
+def get_uptime():
+    try:
+        with open('/proc/uptime', 'r') as f:
+            secs = int(float(f.read().split()[0]))
+            days = secs // 86400
+            hours = (secs % 86400) // 3600
+            mins = (secs % 3600) // 60
+            if days > 0:
+                return "{}d {}h {}m".format(days, hours, mins)
+            elif hours > 0:
+                return "{}h {}m".format(hours, mins)
+            else:
+                return "{}m".format(mins)
+    except Exception:
+        return None
 
 def load_history():
     try:
@@ -97,6 +121,9 @@ body { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 1em;
 button { font-size: 1.2em; padding: 0.5em 2em; margin-top: 1em; cursor: pointer; background: #0a0; color: #000; border: none; border-radius: 4px; }
 button:hover { background: #0c0; }
 .msg { margin-left: 1em; color: #0f0; }
+.cpu-temp { position: fixed; bottom: 1em; right: 1em; font-size: 0.8em; color: #888; background: #111; border: 1px solid #333; border-radius: 4px; padding: 0.3em 0.6em; }
+.cpu-temp.warn { color: #f80; }
+.cpu-temp.crit { color: #f00; }
 .chart-box { border: 1px solid #555; border-radius: 8px; padding: 0.5em; cursor: pointer; user-select: none; }
 .chart-box canvas { width: 100%; height: 100%; display: block; }
 .chart-box h3 { margin: 0 0 0.3em 0; color: #0f0; font-size: 0.85em; }
@@ -110,11 +137,14 @@ button:hover { background: #0c0; }
 <div id="extras" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em"></div>
 <button onclick="save()">Save</button>
 <span class="msg" id="msg"></span>
+<div class="cpu-temp" id="cputemp"></div><div class="cpu-temp" id="uptime" style="right:1em;bottom:3.2em"></div>
 <script>
 var config = __CONFIG__;
 var humidity = __HUMIDITY__;
 var sensors = __SENSORS__;
 var pumpStatus = __STATUS__;
+var cpuTemp = __CPU_TEMP__;
+var uptime = __UPTIME__;
 var chartVisible = {};
 var chartHeight = {};
 
@@ -381,11 +411,26 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
+function updateCpuTemp(temp) {
+  var el = document.getElementById('cputemp');
+  if (temp === null) { el.textContent = 'CPU: --'; return; }
+  el.textContent = 'CPU: ' + temp + '°C';
+  el.className = 'cpu-temp' + (temp >= 80 ? ' crit' : temp >= 70 ? ' warn' : '');
+}
+function updateUptime(ut) {
+  var el = document.getElementById('uptime');
+  el.textContent = ut ? 'Up: ' + ut : 'Up: --';
+}
+updateCpuTemp(cpuTemp);
+updateUptime(uptime);
+
 setInterval(function() {
   fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
     humidity = data.humidity;
     sensors = data.sensors;
     pumpStatus = data.status;
+    updateCpuTemp(data.cpu_temp);
+    updateUptime(data.uptime);
     render();
     updateFills();
     restoreCharts();
@@ -407,6 +452,8 @@ class Handler(BaseHTTPRequestHandler):
             page = page.replace('__HUMIDITY__', json.dumps(humidity))
             page = page.replace('__SENSORS__', json.dumps(sensors))
             page = page.replace('__STATUS__', json.dumps(status))
+            page = page.replace('__CPU_TEMP__', json.dumps(get_cpu_temp()))
+            page = page.replace('__UPTIME__', json.dumps(get_uptime()))
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
@@ -418,7 +465,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"humidity": humidity, "sensors": sensors, "status": status}).encode())
+            self.wfile.write(json.dumps({"humidity": humidity, "sensors": sensors, "status": status, "cpu_temp": get_cpu_temp(), "uptime": get_uptime()}).encode())
         elif self.path.startswith('/history'):
             ch = '0'
             if '?' in self.path:
