@@ -10,6 +10,7 @@ THERMAL_PATH = "/sys/class/thermal/thermal_zone0/temp"
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
 STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
 HISTORY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "history.json")
+TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_request.json")
 SENSOR_URL = "http://ws-gateway/get_livedata_info?"
 PORT = 8080
 HISTORY_INTERVAL = 600  # 10 minutes
@@ -94,7 +95,7 @@ body { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 1em;
 .pot { border: 1px solid #555; border-radius: 8px; padding: 0.5em; position: relative; font-size: 0.85em; cursor: pointer; user-select: none; height: 130px; overflow: hidden; }
 .pot.inactive { opacity: 0.5; }
 .pot h3 { margin: 0 0 0.5em 0; color: #0f0; }
-.battery { position: absolute; top: 1em; right: 1em; width: 24px; height: 12px; border: 1px solid #888; border-radius: 2px; }
+.battery { position: absolute; top: 10px; right: 1em; width: 24px; height: 14px; border: 1px solid #888; border-radius: 2px; box-sizing: border-box; }
 .battery::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: #888; border-radius: 0 1px 1px 0; }
 .battery .level { position: absolute; left: 1px; top: 1px; bottom: 1px; border-radius: 1px; }
 .water-icon { font-size: 1.2em; animation: pulse 1s infinite; }
@@ -120,6 +121,10 @@ body { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 1em;
 .row .val { width: 40px; text-align: right; margin-left: 0.5em; }
 button { font-size: 1.2em; padding: 0.5em 2em; margin-top: 1em; cursor: pointer; background: #0a0; color: #000; border: none; border-radius: 4px; }
 button:hover { background: #0c0; }
+.test-btn { position: absolute; top: 10px; right: 2.5em; width: 40px; height: 14px; background: #333; border: 1px solid #666; border-radius: 7px; cursor: pointer; transition: all 0.3s; padding: 0; margin: 0; box-sizing: border-box; line-height: 0; }
+.test-btn::after { content: ''; position: absolute; top: 1px; left: 1px; width: 8px; height: 8px; background: #aaa; border-radius: 50%; transition: all 0.3s; }
+.test-btn.active { background: #f80; border-color: #f80; }
+.test-btn.active::after { left: 29px; background: #fff; }
 .msg { margin-left: 1em; color: #0f0; }
 .cpu-temp { position: fixed; bottom: 1em; right: 1em; font-size: 0.8em; color: #888; background: #111; border: 1px solid #333; border-radius: 4px; padding: 0.3em 0.6em; }
 .cpu-temp.warn { color: #f80; }
@@ -166,6 +171,7 @@ function render() {
     var isWatering = pumpStatus.watering && pumpStatus.watering.indexOf(i) >= 0;
     var isTesting = pumpStatus.testing && isWatering;
     html += batteryHtml(bat);
+    html += '<button class="test-btn" onclick="testPot(' + i + ', event)"></button>';
     html += '<h3>' + p.name + ' (CH' + p.channel + ')' + (isWatering ? ' <span class="water-icon">' + (isTesting ? '🔧' : '💧') + '</span>' : '') + '</h3>';
     html += '<div class="pot-config" id="pcfg' + i + '">';
     html += '<div class="row"><label>Active</label><input type="checkbox" ' + (active ? 'checked' : '') + ' onchange="toggle(' + i + ', this.checked)"></div>';
@@ -357,6 +363,21 @@ function toggle(i, checked) {
   restoreCharts();
 }
 
+function testPot(i, event) {
+  event.stopPropagation();
+  var btn = event.target;
+  fetch('/test', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({pot: i})
+  }).then(function(r) {
+    if (r.ok) {
+      btn.classList.add('active');
+      setTimeout(function() { btn.classList.remove('active'); }, 12000);
+    }
+  });
+}
+
 function save() {
   fetch('/save', {
     method: 'POST',
@@ -414,18 +435,24 @@ function updateUptime(ut) {
 updateCpuTemp(cpuTemp);
 updateUptime(uptime);
 
-setInterval(function() {
-  fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
-    humidity = data.humidity;
-    sensors = data.sensors;
-    pumpStatus = data.status;
-    updateCpuTemp(data.cpu_temp);
-    updateUptime(data.uptime);
-    render();
-    updateFills();
-    restoreCharts();
-  });
-}, 10000);
+var pollTimer = null;
+function schedulePoll() {
+  var interval = (pumpStatus.testing) ? 2000 : 10000;
+  pollTimer = setTimeout(function() {
+    fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
+      humidity = data.humidity;
+      sensors = data.sensors;
+      pumpStatus = data.status;
+      updateCpuTemp(data.cpu_temp);
+      updateUptime(data.uptime);
+      render();
+      updateFills();
+      restoreCharts();
+      schedulePoll();
+    }).catch(function() { schedulePoll(); });
+  }, interval);
+}
+schedulePoll();
 </script>
 </body>
 </html>"""
@@ -474,7 +501,26 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
-        if self.path == '/save':
+        if self.path == '/test':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                pot = int(data['pot'])
+                if pot < 0 or pot >= 8:
+                    raise ValueError("pot out of range")
+                with open(TEST_PATH, 'w') as f:
+                    json.dump({"pot": pot}, f)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(b'{"status":"ok"}')
+            except Exception as e:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode())
+        elif self.path == '/save':
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
             try:

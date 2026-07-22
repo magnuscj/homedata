@@ -7,6 +7,7 @@ import json
 import logging
 import signal
 import sys
+import threading
 
 # Create a logger
 logger = logging.getLogger('logger')
@@ -37,21 +38,53 @@ potNames= ["name1","name2","name3","name4","name5","name6","name7","name8"]
 hyst    = [0,0,0,0,0,0,0,0]
 soilHumidity = []
 url = "http://ws-gateway/get_livedata_info?"
-NAME = 1
-WET = 2
-DRY = 3
-ACTIVE = 4
-DURATION = 5
+NAME = 'name'
+WET = 'potWet'
+DRY = 'potDry'
+ACTIVE = 'potActive'
+DURATION = 'watering_duration'
 
 MAX_WATERING_PER_CYCLE = 600  # seconds, safety cap per pot
 STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
+TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_request.json")
+TEST_DURATION = 10  # seconds
 
-def write_status(active_pots, testing=False):
+def write_status(active_pots, testing=False, next_measure=None):
     try:
         with open(STATUS_PATH, 'w') as f:
-            json.dump({"watering": active_pots, "testing": testing}, f)
+            json.dump({"watering": active_pots, "testing": testing, "next_measure": next_measure}, f)
     except Exception:
         pass
+
+def run_test(pot):
+    try:
+        logger.info("TEST: Opening valve {} for {} seconds".format(pot, TEST_DURATION))
+        write_status([pot], testing=True)
+        GPIO.output(potPin[pot], GPIO.HIGH)
+        time.sleep(TEST_DURATION)
+        GPIO.output(potPin[pot], GPIO.LOW)
+        write_status([], testing=False)
+        logger.info("TEST: Valve {} closed".format(pot))
+    except Exception as e:
+        logger.error("Test error: {}".format(e))
+        GPIO.output(potPin[pot], GPIO.LOW)
+        write_status([], testing=False)
+
+def check_test_request():
+    try:
+        if not os.path.exists(TEST_PATH):
+            return
+        with open(TEST_PATH, 'r') as f:
+            req = json.load(f)
+        os.remove(TEST_PATH)
+        pot = int(req.get('pot', -1))
+        if pot < 0 or pot >= 8:
+            logger.error("Invalid test pot: {}".format(pot))
+            return
+        t = threading.Thread(target=run_test, args=(pot,), daemon=True)
+        t.start()
+    except Exception as e:
+        logger.error("Test request error: {}".format(e))
 
 logger.debug("Init done")
 
@@ -72,12 +105,11 @@ def readConfig():
         logger.error("Configuration could not be read")
     return config
 
-def getConfig(item, cnf):
+def getConfig(key, cnf):
     configuration = []
     try:
         for c in cnf:
-            pv = list(c.values())
-            configuration.append(int(pv[item]))
+            configuration.append(int(c[key]))
     except Exception as e:
         logger.error(e)
     logger.debug(configuration)
@@ -136,10 +168,11 @@ def setupBoard():
     logger.info("Test watering mechanics")
     for b in range(8):
         write_status([b], testing=True)
+        time.sleep(0.2)
         GPIO.output(potPin[b], GPIO.HIGH)
-        time.sleep(0.1)
         time.sleep(5)
         GPIO.output(potPin[b], GPIO.LOW)
+        time.sleep(0.2)
 
     write_status([], testing=False)
 
@@ -174,7 +207,11 @@ while True:
 
     if not soilHumidity:
         logger.warning("No humidity data — skipping watering cycle")
-        time.sleep(60)
+        elapsed = 0
+        while elapsed < 60:
+            check_test_request()
+            time.sleep(2)
+            elapsed += 2
         continue
 
     logger.debug("Pot name:      {}".format(' '.join(map(str, potNames))))
@@ -206,7 +243,11 @@ while True:
                 logger.info("Watering pot: {} ({} - Humidity: {}({}/{}))".format(
                     potNo[b], potNames[b] if b < len(potNames) else "?",
                     humidity, potDry[b], potWet[b]))
-                time.sleep(duration)
+                elapsed = 0
+                while elapsed < duration:
+                    check_test_request()
+                    time.sleep(2)
+                    elapsed += 2
                 wateringCycle -= duration
             finally:
                 GPIO.output(potPin[b], GPIO.LOW)
@@ -223,4 +264,9 @@ while True:
     logger.info("Watering done")
     sleepTime = max(wateringCycle, 60)
     logger.info("Let's sleep for {} seconds.".format(sleepTime))
-    time.sleep(sleepTime)
+    write_status([], next_measure=time.time() + sleepTime)
+    elapsed = 0
+    while elapsed < sleepTime:
+        check_test_request()
+        time.sleep(2)
+        elapsed += 2
