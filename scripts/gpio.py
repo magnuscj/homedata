@@ -47,7 +47,7 @@ DURATION = 'watering_duration'
 MAX_WATERING_PER_CYCLE = 600  # seconds, safety cap per pot
 STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.json")
 TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_request.json")
-TEST_DURATION = 10  # seconds
+TEST_DURATION = 20  # seconds
 
 def write_status(active_pots, testing=False, next_measure=None):
     try:
