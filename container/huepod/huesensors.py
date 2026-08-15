@@ -60,6 +60,8 @@ def create_details():
                             detail = detail.replace("#DATE#", sen_value['lastupdated'])
                             for val_key, val in sen_value.items():
                                 if val_key in ['temperature', 'lightlevel', 'presence']:
+                                    if val_key == 'temperature':
+                                        val = f"{val / 100:.2f}"
                                     detail = detail.replace("#DATA#", str(val))
                         if sen_key == 'config':
                             detail = detail.replace("#BATT#", str(sen_value['battery']))
