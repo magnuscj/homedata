@@ -75,7 +75,7 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
 
         if ($sensors[$colType][$senNo] == "temp") {
             if (
-                $name == "kylFrys"
+                $name == "Fry_gr"
                 || $name == "Garage"
                 || ($name == "Skorst" && ($currValue >= 30))
             ) {
@@ -94,7 +94,7 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
         if ($sensors[$colType][$senNo] == "temp") {
             $infoStart_Y = 40;
             if (
-                ($name == "kylFrys" && ($currValue > -15))
+                ($name == "Fry_gr" && ($currValue > -15))
                 || $name == "Inne"
                 || $name == "Ute"
                 || ($name == "Skorst" && ($currValue >= 30))

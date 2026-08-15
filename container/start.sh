@@ -12,6 +12,9 @@ echo "CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'kmjmkm54C#';" | mysql
 echo "GRANT ALL PRIVILEGES ON * . * TO 'dbuser'@'localhost';" | mysql
 echo "FLUSH PRIVILEGES;" | mysql
 ./restore.sh
+if [[ $? -ne 0 ]]; then
+  echo "WARNING: restore.sh failed, continuing with fresh DB"
+fi
 ./createSensorConfig.sh
 service cron start
 ./start_eds.sh

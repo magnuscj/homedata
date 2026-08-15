@@ -79,7 +79,7 @@ do
 		$name = $sensors[$colName][$senNo];
 		if($sensors[$colType][$senNo] == "temp")
 		{
-         if((   $name == "kylFrys" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
+         if((   $name == "Fry_gr" && (getCurr($sensorId, $username, $password, $serverHostName, $database)> -15)) 
              || $name == "Inne" 
              || $name == "Ute" 
              || $name == "Sovrum" 

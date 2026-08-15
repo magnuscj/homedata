@@ -28,7 +28,7 @@ else
     $sleepTime = 60;
 }
 
-$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "kylFrys", "Fry_ga", "Garage", "Skorst", "vaxthus");
+$resources = array("Fry_ko", "Kyl_ko", "Kyl_gr", "Fry_gr", "Fry_ga", "Garage", "Skorst", "vaxthus");
 
 do 
 {
@@ -68,7 +68,7 @@ do
         $skip=0;
         $skift=0;
 
-        if ((explode('_', $resource)[0] == "Fry") || $resource=="kylFrys")
+        if (explode('_', $resource)[0] == "Fry")
         {
             $min=-25.0;
             $max=-10.0;
@@ -116,7 +116,6 @@ do
             $B=0;
 
             $color = array($R, $G, $B);
-            $resource = $resource=="kylFrys" ? "Fry_gr" : $resource;
             $t = new Text($resource);       
             $t->SetPos(10,$Y,'left');
             $t->SetFont(FF_ARIAL,FS_BOLD,$length*0.155);
