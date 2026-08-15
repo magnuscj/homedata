@@ -49,17 +49,23 @@ STATUS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "status.j
 TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_request.json")
 TEST_DURATION = 20  # seconds
 
-def write_status(active_pots, testing=False, next_measure=None):
+def write_status(active_pots, testing=False, next_measure=None, watering_start=None, watering_duration=None):
     try:
         with open(STATUS_PATH, 'w') as f:
-            json.dump({"watering": active_pots, "testing": testing, "next_measure": next_measure}, f)
+            json.dump({
+                "watering": active_pots,
+                "testing": testing,
+                "next_measure": next_measure,
+                "watering_start": watering_start,
+                "watering_duration": watering_duration
+            }, f)
     except Exception:
         pass
 
 def run_test(pot):
     try:
         logger.info("TEST: Opening valve {} for {} seconds".format(pot, TEST_DURATION))
-        write_status([pot], testing=True)
+        write_status([pot], testing=True, watering_start=time.time(), watering_duration=TEST_DURATION)
         GPIO.output(potPin[pot], GPIO.HIGH)
         time.sleep(TEST_DURATION)
         GPIO.output(potPin[pot], GPIO.LOW)
@@ -77,6 +83,10 @@ def check_test_request():
         with open(TEST_PATH, 'r') as f:
             req = json.load(f)
         os.remove(TEST_PATH)
+        if req.get('all'):
+            t = threading.Thread(target=run_mechanics_test, daemon=True)
+            t.start()
+            return
         pot = int(req.get('pot', -1))
         if pot < 0 or pot >= 8:
             logger.error("Invalid test pot: {}".format(pot))
@@ -158,27 +168,24 @@ def getPotNames(url):
             potNames.append('')
     return potNames
 
+def run_mechanics_test():
+    """Test all 8 valves sequentially for 5 seconds each."""
+    logger.info("Running full mechanics test")
+    for b in range(8):
+        GPIO.output(potPin[b], GPIO.HIGH)
+        write_status([b], testing=True, watering_start=time.time(), watering_duration=5)
+        time.sleep(5)
+        GPIO.output(potPin[b], GPIO.LOW)
+        time.sleep(0.4)
+    write_status([], testing=False)
+    logger.info("Mechanics test complete")
+
 def setupBoard():
     GPIO.setmode(GPIO.BOARD)
     logger.info("Setting up board")
     for b in range(8):
         GPIO.setup(potPin[b], GPIO.OUT)
         GPIO.output(potPin[b], GPIO.LOW)
-
-    logger.info("Test watering mechanics")
-    for b in range(8):
-        write_status([b], testing=True)
-        time.sleep(0.2)
-        GPIO.output(potPin[b], GPIO.HIGH)
-        time.sleep(5)
-        GPIO.output(potPin[b], GPIO.LOW)
-        time.sleep(0.2)
-
-    write_status([], testing=False)
-
-    for b in range(8):
-        GPIO.output(potPin[b], GPIO.LOW)
-        time.sleep(0.1)
 
 signal.signal(signal.SIGINT, signal_handler)
 setupBoard()
@@ -238,7 +245,7 @@ while True:
             duration = min(watDur[b], MAX_WATERING_PER_CYCLE)
             try:
                 GPIO.output(potPin[b], GPIO.HIGH)
-                write_status([b])
+                write_status([b], watering_start=time.time(), watering_duration=duration)
                 hyst[b] = 1
                 logger.info("Watering pot: {} ({} - Humidity: {}({}/{}))".format(
                     potNo[b], potNames[b] if b < len(potNames) else "?",

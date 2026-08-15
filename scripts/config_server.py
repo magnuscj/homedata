@@ -141,6 +141,7 @@ button:hover { background: #0c0; }
 <div id="pots" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em"></div>
 <div id="extras" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5em"></div>
 <button onclick="save()">Save</button>
+<button onclick="testAll()" style="background:#f80;margin-left:0.5em">Test All Valves</button>
 <span class="msg" id="msg"></span>
 <div class="cpu-temp" id="cputemp"></div><div class="cpu-temp" id="uptime" style="right:1em;bottom:3.2em"></div>
 <script>
@@ -378,6 +379,20 @@ function testPot(i, event) {
   });
 }
 
+function testAll() {
+  if (!confirm('Test all 8 valves sequentially (~45s)?')) return;
+  fetch('/test', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({all: true})
+  }).then(function(r) {
+    if (r.ok) {
+      document.getElementById('msg').textContent = 'Mechanics test started';
+      setTimeout(function() { document.getElementById('msg').textContent = ''; }, 5000);
+    }
+  });
+}
+
 function save() {
   fetch('/save', {
     method: 'POST',
@@ -409,8 +424,31 @@ function updateFills() {
 }
 updateFills();
 
+var lastPollTime = Date.now() / 1000;
+var lastWateringRemaining = null;
+
 function updateCountdown() {
   var el = document.getElementById('countdown');
+  // Show watering countdown if watering is active
+  if (pumpStatus.watering && pumpStatus.watering.length > 0 && pumpStatus.watering_remaining !== null && pumpStatus.watering_remaining !== undefined) {
+    var sincePoll = Date.now() / 1000 - lastPollTime;
+    var remaining = Math.max(0, Math.round(pumpStatus.watering_remaining - sincePoll));
+    if (remaining <= 0) {
+      el.textContent = 'Switching...';
+      el.style.color = '#888';
+      if (!pollPending) { pollNow(); }
+    } else {
+      var min = Math.floor(remaining / 60);
+      var sec = remaining % 60;
+      var potIdx = pumpStatus.watering[0];
+      var potName = (potIdx < config.length) ? config[potIdx].name : 'Pot ' + potIdx;
+      var label = pumpStatus.testing ? '🔧 Testing' : '💧 Watering';
+      el.textContent = label + ' ' + potName + ' — ' + min + 'm ' + (sec < 10 ? '0' : '') + sec + 's remaining';
+      el.style.color = pumpStatus.testing ? '#f80' : '#0af';
+    }
+    return;
+  }
+  el.style.color = '#888';
   if (!pumpStatus.next_measure) { el.textContent = 'Waiting for next measurement...'; return; }
   var now = Date.now() / 1000;
   var diff = Math.max(0, Math.round(pumpStatus.next_measure - now));
@@ -436,21 +474,31 @@ updateCpuTemp(cpuTemp);
 updateUptime(uptime);
 
 var pollTimer = null;
+var pollPending = false;
+function doPoll() {
+  pollPending = true;
+  fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
+    humidity = data.humidity;
+    sensors = data.sensors;
+    pumpStatus = data.status;
+    lastPollTime = Date.now() / 1000;
+    updateCpuTemp(data.cpu_temp);
+    updateUptime(data.uptime);
+    render();
+    updateFills();
+    restoreCharts();
+    pollPending = false;
+    schedulePoll();
+  }).catch(function() { pollPending = false; schedulePoll(); });
+}
+function pollNow() {
+  if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+  doPoll();
+}
 function schedulePoll() {
-  var interval = (pumpStatus.testing) ? 2000 : 10000;
-  pollTimer = setTimeout(function() {
-    fetch('/humidity').then(function(r) { return r.json(); }).then(function(data) {
-      humidity = data.humidity;
-      sensors = data.sensors;
-      pumpStatus = data.status;
-      updateCpuTemp(data.cpu_temp);
-      updateUptime(data.uptime);
-      render();
-      updateFills();
-      restoreCharts();
-      schedulePoll();
-    }).catch(function() { schedulePoll(); });
-  }, interval);
+  if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+  var interval = (pumpStatus.testing || (pumpStatus.watering && pumpStatus.watering.length > 0)) ? 2000 : 10000;
+  pollTimer = setTimeout(doPoll, interval);
 }
 schedulePoll();
 </script>
@@ -506,11 +554,15 @@ class Handler(BaseHTTPRequestHandler):
             body = self.rfile.read(length)
             try:
                 data = json.loads(body)
-                pot = int(data['pot'])
-                if pot < 0 or pot >= 8:
-                    raise ValueError("pot out of range")
-                with open(TEST_PATH, 'w') as f:
-                    json.dump({"pot": pot}, f)
+                if data.get('all'):
+                    with open(TEST_PATH, 'w') as f:
+                        json.dump({"all": True}, f)
+                else:
+                    pot = int(data['pot'])
+                    if pot < 0 or pot >= 8:
+                        raise ValueError("pot out of range")
+                    with open(TEST_PATH, 'w') as f:
+                        json.dump({"pot": pot}, f)
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
@@ -579,9 +631,16 @@ class Handler(BaseHTTPRequestHandler):
     def get_status(self):
         try:
             with open(STATUS_PATH, 'r') as f:
-                return json.load(f)
+                status = json.load(f)
+            # Compute remaining time server-side to avoid clock skew with browser
+            if status.get('watering_start') and status.get('watering_duration'):
+                elapsed = time.time() - status['watering_start']
+                status['watering_remaining'] = max(0, status['watering_duration'] - elapsed)
+            else:
+                status['watering_remaining'] = None
+            return status
         except Exception:
-            return {"watering": [], "testing": False, "next_measure": None}
+            return {"watering": [], "testing": False, "next_measure": None, "watering_start": None, "watering_duration": None, "watering_remaining": None}
 
     def log_message(self, format, *args):
         print("[{}] {}".format(self.client_address[0], format % args))
