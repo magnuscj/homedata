@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: hue
-        image: magnuscj/hue:prod_1
+        image: magnuscj/hue:prod_4
           #command: ["./start.sh"]
         ports:
           - containerPort: 80

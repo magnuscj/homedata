@@ -49,7 +49,8 @@ spec:
       initContainers:
       - name: seed-ips
         image: magnuscj/eds:REPLACE
-        command: ["/bin/bash", "-c", "mkdir -p /usr/storage/ips && [ ! -f /usr/storage/ips/ips.txt ] && cp /img/ips.txt /usr/storage/ips/ips.txt || true"]
+        imagePullPolicy: Never
+        command: ["/bin/bash", "-c", "mkdir -p /usr/storage/ips && [ ! -f /usr/storage/ips/ips.txt ] && cp /img/ips.txt /usr/storage/ips/ips.txt || true; touch /usr/storage/sensorconfig.sql && chown www-data:www-data /usr/storage/sensorconfig.sql"]
         volumeMounts:
           - mountPath: "/usr/storage"
             name: eds-pv-storage
@@ -57,6 +58,7 @@ spec:
       containers:
       - name: eds
         image: magnuscj/eds:REPLACE
+        imagePullPolicy: Never
         command: ["./start.sh"]
         ports:
           - containerPort: 80
