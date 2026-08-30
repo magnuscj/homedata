@@ -1,6 +1,7 @@
 FROM ubuntu:24.04
 
 ARG CACHE_DATE=2026-01-05
+RUN echo "Cache date: $CACHE_DATE"
 
 LABEL org.containers.image.title="EDS data manager" \
       org.containers.image.description="Collects, stores and vizualise data from Embedded data systems" \
@@ -82,6 +83,7 @@ COPY ips.txt /usr/storage/ips/ips.txt
 COPY ips.txt /img/ips.txt
 COPY create_ips.php /var/www/html/
 COPY sensorcfg.php /var/www/html/
+COPY jpgraph_colors.php /var/www/html/
 RUN chown www-data:www-data /usr/storage/ips/ips.txt
 
 COPY container/start.sh homedata/edssensors

@@ -45,11 +45,12 @@ spec:
         - name: eds-pv-storage
           persistentVolumeClaim:
             claimName: eds-pv-claim
+      automountServiceAccountToken: true
 
       initContainers:
       - name: seed-ips
         image: magnuscj/eds:REPLACE
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         command: ["/bin/bash", "-c", "mkdir -p /usr/storage/ips && [ ! -f /usr/storage/ips/ips.txt ] && cp /img/ips.txt /usr/storage/ips/ips.txt || true; touch /usr/storage/sensorconfig.sql && chown www-data:www-data /usr/storage/sensorconfig.sql"]
         volumeMounts:
           - mountPath: "/usr/storage"
@@ -58,7 +59,7 @@ spec:
       containers:
       - name: eds
         image: magnuscj/eds:REPLACE
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         command: ["./start.sh"]
         ports:
           - containerPort: 80
