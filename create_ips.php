@@ -81,6 +81,12 @@ foreach ($discovered as $d) {
         .msg { color: green; font-weight: bold; }
         .err { color: red; font-weight: bold; }
         .check { color: #28a745; font-weight: bold; margin-left: 8px; }
+        .new-heading { margin: 20px 0 10px; font-weight: bold; color: #ffc107; }
+        .new-row { padding: 6px; border: 1px dashed #ffc107; border-radius: 4px; display: inline-block; }
+        .new-ip-input { opacity: 0.7; }
+        .new-badge { color: #ffc107; font-weight: bold; margin: 0 8px; }
+        .accept-btn { background: #28a745; margin-left: 4px; }
+        .reject-btn { background: #dc3545; margin-left: 4px; }
     </style>
 </head>
 <body>
@@ -104,15 +110,23 @@ foreach ($discovered as $d) {
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
+            <?php
+            $new_discovered = array_filter($discovered, fn($d) => !in_array($d['ip'], $ip_list));
+            if (!empty($new_discovered)):
+            ?>
+                <div class="new-heading">Newly discovered services (not in list):</div>
+            <?php endif; ?>
             <?php foreach ($discovered as $d):
                 if (in_array($d['ip'], $ip_list)) continue;
                 $short_name = explode('-', $d['name'])[0];
             ?>
-                <div class="ip-row">
-                    <input type="text" name="ips[]" value="<?php echo htmlspecialchars($d['ip']); ?>"
-                        placeholder="192.168.1.1" inputmode="decimal" maxlength="15">
-                    <button type="button" class="del-btn" onclick="this.parentElement.remove()">Remove</button>
-                    <span class="check" title="<?php echo htmlspecialchars($d['name']); ?>">✔ <?php echo htmlspecialchars($short_name); ?></span>
+                <div class="ip-row new-row" data-ip="<?php echo htmlspecialchars($d['ip']); ?>">
+                    <!-- Disabled input so it is NOT submitted until accepted -->
+                    <input type="text" value="<?php echo htmlspecialchars($d['ip']); ?>" disabled
+                        data-name="ips[]" class="new-ip-input">
+                    <span class="new-badge" title="<?php echo htmlspecialchars($d['name']); ?>">NEW: <?php echo htmlspecialchars($short_name); ?> (<?php echo htmlspecialchars($d['ip']); ?>)</span>
+                    <button type="button" class="accept-btn" onclick="acceptRow(this)">Accept</button>
+                    <button type="button" class="reject-btn" onclick="this.closest('.ip-row').remove()">Reject</button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -127,6 +141,20 @@ foreach ($discovered as $d) {
         function validIP(val) {
             if (!IP_PATTERN.test(val)) return false;
             return val.split('.').every(n => parseInt(n) <= 255);
+        }
+
+        // Accept a discovered IP: turn it into a normal, submittable row
+        function acceptRow(btn) {
+            const row = btn.closest('.ip-row');
+            const ip = row.getAttribute('data-ip');
+            const svcTitle = row.querySelector('.new-badge').getAttribute('title');
+            const shortName = row.querySelector('.new-badge').textContent
+                .replace(/^NEW:\s*/, '').replace(/\s*\(.*\)$/, '');
+            row.innerHTML =
+                '<input type="text" name="ips[]" value="' + ip + '" placeholder="192.168.1.1" inputmode="decimal" maxlength="15">' +
+                '<button type="button" class="del-btn" onclick="this.parentElement.remove()">Remove</button>' +
+                '<span class="check" title="' + svcTitle + '">\u2714 ' + shortName + '</span>';
+            row.classList.remove('new-row');
         }
 
         function addBox() {
