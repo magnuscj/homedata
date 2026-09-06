@@ -69,5 +69,33 @@ int main()
   }
 
   std::cout << "PASS: all " << sensors.size() << " sensors verified\n";
+
+  // Verify the canonical sensorid is now the deterministic FNV-1a hash
+  // (stableHash) over  ROMId + metricType + type, NOT the legacy std::hash.
+  // details.xml uses the placeholder ROMId "[romId]"; for owd_DS18B20/Temperature
+  // the input is "[romId]Temperatureowd_DS18B20".
+  {
+    const std::string expectedId = "18435809319482831335"; // FNV-1a of that input
+    const std::string legacyId =
+        std::to_string(std::hash<std::string>{}("[romId]Temperatureowd_DS18B20"));
+    bool ok = false;
+    for (const auto& s : sensors) {
+      if (s->type == "owd_DS18B20" && s->unit == "Temperature") {
+        if (s->id == expectedId) {
+          ok = true;
+        } else {
+          std::cerr << "FAIL: sensorid is '" << s->id << "', expected FNV-1a '"
+                    << expectedId << "'";
+          if (s->id == legacyId)
+            std::cerr << " (got the LEGACY std::hash — FNV-1a change not applied)";
+          std::cerr << "\n";
+          return 1;
+        }
+        break;
+      }
+    }
+    if (!ok) { std::cerr << "FAIL: DS18B20/Temperature sensor not found\n"; return 1; }
+    std::cout << "PASS: canonical sensorid is FNV-1a (" << expectedId << ")\n";
+  }
   return 0;
 }

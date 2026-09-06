@@ -149,20 +149,25 @@ void edsServerHandler::decodeXml(const std::string& xmldoc)
         }
         child = child->NextSibling();
       }
-      // Deterministic id2 (FNV-1a) over the SAME input string eds hashes for the
-      // legacy id, computed before sens->id is overwritten below.
+      // Canonical sensorid is now the deterministic FNV-1a hash (stableHash),
+      // computed over the input string  ROMId + metricType + type.
+      // id2 keeps the legacy std::hash value as a backward-reference so old
+      // deployments can still be cross-referenced. NOTE: std::hash is NOT stable
+      // across builds/architectures, so id2 is only meaningful on the machine
+      // that produced the legacy ids; for brand-new sensors it is a best-effort
+      // local value.
       std::string hashInput = sens->id + metricType + sens->type;
-      std::string id2 = stableHash(hashInput);
-      sens->id   = std::to_string(std::hash<std::string>{}(hashInput));
+      std::string legacyId2 = std::to_string(std::hash<std::string>{}(hashInput));
+      sens->id   = stableHash(hashInput);
       sens->unit = metricType;
       auto cfg = sensorConfigurations[sens->id];
       if (!cfg) {
-        // Unknown sensor: insert a new config row (with id2).
-        this->writeSensorConfiguration(sens->id, id2);
+        // Unknown sensor: insert a new config row (sensorid=FNV, id2=legacy).
+        this->writeSensorConfiguration(sens->id, legacyId2);
       } else if (cfg->size() < 2 || cfg->at(1).empty()) {
         // Known sensor but id2 not yet stored (row predates id2 / was NULL):
-        // back-fill it now that the sensor is live and we can compute it.
-        this->updateId2(sens->id, id2);
+        // back-fill the legacy id2 now that the sensor is live.
+        this->updateId2(sens->id, legacyId2);
       }
       sensors.push_back(std::move(sens));
     }
