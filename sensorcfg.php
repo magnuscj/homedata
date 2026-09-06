@@ -77,6 +77,7 @@ $result = $conn->query("SELECT * FROM sensorconfig");
             <tr>
                 <th>ID</th>
                 <th>Sensor ID</th>
+                <th>ID2</th>
                 <th>Name</th>
                 <th>Color</th>
                 <th>Visible</th>
@@ -91,6 +92,7 @@ $result = $conn->query("SELECT * FROM sensorconfig");
                         <form method="POST">
                             <td><?php echo $row['id']; ?><input type="hidden" name="id" value="<?php echo $row['id']; ?>"></td>
                             <td><input type="text" name="sensorid"   value="<?php echo htmlspecialchars($row['sensorid']); ?>"></td>
+                            <td><?php echo htmlspecialchars($row['id2'] ?? ''); ?></td>
                             <td><input type="text" name="sensorname" value="<?php echo htmlspecialchars($row['sensorname']); ?>"></td>
                             <td>
                                 <?php $current_color = $row['color']; $in_subset = in_array(strtolower($current_color), array_map('strtolower', $JPGRAPH_COLOR_SUBSET)); ?>
@@ -119,6 +121,7 @@ $result = $conn->query("SELECT * FROM sensorconfig");
                     <?php else: ?>
                         <td><?php echo $row['id']; ?></td>
                         <td><?php echo htmlspecialchars($row['sensorid']); ?></td>
+                        <td><?php echo htmlspecialchars($row['id2'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($row['sensorname']); ?></td>
                         <td>
                             <span class="color-dot" style="background-color: <?php echo htmlspecialchars(jpgraph_color_to_hex($row['color'])); ?>;"></span>

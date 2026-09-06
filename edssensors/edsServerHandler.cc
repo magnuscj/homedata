@@ -140,16 +140,30 @@ void edsServerHandler::decodeXml(const std::string& xmldoc)
       while (child != nullptr) {
         if (!child->NoChildren()) {
           const char* val = child->FirstChild()->Value();
-          if (strcmp(child->Value(), "ROMId") == 0)
-            sens->id = val;
-          else if (strcmp(child->Value(), metricType.c_str()) == 0)
-            sens->value = val;
+          if (val != nullptr) {
+            if (strcmp(child->Value(), "ROMId") == 0)
+              sens->id = val;
+            else if (strcmp(child->Value(), metricType.c_str()) == 0)
+              sens->value = val;
+          }
         }
         child = child->NextSibling();
       }
-      sens->id   = std::to_string(std::hash<std::string>{}(sens->id + metricType + sens->type));
+      // Deterministic id2 (FNV-1a) over the SAME input string eds hashes for the
+      // legacy id, computed before sens->id is overwritten below.
+      std::string hashInput = sens->id + metricType + sens->type;
+      std::string id2 = stableHash(hashInput);
+      sens->id   = std::to_string(std::hash<std::string>{}(hashInput));
       sens->unit = metricType;
-      if (!sensorConfigurations[sens->id]) this->writeSensorConfiguration(sens->id);
+      auto cfg = sensorConfigurations[sens->id];
+      if (!cfg) {
+        // Unknown sensor: insert a new config row (with id2).
+        this->writeSensorConfiguration(sens->id, id2);
+      } else if (cfg->size() < 2 || cfg->at(1).empty()) {
+        // Known sensor but id2 not yet stored (row predates id2 / was NULL):
+        // back-fill it now that the sensor is live and we can compute it.
+        this->updateId2(sens->id, id2);
+      }
       sensors.push_back(std::move(sens));
     }
     node = node->NextSibling();
@@ -225,7 +239,7 @@ void const edsServerHandler::print()
     cout<<left;
     if(sensorConfigurations[sensor->id])
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
-         <<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value
+         <<sensorConfigurations[sensor->id]->at(2)<<": "<<setw(10)<<sensor->value
          <<"("<<sensor->unit<<")"<<"\n";
     else
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
@@ -264,7 +278,7 @@ void edsServerHandler::readSensorConfiguration()
 
         for(int i = 1; i < mysql_num_fields(result)-1; i++)
         {
-          sensConf->emplace_back(row[i]);
+          sensConf->emplace_back(row[i] ? row[i] : "");
         }
         sensorConfigurations.emplace(row[1], std::move(sensConf));
       }
@@ -285,7 +299,18 @@ void edsServerHandler::readSensorConfiguration()
   }
 }
 
-void edsServerHandler::writeSensorConfiguration(std::string sensorid)
+std::string edsServerHandler::stableHash(const std::string& s)
+{
+  // FNV-1a 64-bit: deterministic across builds/architectures (unlike std::hash).
+  unsigned long long h = 0xcbf29ce484222325ULL;        // FNV offset basis
+  for (unsigned char c : s) {
+    h ^= (unsigned long long)c;
+    h *= 0x100000001b3ULL;                             // FNV prime
+  }
+  return std::to_string(h);
+}
+
+void edsServerHandler::writeSensorConfiguration(std::string sensorid, std::string id2)
 {
   if(dbConnection == NULL) return;
   int state;
@@ -294,13 +319,25 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 
   state = mysql_query(dbConnection, string("CREATE TABLE "+ dbName+"." + tbName +
           " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL,\
-          sensorname TEXT NOT NULL, color TEXT NOT NULL, visible TEXT NOT NULL,\
-          type TEXT NOT NULL)").c_str());
+          id2 TEXT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL,\
+          visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
 
-  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,sensorname,\
-                 color,visible, type) VALUES('" + sensorid + "','name','black',\
+  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,id2,sensorname,\
+                 color,visible, type) VALUES('" + sensorid + "','" + id2 + "','name','black',\
                  'false', 'default'" + ")";
   state = mysql_query(dbConnection, query.c_str());
+}
+
+void edsServerHandler::updateId2(std::string sensorid, std::string id2)
+{
+  // Back-fill id2 on an existing row that has it missing/empty. Only touches
+  // rows whose id2 is NULL or '' so it never overwrites an existing value or
+  // any other column (names/colors are preserved).
+  if(dbConnection == NULL) return;
+  string query = "UPDATE mydb.sensorconfig SET id2='" + id2 +
+                 "' WHERE sensorid='" + sensorid +
+                 "' AND (id2 IS NULL OR id2='')";
+  mysql_query(dbConnection, query.c_str());
 }
 
 void edsServerHandler::connectToDatabase()
