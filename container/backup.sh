@@ -1,10 +1,16 @@
 #!/bin/bash
 
-# Check that the DB has meaningful data before backing up
-TABLE="table$(date +%Y%m)"
-ROWS=$(mysql -u dbuser -pkmjmkm54C# -N -e "SELECT COUNT(*) FROM mydb.$TABLE" 2>/dev/null)
+# Check that the DB has meaningful data before backing up.
+# Sum rows across ALL monthly measurement tables (table20*) rather than only the
+# current month: at the start of a new month the current table is near-empty,
+# which previously caused a legitimate backup to be skipped and left the newest
+# dump stale. Summing all months reflects whether the DB actually holds data.
+ROWS=$(mysql -u dbuser -pkmjmkm54C# -N -e "
+  SELECT COALESCE(SUM(table_rows),0)
+  FROM information_schema.tables
+  WHERE table_schema='mydb' AND table_name LIKE 'table20%'" 2>/dev/null)
 if [[ -z "$ROWS" || "$ROWS" -lt 1000 ]]; then
-  echo "Skipping backup — DB looks incomplete ($ROWS rows in $TABLE)"
+  echo "Skipping backup — DB looks incomplete ($ROWS rows across monthly tables)"
   exit 0
 fi
 
@@ -38,4 +44,4 @@ fi
 mysqldump -u dbuser -pkmjmkm54C# mydb > /usr/storage/test1.sql
 tar -czf /usr/storage/test1.tar /usr/storage/test1.sql
 rm -f /usr/storage/test1.sql
-echo "Backup complete ($ROWS rows in $TABLE)"
+echo "Backup complete ($ROWS rows across monthly tables)"
