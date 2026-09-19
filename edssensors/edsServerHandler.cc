@@ -149,25 +149,15 @@ void edsServerHandler::decodeXml(const std::string& xmldoc)
         }
         child = child->NextSibling();
       }
-      // Canonical sensorid is now the deterministic FNV-1a hash (stableHash),
+      // Canonical sensorid is the deterministic FNV-1a hash (stableHash),
       // computed over the input string  ROMId + metricType + type.
-      // id2 keeps the legacy std::hash value as a backward-reference so old
-      // deployments can still be cross-referenced. NOTE: std::hash is NOT stable
-      // across builds/architectures, so id2 is only meaningful on the machine
-      // that produced the legacy ids; for brand-new sensors it is a best-effort
-      // local value.
       std::string hashInput = sens->id + metricType + sens->type;
-      std::string legacyId2 = std::to_string(std::hash<std::string>{}(hashInput));
       sens->id   = stableHash(hashInput);
       sens->unit = metricType;
       auto cfg = sensorConfigurations[sens->id];
       if (!cfg) {
-        // Unknown sensor: insert a new config row (sensorid=FNV, id2=legacy).
-        this->writeSensorConfiguration(sens->id, legacyId2);
-      } else if (cfg->size() < 2 || cfg->at(1).empty()) {
-        // Known sensor but id2 not yet stored (row predates id2 / was NULL):
-        // back-fill the legacy id2 now that the sensor is live.
-        this->updateId2(sens->id, legacyId2);
+        // Unknown sensor: insert a new config row keyed on the FNV sensorid.
+        this->writeSensorConfiguration(sens->id);
       }
       sensors.push_back(std::move(sens));
     }
@@ -244,7 +234,7 @@ void const edsServerHandler::print()
     cout<<left;
     if(sensorConfigurations[sensor->id])
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
-         <<sensorConfigurations[sensor->id]->at(2)<<": "<<setw(10)<<sensor->value
+         <<sensorConfigurations[sensor->id]->at(1)<<": "<<setw(10)<<sensor->value
          <<"("<<sensor->unit<<")"<<"\n";
     else
        cout<<setw(0)<<""<<setw(15)<<sensor->type<<setw(22)<<sensor->id<<setw(7)
@@ -315,7 +305,7 @@ std::string edsServerHandler::stableHash(const std::string& s)
   return std::to_string(h);
 }
 
-void edsServerHandler::writeSensorConfiguration(std::string sensorid, std::string id2)
+void edsServerHandler::writeSensorConfiguration(std::string sensorid)
 {
   if(dbConnection == NULL) return;
   int state;
@@ -324,25 +314,13 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid, std::strin
 
   state = mysql_query(dbConnection, string("CREATE TABLE "+ dbName+"." + tbName +
           " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL,\
-          id2 TEXT NULL, sensorname TEXT NOT NULL, color TEXT NOT NULL,\
+          sensorname TEXT NOT NULL, color TEXT NOT NULL,\
           visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
 
-  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,id2,sensorname,\
-                 color,visible, type) VALUES('" + sensorid + "','" + id2 + "','name','black',\
+  string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,sensorname,\
+                 color,visible, type) VALUES('" + sensorid + "','name','black',\
                  'false', 'default'" + ")";
   state = mysql_query(dbConnection, query.c_str());
-}
-
-void edsServerHandler::updateId2(std::string sensorid, std::string id2)
-{
-  // Back-fill id2 on an existing row that has it missing/empty. Only touches
-  // rows whose id2 is NULL or '' so it never overwrites an existing value or
-  // any other column (names/colors are preserved).
-  if(dbConnection == NULL) return;
-  string query = "UPDATE mydb.sensorconfig SET id2='" + id2 +
-                 "' WHERE sensorid='" + sensorid +
-                 "' AND (id2 IS NULL OR id2='')";
-  mysql_query(dbConnection, query.c_str());
 }
 
 void edsServerHandler::connectToDatabase()

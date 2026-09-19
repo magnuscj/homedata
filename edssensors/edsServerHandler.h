@@ -37,8 +37,7 @@ class edsServerHandler
     void printServerData();
     void printIdValue(std::string id);
     void readSensorConfiguration();
-    void writeSensorConfiguration(std::string sensorid, std::string id2);
-    void updateId2(std::string sensorid, std::string id2);
+    void writeSensorConfiguration(std::string sensorid);
     static std::string stableHash(const std::string& s);
     void const print();
     void connectToDatabase();
