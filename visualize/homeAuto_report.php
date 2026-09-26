@@ -42,7 +42,7 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
     $kwhPosDelta   = 0;
     $moiPosDelta   = 0;
     $col_1         = 10;
-    $col_2         = 160;
+    $col_2         = 114;
     $col_3         = 310;
     $row_1         = 225;
     $row_2         = 245;
@@ -72,24 +72,6 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
         $infoStart_Y = -56;
         $name        = $sensors[$colName][$senNo];
         $currValue   = getCurr($sensorId, $username, $password, $serverHostName, $database);
-
-        if ($sensors[$colType][$senNo] == "temp") {
-            if (
-                $name == "Fry_gr"
-                || $name == "Garage"
-                || ($name == "Skorst" && ($currValue >= 30))
-            ) {
-                $value      = number_format($currValue, 0);
-                $sensorName = $sensors[$colName][$senNo];
-                $t          = new Text($sensorName . ": " . $value, $col_3, $row_4 + $miniListDelta);
-                $t->SetFont(FF_ARIAL, FS_BOLD, 12);
-                $t->SetColor($textColor);
-                $t->Align('left', 'bottom');
-                $t->ParagraphAlign('left');
-                $graph->AddText($t);
-                $miniListDelta = $miniListDelta + 15;
-            }
-        }
 
         if ($sensors[$colType][$senNo] == "temp") {
             $infoStart_Y = 40;
@@ -247,8 +229,37 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
             $graph->AddText($t);
         }
 
-        if ($sensors[$colType][$senNo] == "rain") {
-            $sensorName = $sensors[$colName][$senNo];
+        if ($sensors[$colType][$senNo] == "price") {
+            // Current electricity spot price, rendered in the same style as "El".
+            // Evenly spaced with Värme (col_1=10) and Regn (col_2=114); kept left
+            // of status.png (which occupies x>=297 on the dashboard).
+            $priceCol = 218;
+
+            $sensorName = $sensors[$colName][$senNo]; // "Pris"
+            $t          = new Text($sensorName, $priceCol, $row_4);
+            $t->SetFont(FF_ARIAL, FS_BOLD, 12);
+            $t->SetColor($textColor);
+            $t->Align('left', 'bottom');
+            $t->ParagraphAlign('left');
+            $graph->AddText($t);
+
+            $priceValue = number_format($currValue, 2);
+            $t          = new Text($priceValue, $priceCol, $row_5);
+            $t->SetFont(FF_ARIAL, FS_BOLD, 18);
+            $t->SetColor($textColor);
+            $t->Align('left', 'bottom');
+            $t->ParagraphAlign('left');
+            $graph->AddText($t);
+
+            $t = new Text("Sek", $priceCol + 45, $row_5);
+            $t->SetFont(FF_ARIAL, FS_BOLD, 12);
+            $t->SetColor($textColor);
+            $t->Align('left', 'bottom');
+            $t->ParagraphAlign('left');
+            $graph->AddText($t);
+        }
+
+        if ($sensors[$colType][$senNo] == "rain") {            $sensorName = $sensors[$colName][$senNo];
             $t          = new Text($sensorName, $col_2, $row_4);
             $t->SetFont(FF_ARIAL, FS_BOLD, 12);
             $t->SetColor($textColor);
@@ -299,54 +310,6 @@ $sensors       = getSensorNames($username, $password, $database, $serverHostName
             $graph->AddText($t);
         }
 
-        if ($sensors[$colType][$senNo] == "Wind") {
-            if ($sensors[$colName][$senNo] == "WiSpeed") {
-                $t = new Text("Vind", $col_3, $row_1);
-                $t->SetFont(FF_ARIAL, FS_BOLD, 12);
-                $t->SetColor($textColor);
-                $t->Align('left', 'bottom');
-                $t->ParagraphAlign('left');
-                $graph->AddText($t);
-
-                $sensorValue = number_format($currValue, 1) . '';
-                $t           = new Text($sensorValue, $col_3, $row_2);
-                $t->SetFont(FF_ARIAL, FS_BOLD, 18);
-                $t->SetColor($textColor);
-                $t->Align('left', 'bottom');
-                $t->ParagraphAlign('left');
-                $graph->AddText($t);
-
-                $t = new Text("m/s", $col_3 + 45, $row_2);
-                $t->SetFont(FF_ARIAL, FS_BOLD, 12);
-                $t->SetColor($textColor);
-                $t->Align('left', 'bottom');
-                $t->ParagraphAlign('left');
-                $graph->AddText($t);
-            }
-
-            if ($sensors[$colName][$senNo] == "WiSMax") {
-                $windMax = number_format($currValue, 1);
-            }
-
-            if ($sensors[$colName][$senNo] == "WiSDir") {
-                $sensorValue = number_format($currValue, 0);
-                $dirMap = [45=>'N', 90=>'NO', 135=>'O', 180=>'SO', 225=>'S', 270=>'SV', 315=>'V', 360=>'NV'];
-                $DirStr = '';
-                foreach ($dirMap as $limit => $label) {
-                    if ($sensorValue <= $limit) { $DirStr = $label; break; }
-                }
-                $windDir = $sensorValue . '° ' . $DirStr;
-            }
-
-            if ($windDir != "" && $windMax != "") {
-                $s = new Text($windDir . "/" . $windMax, $col_3, $row_3);
-                $s->SetFont(FF_ARIAL, FS_BOLD, 9);
-                $s->SetColor($textColor);
-                $s->Align('left', 'bottom');
-                $s->ParagraphAlign('left');
-                $graph->AddText($s);
-            }
-        }
         $senNo++;
     }
 

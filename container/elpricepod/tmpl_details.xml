@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Devices-Detail-Response xmlns="http://www.embeddeddatasystems.com/schema/owserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PollCount>#POLLCOUNT#</PollCount>
+<DevicesConnected>1</DevicesConnected>
+<LoopTime>#LOOPTIME#</LoopTime>
+<DevicesConnectedChannel1>1</DevicesConnectedChannel1>
+<DataErrorsChannel3>0</DataErrorsChannel3>
+<VoltageChannel3>4.76</VoltageChannel3>
+<VoltagePower>5.00</VoltagePower>
+<DeviceName>ELPRICE_SERVER</DeviceName>
+<HostName>ELPRICE_SERVER1</HostName>
+<DateTime>#TIME#</DateTime>
+<owd_ELPRICE Description="Electricity spot price now">
+    <Name>ELPRICE</Name>
+    <ROMId>#ROMID#</ROMId>
+    <Price Units="SEK/kWh">#PRICE#</Price>
+    <Version>1.04</Version>
+</owd_ELPRICE>
+</Devices-Detail-Response>

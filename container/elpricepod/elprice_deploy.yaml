@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elprice-deployment
+  labels:
+    app: elprice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elprice
+  template:
+    metadata:
+      labels:
+        app: elprice
+    spec:
+      containers:
+      - name: elprice
+        image: magnuscj/elprice:REPLACE
+        ports:
+          - containerPort: 80
+            name: elprice-port
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/bash", "-c", "ls -l"]
+          preStop:
+            exec:
+              command: ["/bin/bash", "-c", "ls -l"]
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ./elpriceLiveness.sh
+          initialDelaySeconds: 120
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elprice-service
+spec:
+  selector:
+    app: elprice
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: elprice-port
+      nodePort: 30169

@@ -1,0 +1,8 @@
+# generated at deploy time
+elprice_deploy.gen.yaml
+# runtime artifacts
+sensorlog.log
+electricityprice.csv
+details.xml
+__pycache__/
+*.pyc

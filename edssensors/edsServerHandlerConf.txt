@@ -22,4 +22,5 @@ owd_PI Wind
 owd_PI WindMax 
 owd_PI Direction
 owd_NUC Temperature 
+owd_ELPRICE Price
 
