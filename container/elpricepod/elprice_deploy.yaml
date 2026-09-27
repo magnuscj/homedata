@@ -39,7 +39,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: elprice-service
+  name: elprice-ext-nordenort-service
 spec:
   selector:
     app: elprice
