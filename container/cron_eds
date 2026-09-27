@@ -29,6 +29,7 @@
 #* * * * * /home/holken/nas/nuc/holken_data/holken_backup.sh 
 0 */1 * * * cd ../homedata/edssensors/; ./backup.sh
 */5 * * * * cd ../homedata/visualize/;php homeAutoGraphMob4.php >> /var/log/cron.log 2>&1
+*/5 * * * * cd ../homedata/visualize/;php homeAuto_elprice_graph.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_report_office.php >> /var/log/cron.log 2>&1
 */5 * * * * cd ../homedata/visualize/;php homeAuto_pedo_Bar.php >> /var/log/cron.log 2>&1

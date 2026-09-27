@@ -22,31 +22,47 @@
     	</div>
 
     	<div style="position: absolute; left: 405px; top: 222px;">
-         <img id="p6" src='picture//homeAuto_pedo_Bar.png' align ="top"/>
+         <img id="p6" src='picture//homeAuto_pedo_Bar.png' align ="top" style="cursor: pointer;" title="Click to switch pedometer / electricity price"/>
     	</div>
 
 <script>
+// p6 toggles between the pedometer bar graph and the electricity price graph.
+// The chosen view is remembered (localStorage) so it survives the periodic
+// auto-refresh and full page reloads.
+const p6Sources = ['picture/homeAuto_pedo_Bar.png', 'picture/homeAuto_elprice_graph.png'];
+let p6Index = parseInt(localStorage.getItem('p6Index') || '0', 10);
+if (isNaN(p6Index) || p6Index < 0 || p6Index >= p6Sources.length) p6Index = 0;
+
+const p6 = document.getElementById('p6');
+p6.addEventListener('click', () => {
+  p6Index = (p6Index + 1) % p6Sources.length;
+  localStorage.setItem('p6Index', String(p6Index));
+  refresh();
+});
+
 const imgs = [
   [p1, 'picture/homeAuto_report.png'],
   [p2, 'picture/wind.png'],
   [p3, 'picture/status.png'],
   [p5, 'picture/homeAutoGraphMob4.png'],
-  [p6, 'picture/homeAuto_pedo_Bar.png'],
 ];
 
 async function refresh() {
   const ts = '?t=' + Date.now();
+  // p6 uses the currently selected source; everything else is fixed.
+  const list = imgs.concat([[p6, p6Sources[p6Index]]]);
   const blobs = await Promise.all(
-    imgs.map(([, src]) => fetch(src + ts).then(r => r.blob()))
+    list.map(([, src]) => fetch(src + ts).then(r => r.blob()))
   );
   const urls = blobs.map(b => URL.createObjectURL(b));
-  imgs.forEach(([el], i) => {
+  list.forEach(([el], i) => {
     URL.revokeObjectURL(el.src);
     el.src = urls[i];
   });
 }
 
 setInterval(refresh, 300000);
+refresh();
 
 const canvas = document.getElementById('wdcanvas');
 const ctx = canvas.getContext('2d');
