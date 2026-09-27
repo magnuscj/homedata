@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Storage location for dumps/archives. Overridable for tests; defaults to the
+# in-pod PVC mount so production behaviour is unchanged.
+STORAGE_DIR="${STORAGE_DIR:-/usr/storage}"
+
 # Check that the DB has meaningful data before backing up.
 # Sum rows across ALL monthly measurement tables (table20*) rather than only the
 # current month: at the start of a new month the current table is near-empty,
@@ -14,10 +18,10 @@ if [[ -z "$ROWS" || "$ROWS" -lt 1000 ]]; then
   exit 0
 fi
 
-mysqldump -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig > /usr/storage/sensorconfig.sql
+mysqldump -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig > "$STORAGE_DIR"/sensorconfig.sql
 
-N_O_FILES=`ls /usr/storage/*.tar | wc -w`
-ARR=($(ls -tr /usr/storage/*.tar))
+N_O_FILES=`ls "$STORAGE_DIR"/*.tar | wc -w`
+ARR=($(ls -tr "$STORAGE_DIR"/*.tar))
 i=0
 
 echo $N_O_FILES
@@ -41,7 +45,7 @@ then
   done
 fi
 
-mysqldump -u dbuser -pkmjmkm54C# mydb > /usr/storage/test1.sql
-tar -czf /usr/storage/test1.tar /usr/storage/test1.sql
-rm -f /usr/storage/test1.sql
+mysqldump -u dbuser -pkmjmkm54C# mydb > "$STORAGE_DIR"/test1.sql
+tar -czf "$STORAGE_DIR"/test1.tar "$STORAGE_DIR"/test1.sql
+rm -f "$STORAGE_DIR"/test1.sql
 echo "Backup complete ($ROWS rows across monthly tables)"

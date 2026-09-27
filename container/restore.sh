@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Restore the database from the newest VALID backup in /usr/storage.
+# Storage location for backup archives. Overridable for tests; defaults to the
+# in-pod PVC mount so production behaviour is unchanged.
+STORAGE_DIR="${STORAGE_DIR:-/usr/storage}"
+
+# Restore the database from the newest VALID backup in $STORAGE_DIR.
 #
 # backup.sh rotates dumps so that test1.tar is always the newest and higher
 # numbers are progressively older (test10.tar oldest). We therefore try
@@ -12,14 +16,14 @@
 
 # Build the candidate list ordered newest -> oldest (numeric sort on the index).
 mapfile -t CANDIDATES < <(
-  ls /usr/storage/test*.tar 2>/dev/null \
+  ls "$STORAGE_DIR"/test*.tar 2>/dev/null \
     | sed -E 's#.*/test([0-9]+)\.tar#\1 &#' \
     | sort -n \
     | awk '{print $2}'
 )
 
 if [[ ${#CANDIDATES[@]} -eq 0 ]]; then
-  echo "No backup found in /usr/storage/, starting fresh"
+  echo "No backup found in $STORAGE_DIR/, starting fresh"
   echo "CREATE DATABASE IF NOT EXISTS mydb;" | mysql
   exit 0
 fi
@@ -67,5 +71,5 @@ for backup in "${CANDIDATES[@]}"; do
   fi
 done
 
-echo "ERROR: all backups in /usr/storage/ failed to restore" >&2
+echo "ERROR: all backups in $STORAGE_DIR/ failed to restore" >&2
 exit 1

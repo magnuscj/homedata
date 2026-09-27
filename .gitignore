@@ -6,3 +6,11 @@ container/eds_deploy.yaml
 /eds_deploy.yaml
 /scripts/humidity.py
 /scripts/__pycache__
+
+# test suite artifacts
+tests/.venv/
+tests/cpp/tinyxml2.o
+tests/cpp/test_stablehash
+tests/cpp/test_decode_xml
+tests/**/__pycache__/
+.pytest_cache/

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Fake `mysql` for shell tests. Records invocations and returns canned output
+# controlled by environment variables set by the test.
+#
+#   STUB_MYSQL_ROWS      -> value echoed for the row-count SELECT (backup.sh)
+#   STUB_MYSQL_NAMED     -> value echoed for the "named rows" SELECT (createSensorConfig.sh)
+#   STUB_MYSQL_LOG       -> file to append the received SQL/args to (optional)
+#
+# Any DDL/DML (CREATE/INSERT/DROP/import via stdin) simply succeeds (exit 0).
+
+log() { [[ -n "${STUB_MYSQL_LOG:-}" ]] && printf '%s\n' "$*" >>"$STUB_MYSQL_LOG"; }
+
+# Join args for logging/inspection.
+ALL_ARGS="$*"
+log "mysql $ALL_ARGS"
+
+# Capture any -e "<sql>" query.
+QUERY=""
+prev=""
+for a in "$@"; do
+  if [[ "$prev" == "-e" ]]; then QUERY="$a"; fi
+  prev="$a"
+done
+
+# If no -e query, mysql is reading SQL from stdin (imports / piped statements).
+if [[ -z "$QUERY" ]]; then
+  if [ ! -t 0 ]; then
+    STDIN_SQL="$(cat 2>/dev/null)"
+    [[ -n "${STUB_MYSQL_LOG:-}" && -n "$STDIN_SQL" ]] && printf 'stdin: %s\n' "$STDIN_SQL" >>"$STUB_MYSQL_LOG"
+  fi
+  exit 0
+fi
+
+log "query: $QUERY"
+
+shopt -s nocasematch
+case "$QUERY" in
+  *"SUM(table_rows)"*|*"table_rows"*)
+    echo "${STUB_MYSQL_ROWS:-0}"; exit 0 ;;
+  *"sensorname <> 'name'"*|*"sensorname <> \"name\""*)
+    echo "${STUB_MYSQL_NAMED:-0}"; exit 0 ;;
+  "SELECT 1"*)
+    echo "1"; exit 0 ;;
+esac
+
+# Default: DDL/DML succeeds silently.
+exit 0

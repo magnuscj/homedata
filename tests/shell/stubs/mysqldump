@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fake `mysqldump` for shell tests. Emits a small canned SQL dump to stdout
+# (or to the redirected file) so backup.sh produces a non-empty artifact.
+echo "-- fake mysqldump output"
+echo "INSERT INTO sensorconfig VALUES (1,'123','Ute','blue','True','temp');"
+exit 0

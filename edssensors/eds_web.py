@@ -60,17 +60,23 @@ tr:hover td{{background:#1e1e1e}}
 </table></body></html>
 """
 
-while True:
-    try:
-        with open(OUTPUT_FILE) as f:
-            buf = f.read()
-        parts = buf.split(FRAME_SEP)
-        if len(parts) >= 2:
-            frame = ANSI.sub("", parts[-2])
-            html = HTML.format(ts=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                               rows=to_html(frame))
-            with open(HTML_FILE, "w") as f:
-                f.write(html)
-    except FileNotFoundError:
-        pass
-    time.sleep(5)
+
+def main():
+    while True:
+        try:
+            with open(OUTPUT_FILE) as f:
+                buf = f.read()
+            parts = buf.split(FRAME_SEP)
+            if len(parts) >= 2:
+                frame = ANSI.sub("", parts[-2])
+                html = HTML.format(ts=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                   rows=to_html(frame))
+                with open(HTML_FILE, "w") as f:
+                    f.write(html)
+        except FileNotFoundError:
+            pass
+        time.sleep(5)
+
+
+if __name__ == "__main__":
+    main()

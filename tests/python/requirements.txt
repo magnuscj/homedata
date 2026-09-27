@@ -1,0 +1,5 @@
+# Python test dependencies for the homedata test suite.
+# Install into the project-local venv used by run_tests.sh:
+#   python3 -m venv tests/.venv
+#   tests/.venv/bin/pip install -r tests/python/requirements.txt
+pytest==9.1.1
