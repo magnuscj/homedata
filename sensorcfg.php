@@ -23,13 +23,19 @@ if (isset($_GET['delete'])) {
 
 // --- 2. SPARA ÄNDRINGAR ---
 if (isset($_POST['save'])) {
+    // Canonicalise the sensor type to lowercase before storing. Reports branch
+    // on `type` with case-sensitive comparisons ("price", "temp", ...), so a
+    // stray-cased value entered here (e.g. "Price") would silently break tile
+    // rendering. Normalising on write keeps the DB clean; getSensorNames() also
+    // lowercases on read as defence in depth.
+    $type = strtolower(trim($_POST['type']));
     $stmt = $conn->prepare("UPDATE sensorconfig SET sensorid=?, sensorname=?, color=?, visible=?, type=? WHERE id=?");
     $stmt->bind_param("sssssi",
         $_POST['sensorid'],
         $_POST['sensorname'],
         $_POST['color'],
         $_POST['visible'],
-        $_POST['type'],
+        $type,
         $_POST['id']
     );
     $stmt->execute();

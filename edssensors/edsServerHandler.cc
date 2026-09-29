@@ -154,9 +154,13 @@ void edsServerHandler::decodeXml(const std::string& xmldoc)
       std::string hashInput = sens->id + metricType + sens->type;
       sens->id   = stableHash(hashInput);
       sens->unit = metricType;
-      auto cfg = sensorConfigurations[sens->id];
-      if (!cfg) {
-        // Unknown sensor: insert a new config row keyed on the FNV sensorid.
+      // Look up WITHOUT mutating the map. Using operator[] here would
+      // auto-insert a null entry for an unknown key as a side effect.
+      auto it = sensorConfigurations.find(sens->id);
+      if (it == sensorConfigurations.end()) {
+        // Unknown sensor: insert a new placeholder config row keyed on the FNV
+        // sensorid. This is a non-clobbering upsert (see writeSensorConfiguration)
+        // so it can never demote a name assigned by another writer.
         this->writeSensorConfiguration(sens->id);
       }
       sensors.push_back(std::move(sens));
@@ -312,14 +316,20 @@ void edsServerHandler::writeSensorConfiguration(std::string sensorid)
   string dbName   = "mydb";
   string tbName   = "sensorconfig";
 
-  state = mysql_query(dbConnection, string("CREATE TABLE "+ dbName+"." + tbName +
+  state = mysql_query(dbConnection, string("CREATE TABLE IF NOT EXISTS "+ dbName+"." + tbName +
           " (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sensorid TEXT NOT NULL,\
           sensorname TEXT NOT NULL, color TEXT NOT NULL,\
           visible TEXT NOT NULL, type TEXT NOT NULL)").c_str());
 
+  // Non-clobbering insert: create a placeholder row only if this sensorid has
+  // no row yet. If a row already exists (named OR placeholder) the ON DUPLICATE
+  // KEY clause is a no-op (sensorname = sensorname), so the collector can NEVER
+  // overwrite or demote a name assigned elsewhere. Relies on UNIQUE(sensorid)
+  // (added by migrate_sensorconfig_unique.sql); if that key is absent the
+  // INSERT still succeeds but duplicate placeholder rows become possible.
   string query = "INSERT INTO " + dbName + "." + tbName +  " (sensorid,sensorname,\
                  color,visible, type) VALUES('" + sensorid + "','name','black',\
-                 'false', 'default'" + ")";
+                 'false', 'default') ON DUPLICATE KEY UPDATE sensorname = sensorname";
   state = mysql_query(dbConnection, query.c_str());
 }
 

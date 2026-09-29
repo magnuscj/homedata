@@ -157,7 +157,14 @@ function getSensorNames($username, $password, $database, $serverHostName) {
             $names[]   = $myrow['sensorname'];
             $color[]   = $myrow['color'];
             $visible[] = $myrow['visible'];
-            $type[]    = $myrow['type'];
+            // Canonicalise the sensor type to lowercase at the single source of
+            // truth. The `type` column is free text (set by the collector's
+            // 'default', the SEED, or the sensorcfg.php UI) and every report
+            // branches on it with case-sensitive == comparisons (e.g. "price",
+            // "temp", "power"). A stray-cased value like "Price" would silently
+            // fail to render its tile. Normalising here fixes ALL consumers at
+            // once and prevents the whole class of bug going forward.
+            $type[]    = strtolower(trim($myrow['type']));
         }
         mysqli_free_result($result);
     }

@@ -28,11 +28,36 @@ setup() {
 
 @test "backup: creates archive when row count is sufficient" {
   export STUB_MYSQL_ROWS=5000
+  export STUB_MYSQL_NAMED=30
+  export STUB_MYSQL_PLACEHOLDERS=5
   run bash "$REPO_ROOT/container/backup.sh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Backup complete"* ]]
   [ -f "$STORAGE_DIR/test1.tar" ]
   [ -f "$STORAGE_DIR/sensorconfig.sql" ]
+}
+
+@test "backup: skips sensorconfig.sql dump when table is degenerate (placeholders >= named)" {
+  export STUB_MYSQL_ROWS=5000
+  export STUB_MYSQL_NAMED=10
+  export STUB_MYSQL_PLACEHOLDERS=30
+  run bash "$REPO_ROOT/container/backup.sh"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Skipping sensorconfig.sql dump"* ]]
+  # The tar archive is still produced (measurements are fine), but the polluted
+  # sensorconfig seed must NOT have been persisted to the PVC.
+  [ -f "$STORAGE_DIR/test1.tar" ]
+  [ ! -f "$STORAGE_DIR/sensorconfig.sql" ]
+}
+
+@test "backup: skips sensorconfig.sql dump when there are no named rows" {
+  export STUB_MYSQL_ROWS=5000
+  export STUB_MYSQL_NAMED=0
+  export STUB_MYSQL_PLACEHOLDERS=0
+  run bash "$REPO_ROOT/container/backup.sh"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Skipping sensorconfig.sql dump"* ]]
+  [ ! -f "$STORAGE_DIR/sensorconfig.sql" ]
 }
 
 @test "backup: rotates and drops oldest when 10 archives already present" {

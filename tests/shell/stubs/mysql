@@ -37,6 +37,9 @@ shopt -s nocasematch
 case "$QUERY" in
   *"SUM(table_rows)"*|*"table_rows"*)
     echo "${STUB_MYSQL_ROWS:-0}"; exit 0 ;;
+  *"sensorname = 'name'"*|*"sensorname = \"name\""*)
+    # placeholder-count query (backup.sh guard)
+    echo "${STUB_MYSQL_PLACEHOLDERS:-0}"; exit 0 ;;
   *"sensorname <> 'name'"*|*"sensorname <> \"name\""*)
     echo "${STUB_MYSQL_NAMED:-0}"; exit 0 ;;
   "SELECT 1"*)

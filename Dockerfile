@@ -100,6 +100,11 @@ RUN touch /usr/storage/txt.txt
 COPY container/createSensorConfig.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/createSensorConfig.sh
 
+# The sensorid uniqueness migration must sit next to createSensorConfig.sh so
+# its SCRIPT_DIR-relative lookup ($SCRIPT_DIR/migrate_sensorconfig_unique.sql)
+# resolves inside the image (the script is copied to /homedata/edssensors).
+COPY container/migrate_sensorconfig_unique.sql homedata/edssensors
+
 COPY container/restore.sh homedata/edssensors
 RUN chmod +x homedata/edssensors/restore.sh
 

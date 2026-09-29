@@ -18,7 +18,21 @@ if [[ -z "$ROWS" || "$ROWS" -lt 1000 ]]; then
   exit 0
 fi
 
-mysqldump -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig > "$STORAGE_DIR"/sensorconfig.sql
+# Persist the sensorconfig seed ONLY if the live table looks healthy. Otherwise
+# a transiently-polluted table (many placeholder 'name' rows, e.g. right after
+# the collector auto-created rows for new sensorids) would be dumped over the
+# PVC seed and then faithfully reloaded on the next restart — which is exactly
+# how real names got demoted. Refuse to persist a degenerate table so the
+# previous good seed on the PVC is kept instead.
+NAMED=$(mysql -u dbuser -pkmjmkm54C# -N -e \
+  "SELECT COUNT(*) FROM mydb.sensorconfig WHERE sensorname <> 'name'" 2>/dev/null)
+PLACEHOLDERS=$(mysql -u dbuser -pkmjmkm54C# -N -e \
+  "SELECT COUNT(*) FROM mydb.sensorconfig WHERE sensorname = 'name'" 2>/dev/null)
+if [[ -z "$NAMED" || "$NAMED" -lt 1 || ( -n "$PLACEHOLDERS" && "$PLACEHOLDERS" -ge "$NAMED" ) ]]; then
+  echo "Skipping sensorconfig.sql dump — table looks degenerate (named=$NAMED placeholders=$PLACEHOLDERS); keeping existing PVC seed"
+else
+  mysqldump -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig > "$STORAGE_DIR"/sensorconfig.sql
+fi
 
 N_O_FILES=`ls "$STORAGE_DIR"/*.tar | wc -w`
 ARR=($(ls -tr "$STORAGE_DIR"/*.tar))
