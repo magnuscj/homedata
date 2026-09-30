@@ -7,22 +7,54 @@ $db   = "mydb";
 
 require_once __DIR__ . '/jpgraph_colors.php';
 
+// --- CSRF + method hardening ---------------------------------------------
+// This page mutates the DB. It was previously reachable publicly (via the
+// external port-forward) and performed DELETE/UPDATE on unauthenticated GET
+// requests — a crawler (ClaudeBot) followed the ?delete=/?edit= links on
+// 2026-09-30 and wiped sensorconfig. Mutations now REQUIRE a POST carrying a
+// valid per-session CSRF token, so no amount of link-crawling (GET) can change
+// data. Apache additionally denies this file from being served externally
+// (see container/apache-admin-deny.conf); this is defence in depth.
+session_start();
+if (empty($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
+$CSRF = $_SESSION['csrf'];
+
+function require_post_csrf() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST'
+        || empty($_POST['csrf'])
+        || !hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'])) {
+        http_response_code(403);
+        exit('Forbidden: invalid or missing CSRF token.');
+    }
+}
+
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) die("Anslutning misslyckades: " . $conn->connect_error);
 
-// --- 1. RADERA RAD ---
-if (isset($_GET['delete'])) {
+function refresh_pvc_seed() {
+    // Persist the (healthy) table to the PVC seed after a legitimate change.
+    $dump = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
+    if ($dump !== null && strpos($dump, "INSERT INTO") !== false) {
+        file_put_contents('/usr/storage/sensorconfig.sql', $dump);
+    }
+}
+
+// --- 1. RADERA RAD (POST + CSRF only) ---
+if (isset($_POST['delete'])) {
+    require_post_csrf();
     $stmt = $conn->prepare("DELETE FROM sensorconfig WHERE id = ?");
-    $stmt->bind_param("i", $_GET['delete']);
+    $stmt->bind_param("i", $_POST['delete']);
     $stmt->execute();
-    $dump_result = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
-    file_put_contents('/usr/storage/sensorconfig.sql', $dump_result);
+    refresh_pvc_seed();
     header("Location: sensorcfg.php");
     exit;
 }
 
-// --- 2. SPARA ÄNDRINGAR ---
+// --- 2. SPARA ÄNDRINGAR (POST + CSRF only) ---
 if (isset($_POST['save'])) {
+    require_post_csrf();
     // Canonicalise the sensor type to lowercase before storing. Reports branch
     // on `type` with case-sensitive comparisons ("price", "temp", ...), so a
     // stray-cased value entered here (e.g. "Price") would silently break tile
@@ -39,13 +71,12 @@ if (isset($_POST['save'])) {
         $_POST['id']
     );
     $stmt->execute();
-    $dump_result = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
-    file_put_contents('/usr/storage/sensorconfig.sql', $dump_result);
+    refresh_pvc_seed();
     header("Location: sensorcfg.php");
     exit;
 }
 
-$edit_id = $_GET['edit'] ?? null;
+$edit_id = $_GET['edit'] ?? null;  // read-only view toggle; safe as GET
 $result = $conn->query("SELECT * FROM sensorconfig");
 ?>
 
@@ -96,6 +127,7 @@ $result = $conn->query("SELECT * FROM sensorconfig");
                 <tr>
                     <?php if ($edit_id == $row['id']): ?>
                         <form method="POST">
+                            <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($CSRF); ?>">
                             <td><?php echo $row['id']; ?><input type="hidden" name="id" value="<?php echo $row['id']; ?>"></td>
                             <td><input type="text" name="sensorid"   value="<?php echo htmlspecialchars($row['sensorid']); ?>"></td>
                             <td><input type="text" name="sensorname" value="<?php echo htmlspecialchars($row['sensorname']); ?>"></td>
@@ -135,9 +167,12 @@ $result = $conn->query("SELECT * FROM sensorconfig");
                         <td><?php echo htmlspecialchars($row['type']); ?></td>
                         <td>
                             <a href="?edit=<?php echo $row['id']; ?>" class="btn btn-edit">Change</a>
-                            <a href="?delete=<?php echo $row['id']; ?>"
-                               class="btn btn-delete"
-                               onclick="return confirm('Are you sure you want to remove this sensor?');">Remove</a>
+                            <form method="POST" style="display:inline"
+                                  onsubmit="return confirm('Are you sure you want to remove this sensor?');">
+                                <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($CSRF); ?>">
+                                <input type="hidden" name="delete" value="<?php echo $row['id']; ?>">
+                                <button type="submit" class="btn btn-delete">Remove</button>
+                            </form>
                         </td>
                     <?php endif; ?>
                 </tr>

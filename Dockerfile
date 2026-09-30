@@ -83,6 +83,11 @@ COPY ips.txt /usr/storage/ips/ips.txt
 COPY ips.txt /img/ips.txt
 COPY create_ips.php /var/www/html/
 COPY sensorcfg.php /var/www/html/
+
+# Deny serving the DB-mutating admin pages (defence in depth; a crawler wiped
+# sensorconfig via the public port-forward on 2026-09-30). Placed in
+# conf-enabled so Apache loads it at startup — survives pod restarts.
+COPY container/apache-admin-deny.conf /etc/apache2/conf-enabled/zz-block-admin.conf
 COPY jpgraph_colors.php /var/www/html/
 RUN chown www-data:www-data /usr/storage/ips/ips.txt
 
