@@ -53,3 +53,20 @@ else
 fi
 
 echo "Done. Context: $(kubectl config current-context 2>/dev/null), tag: ${TAG}"
+
+# --- Image cleanup: keep only the 5 most-recent ${IMAGE} images ----------
+# Prevents unbounded image accumulation from filling the host disk (the eds
+# series once filled holken2 to 100% and crashed mysqld, 2026-09-30). Docker
+# refuses to remove an in-use image, so the running pod is safe even if its
+# tag falls outside the newest 5.
+echo "Pruning old ${IMAGE} images (keeping newest 5)..."
+docker images "${IMAGE}" --format '{{.Tag}}\t{{.CreatedAt}}' \
+  | sort -k2 -r \
+  | tail -n +6 \
+  | awk '{print $1}' \
+  | while read -r tag; do
+      echo "  removing ${IMAGE}:${tag}"
+      docker rmi "${IMAGE}:${tag}" 2>/dev/null || echo "    (in use or already gone; skipped)"
+    done
+echo "Pruning dangling image layers..."
+docker image prune -f 2>&1 | tail -1
