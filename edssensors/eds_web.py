@@ -10,8 +10,10 @@ FRAME_SEP   = "\x1b[2J\x1b[H"
 ANSI        = re.compile(r'\x1B\[[0-9;]*[mJH]')
 
 # DB credentials (match edssensors/edsServerHandlerConf.txt: local mysql, dbuser).
+# Password from the DB_PASSWORD env (injected from the 'eds-db' Secret).
+import os
 DB_USER = "dbuser"
-DB_PWD  = "kmjmkm54C#"
+DB_PWD  = os.environ.get("DB_PASSWORD", "")
 DB_NAME = "mydb"
 
 

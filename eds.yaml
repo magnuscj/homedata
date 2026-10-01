@@ -61,6 +61,26 @@ spec:
         image: magnuscj/eds:REPLACE
         imagePullPolicy: IfNotPresent
         command: ["./start.sh"]
+        env:
+          # DB password is injected from the 'eds-db' Secret (created out-of-band
+          # per cluster: kubectl create secret generic eds-db --from-literal=...).
+          # start.sh uses it to CREATE USER and to render config.txt /
+          # edsServerHandlerConf.txt at boot, so the secret is never in git or
+          # the image. See .kiro skill "secrets" section.
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: eds-db
+                key: db-password
+          # SMTP password for the collector's mail alerts. Optional: marked
+          # optional so the pod still starts if the key is absent (SMTP just
+          # won't authenticate). Same 'eds-db' Secret.
+          - name: SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: eds-db
+                key: smtp-password
+                optional: true
         ports:
           - containerPort: 80
             name: eds-cont-port

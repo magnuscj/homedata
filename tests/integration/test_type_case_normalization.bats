@@ -47,7 +47,8 @@ SQL
   cat > /tmp/type_case_probe.php <<'PHP'
 <?php
 require_once('/tmp/homeFunctions_test.php');
-$s = getSensorNames('dbuser','kmjmkm54C#','type_case_test','127.0.0.1');
+$pw = getenv('DB_PASSWORD') ?: '';
+$s = getSensorNames('dbuser', $pw, 'type_case_test', '127.0.0.1');
 $colName = 1; $colType = 4;
 foreach ($s[$colName] as $k => $name) {
   echo $name . '=' . $s[$colType][$k] . "\n";

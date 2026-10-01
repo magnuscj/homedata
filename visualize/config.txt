@@ -1,6 +1,6 @@
 DBIP:127.0.0.1
 DBNAME:mydb
-DBPSW:kmjmkm54C#
+DBPSW:__DB_PASSWORD__
 DBUSN:dbuser
 SLEEP:300
 PATH:/var/www/html/picture/

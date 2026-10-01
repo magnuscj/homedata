@@ -2,7 +2,9 @@
 // Inställningar för databasen
 $host = "127.0.0.1";
 $user = "dbuser";
-$pass = "kmjmkm54C#";
+// DB password comes from the DB_PASSWORD env (injected from the 'eds-db'
+// Secret and exported by start.sh for the apache/PHP process). Never hardcoded.
+$pass = getenv('DB_PASSWORD') ?: '';
 $db   = "mydb";
 
 require_once __DIR__ . '/jpgraph_colors.php';
@@ -35,7 +37,12 @@ if ($conn->connect_error) die("Anslutning misslyckades: " . $conn->connect_error
 
 function refresh_pvc_seed() {
     // Persist the (healthy) table to the PVC seed after a legitimate change.
-    $dump = shell_exec("sh -c '/usr/bin/mysqldump -h 127.0.0.1 -u dbuser -pkmjmkm54C# --no-create-info mydb sensorconfig 2>&1'");
+    // Pass the password via MYSQL_PWD (from the DB_PASSWORD env) so it is not
+    // on the command line / process list and not hardcoded.
+    $pw = getenv('DB_PASSWORD') ?: '';
+    $cmd = 'MYSQL_PWD=' . escapeshellarg($pw)
+         . ' /usr/bin/mysqldump -h 127.0.0.1 -u dbuser --no-create-info mydb sensorconfig 2>&1';
+    $dump = shell_exec('sh -c ' . escapeshellarg($cmd));
     if ($dump !== null && strpos($dump, "INSERT INTO") !== false) {
         file_put_contents('/usr/storage/sensorconfig.sql', $dump);
     }

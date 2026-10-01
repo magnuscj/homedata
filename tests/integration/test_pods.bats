@@ -61,13 +61,13 @@ http_code() {  # $1 = url; prints HTTP status, or 000 on connection failure
 @test "eds: MySQL reachable inside pod" {
   pod="$(pod_for eds)"
   [ -n "$pod" ]
-  kubectl exec "$pod" -- bash -c "mysql -u dbuser -pkmjmkm54C# -e 'SELECT 1'"
+  kubectl exec "$pod" -- bash -c "mysql -e 'SELECT 1'"
 }
 
 @test "eds: sensor tables present" {
   pod="$(pod_for eds)"
   [ -n "$pod" ]
-  run kubectl exec "$pod" -- bash -c "mysql -u dbuser -pkmjmkm54C# mydb -e 'SHOW TABLES'"
+  run kubectl exec "$pod" -- bash -c "mysql mydb -e 'SHOW TABLES'"
   [ "$status" -eq 0 ]
   [ -n "$output" ]
 }

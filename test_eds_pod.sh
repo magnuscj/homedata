@@ -30,8 +30,8 @@ check "apache2 running"    kexec "pgrep apache2"
 check "mysqld running"     kexec "pgrep mysqld"
 
 # Task 2: MySQL
-check "MySQL reachable"      kexec "mysql -u dbuser -pkmjmkm54C# -e 'SELECT 1'"
-check "sensor tables present" kexec "mysql -u dbuser -pkmjmkm54C# mydb -e 'SHOW TABLES' | grep -q ."
+check "MySQL reachable"      kexec "mysql -e 'SELECT 1'"
+check "sensor tables present" kexec "mysql mydb -e 'SHOW TABLES' | grep -q ."
 
 # Task 3: XML freshness (hueTemps writes every 10 min, allow 15)
 check "details.xml updated <15min" kexec "find /mnt/ramdisk -name details.xml -mmin -15 | grep -q ."
