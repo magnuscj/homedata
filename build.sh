@@ -4,10 +4,17 @@ docker image build --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) -t magnuscj
 kubectl get deployments | grep -q eds-deployment  && DEP="true" || DEP="false"
 
 if [[ "$DEP" == "true" ]]
-then 
-  kubectl set image deployments/eds-deployment  eds=magnuscj/eds:$1
+then
+  # Regenerate the manifest with the new tag and APPLY it. Applying (not just
+  # `kubectl set image`) is required so that ANY change in eds.yaml beyond the
+  # image — env/secretKeyRef, volumes, probes — actually reaches the cluster.
+  # (2026-10-01: a set-image-only deploy silently dropped the new DB_PASSWORD
+  # secretKeyRef, crash-looping the pod on missing env.) apply also updates the
+  # image, so the explicit set image is redundant but kept as a harmless no-op.
   cp eds.yaml eds_deploy.yaml
   sed -i "s/REPLACE/$1/g" eds_deploy.yaml
+  kubectl apply -f eds_deploy.yaml
+  kubectl set image deployments/eds-deployment eds=magnuscj/eds:$1
 
 else
   cp eds.yaml eds_deploy.yaml
