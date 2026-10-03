@@ -149,16 +149,20 @@ do {
         $range = $max - $min;
         if ($range <= 0) $range = 1;
 
-        // Four equal price bands across [min, max], as a GRAYSCALE ramp:
-        // light gray = cheapest quarter ... dark gray = dearest quarter.
-        // jpgraph 'gray:<intensity>' — higher intensity = lighter.
+        // Four equal price bands across [min, max], as an AQUAMARINE ramp from
+        // aquamarine1 (lightest = cheapest quarter) to aquamarine3 (darkest =
+        // dearest quarter). RGB from jpgraph_colors.php:
+        //   aquamarine1 #7fffd4 (127,255,212)
+        //   aquamarine2 #76eec6 (118,238,198)
+        //   aquamarine3 #66cdaa (102,205,170)
+        // Band 3 is an even interpolation between aquamarine2 and aquamarine3.
         $barcolors = [];
         foreach ($prices as $p) {
             $q = ($p - $min) / $range;
-            if      ($q < 0.25) $barcolors[] = 'gray:1.5';   // lightest
-            elseif  ($q < 0.50) $barcolors[] = 'gray:1.15';
-            elseif  ($q < 0.75) $barcolors[] = 'gray:0.9';
-            else                $barcolors[] = 'gray:0.7';   // darkest (kept above the black bg)
+            if      ($q < 0.25) $barcolors[] = '#7fffd4';   // aquamarine1 (lightest)
+            elseif  ($q < 0.50) $barcolors[] = '#76eec6';   // aquamarine2
+            elseif  ($q < 0.75) $barcolors[] = '#6eddb8';   // between a2 and a3
+            else                $barcolors[] = '#66cdaa';   // aquamarine3 (darkest)
         }
 
         // Left axis: price (bars). Right axis (Y2): consumption kWh (curve).
