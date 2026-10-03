@@ -161,14 +161,21 @@ do {
         $maxC = max($consume);
         if ($maxC <= 0) $maxC = 1;
         $graph->SetY2Scale('lin', 0, $maxC * 1.15);
+        // Draw Y2 plots (the consumption line) AFTER the Y1 bars, so the curve
+        // renders IN FRONT of the bars. jpgraph defaults y2orderback=true, which
+        // strokes Y2 first (behind the bars) — exactly what we must avoid.
+        $graph->SetY2OrderBack(false);
 
         $graph->xgrid->Show(true);
         $graph->xaxis->SetColor('black:1.5', 'gray');
         $graph->xaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->xaxis->SetTickLabels($labels);
-        // Label/tick every 2nd hour for readability (24 hourly bars).
+        // A tick every 2 hours, and a label on EVERY tick. NOTE: these two
+        // settings COMPOUND (label shows every tick_step*label_step-th point),
+        // so label_step must be 1 to get a label every 2nd hour — not 2 (which
+        // would yield every 4th).
         $graph->xaxis->SetTextTickInterval(2);
-        $graph->xaxis->SetTextLabelInterval(2);
+        $graph->xaxis->SetTextLabelInterval(1);
 
         $graph->yaxis->SetColor('gray');
         $graph->yaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
