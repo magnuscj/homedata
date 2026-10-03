@@ -199,11 +199,11 @@ do {
         $graph->yaxis->SetTitleMargin(28);
         $graph->yaxis->SetTitleSide(SIDE_LEFT);
 
-        $graph->y2axis->SetColor('lightblue');
+        $graph->y2axis->SetColor('white');
         $graph->y2axis->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->y2axis->title->Set('kWh');
         $graph->y2axis->title->SetFont(FF_VERDANA, FS_BOLD, 8);
-        $graph->y2axis->title->SetColor('lightblue');
+        $graph->y2axis->title->SetColor('white');
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
@@ -215,7 +215,7 @@ do {
         // Consumption curve in front of the bars (SetY2OrderBack(false) above).
         // With 96 points, drop the per-point markers for a clean smooth line.
         $lplot = new LinePlot($consume);
-        $lplot->SetColor('lightblue');
+        $lplot->SetColor('white');
         $lplot->SetWeight(2);
         $graph->AddY2($lplot);
     }
