@@ -49,11 +49,15 @@ function getLast24h($username, $password, $database, $serverHostName)
     $priceAvg = array_fill(0, HOURS_BACK, 0.0);
     $consume  = array_fill(0, HOURS_BACK, 0.0);
 
+    // Buckets anchored to NOW: the window is exactly [now-24h, now). Bucket i
+    // covers [now-(24-i)h, now-(23-i)h); the LAST bucket ends exactly at now,
+    // the FIRST begins exactly 24h ago. (Anchoring to the top of the current
+    // hour instead would drop the earliest hour and misalign the axis.)
     $now        = time();
-    $hourStart0 = strtotime(date('Y-m-d H:00:00', $now)) - (HOURS_BACK - 1) * 3600;
+    $hourStart0 = $now - HOURS_BACK * 3600;      // start = now - 24h
 
     for ($i = 0; $i < HOURS_BACK; $i++) {
-        $labels[$i] = date('H', $hourStart0 + $i * 3600);
+        $labels[$i] = date('H', $hourStart0 + $i * 3600);  // label = bucket start hour
     }
 
     $priceId = getSensorId('Pris', $username, $password, $database, $serverHostName);
@@ -150,9 +154,15 @@ do {
         }
 
         // Left axis: price. Right axis (Y2): consumption kWh.
+        // Keep the consumption curve in the TOP THIRD of the plot (above the
+        // price bars) regardless of its dynamic range: offset the Y2 range so
+        // consumption=0 maps to ~2/3 height and the max maps to the top. With
+        // range [-2*maxC, maxC], value v sits at (v+2*maxC)/(3*maxC) of height,
+        // i.e. 0 -> 0.667, maxC -> 1.0 — the whole curve rides above the bars.
         $graph->SetScale('textlin', 0, ceil($max * 10) / 10);
         $maxC = max($consume);
-        $graph->SetY2Scale('lin', 0, ($maxC > 0 ? $maxC * 1.15 : 1));
+        if ($maxC <= 0) $maxC = 1;
+        $graph->SetY2Scale('lin', -2 * $maxC, $maxC);
 
         $graph->xgrid->Show(true);
         $graph->xaxis->SetColor('black:1.5', 'gray');
@@ -175,6 +185,11 @@ do {
         $graph->y2axis->title->Set('kWh');
         $graph->y2axis->title->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->y2axis->title->SetColor('lightblue');
+        // The Y2 scale is intentionally offset (negative floor) to push the
+        // consumption curve into the top third, so its numeric ticks are not
+        // meaningful — hide them and keep just the 'kWh' title + the curve shape.
+        $graph->y2axis->HideLabels();
+        $graph->y2axis->HideTicks();
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
