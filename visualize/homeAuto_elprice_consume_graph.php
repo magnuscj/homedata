@@ -156,9 +156,9 @@ do {
         foreach ($prices as $p) {
             $q = ($p - $min) / $range;
             if      ($q < 0.25) $barcolors[] = 'gray:1.5';   // lightest
-            elseif  ($q < 0.50) $barcolors[] = 'gray:1.1';
-            elseif  ($q < 0.75) $barcolors[] = 'gray:0.75';
-            else                $barcolors[] = 'gray:0.45';  // darkest
+            elseif  ($q < 0.50) $barcolors[] = 'gray:1.15';
+            elseif  ($q < 0.75) $barcolors[] = 'gray:0.9';
+            else                $barcolors[] = 'gray:0.7';   // darkest (kept above the black bg)
         }
 
         // Left axis: price (bars). Right axis (Y2): consumption kWh (curve).
