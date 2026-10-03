@@ -126,24 +126,19 @@ do {
 
     list($labels, $prices, $consume) = getLast24h($username, $password, $database, $serverHostName);
 
-    // Width 410 (vs 395 for the other graphs) to give the right (Y2) side room
-    // for the 'kWh' title to sit to the RIGHT of the tick numbers. The right
-    // margin grows by the same amount as the width, so the PLOT position is
-    // unchanged (right edge stays at 410-55 = 355, same as 395-40).
-    $graph = new Graph(410, 219);
+    // Same size (395x219) as the other toggle graphs.
+    $graph = new Graph(395, 219);
     $graph->ClearTheme();
     $graph->SetColor('gray:0.43');
     $graph->SetBackgroundGradient('black:1.1', 'black:1.1', GRAD_HOR, BGRAD_MARGIN);
-    // Extra right margin for the secondary (consumption) axis + its 'kWh' title.
-    // Right margin = 55 (= 40 + the 15px added to the width) keeps the plot's
-    // right edge at x=355, unchanged from the 395-wide layout.
-    $graph->SetMargin(40, 55, 10, 25);
+    // Right margin leaves room for the Y2 (consumption) axis + its 'kWh' label.
+    $graph->SetMargin(40, 40, 10, 25);
 
     $havePrice = (count(array_filter($prices, fn($p) => $p > 0)) > 0);
 
     if (!$havePrice) {
         $graph->SetScale('textlin', 0, 1);
-        $t = new Text("Ingen prisdata", 205, 100);
+        $t = new Text("Ingen prisdata", 197, 100);
         $t->SetFont(FF_ARIAL, FS_BOLD, 10);
         $t->SetColor('gray:1.2');
         $t->Align('center', 'center');
@@ -206,12 +201,9 @@ do {
 
         $graph->y2axis->SetColor('white');
         $graph->y2axis->SetFont(FF_VERDANA, FS_BOLD, 8);
-        $graph->y2axis->title->Set('kWh');
-        $graph->y2axis->title->SetFont(FF_VERDANA, FS_BOLD, 8);
-        $graph->y2axis->title->SetColor('white');
-        // Push the 'kWh' title right of the tick numbers, but keep it inside
-        // the 40px right margin so it is not clipped at the image edge.
-        $graph->y2axis->SetTitleMargin(2);
+        // NOTE: the 'kWh' label is NOT the Y2 axis title (its margin direction
+        // is confusing). It is drawn as a free Text at an explicit position
+        // below, so "move right" simply means a larger x ($kwhLabelX).
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
@@ -226,9 +218,21 @@ do {
         $lplot->SetColor('white');
         $lplot->SetWeight(2);
         $graph->AddY2($lplot);
+
+        // 'kWh' label for the right axis, drawn free so its horizontal position
+        // is explicit. Increase $kwhLabelX to move it further RIGHT (canvas is 395
+        // wide; keep <= ~392 so it is not clipped). Rotated 90 deg to read
+        // vertically like an axis title.
+        $kwhLabelX = 388;
+        $tk = new Text('kWh', $kwhLabelX, 110);
+        $tk->SetFont(FF_VERDANA, FS_BOLD, 8);
+        $tk->SetColor('white');
+        $tk->SetAngle(90);
+        $tk->Align('center', 'center');
+        $graph->AddText($tk);
     }
 
-    $t2 = new Text(date("Y-m-d H:i"), 368, 209);
+    $t2 = new Text(date("Y-m-d H:i"), 353, 209);
     $t2->SetFont(FF_ARIAL, FS_NORMAL, 8);
     $t2->SetColor('gray:0.63');
     $t2->Align('right', 'top');
