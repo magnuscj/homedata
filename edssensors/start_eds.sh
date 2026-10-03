@@ -10,6 +10,13 @@
 #
 # NOTE: this no longer launches ./eds itself. If supervise_eds.sh is somehow not
 # running, fall back to a one-shot launch so a manual invocation still works.
+#
+# EDS_DIR / IPS_FILE / EDS_LOG are overridable for tests; defaults are the
+# production values so in-pod behaviour is unchanged.
+
+EDS_DIR="${EDS_DIR:-/homedata/edssensors}"
+IPS_FILE="${IPS_FILE:-/usr/storage/ips/ips.txt}"
+EDS_LOG="${EDS_LOG:-/tmp/eds_output.txt}"
 
 PIDS=$(pgrep -x eds)
 if [[ -n "$PIDS" ]]; then
@@ -19,6 +26,6 @@ fi
 # Fallback: if no supervisor is running, do a one-shot launch so manual use
 # (outside the pod's start.sh) still starts the collector.
 if ! pgrep -f "supervise_eds.sh" >/dev/null 2>&1; then
-  cd /homedata/edssensors
-  ./eds $(< /usr/storage/ips/ips.txt) | tee -a /tmp/eds_output.txt &
+  cd "$EDS_DIR"
+  ./eds $(< "$IPS_FILE") | tee -a "$EDS_LOG" &
 fi
