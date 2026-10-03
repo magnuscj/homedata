@@ -202,7 +202,7 @@ do {
         $graph->yaxis->SetTitleMargin(28);
         $graph->yaxis->SetTitleSide(SIDE_LEFT);
 
-        $graph->y2axis->SetColor('#458b74');
+        $graph->y2axis->SetColor('#76eec6');
         $graph->y2axis->SetFont(FF_VERDANA, FS_BOLD, 8);
         // NOTE: the 'kWh' label is NOT the Y2 axis title (its margin direction
         // is confusing). It is drawn as a free Text at an explicit position
@@ -218,7 +218,7 @@ do {
         // Consumption curve in front of the bars (SetY2OrderBack(false) above).
         // With 96 points, drop the per-point markers for a clean smooth line.
         $lplot = new LinePlot($consume);
-        $lplot->SetColor('#458b74');
+        $lplot->SetColor('#76eec6');
         $lplot->SetWeight(2);
         $graph->AddY2($lplot);
 
@@ -229,7 +229,7 @@ do {
         $kwhLabelX = 388;
         $tk = new Text('kWh', $kwhLabelX, 110);
         $tk->SetFont(FF_VERDANA, FS_BOLD, 8);
-        $tk->SetColor('#458b74');
+        $tk->SetColor('#76eec6');
         $tk->SetAngle(90);
         $tk->Align('center', 'center');
         $graph->AddText($tk);
