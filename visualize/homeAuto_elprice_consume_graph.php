@@ -149,20 +149,19 @@ do {
         $range = $max - $min;
         if ($range <= 0) $range = 1;
 
-        // Four equal price bands across [min, max], as an AQUAMARINE ramp from
-        // aquamarine1 (lightest = cheapest quarter) to aquamarine3 (darkest =
-        // dearest quarter). RGB from jpgraph_colors.php:
-        //   aquamarine1 #7fffd4 (127,255,212)
-        //   aquamarine2 #76eec6 (118,238,198)
+        // Four equal price bands across [min, max], as a DARK aquamarine/teal
+        // ramp from aquamarine3 (lightest = cheapest) down to a deep teal
+        // (darkest = dearest). Base RGB from jpgraph_colors.php:
         //   aquamarine3 #66cdaa (102,205,170)
-        // Band 3 is an even interpolation between aquamarine2 and aquamarine3.
+        //   aquamarine4 #458b74 ( 69,139,116)
+        // Bands 3-4 continue the same hue darker (scaled below aquamarine4).
         $barcolors = [];
         foreach ($prices as $p) {
             $q = ($p - $min) / $range;
-            if      ($q < 0.25) $barcolors[] = '#7fffd4';   // aquamarine1 (lightest)
-            elseif  ($q < 0.50) $barcolors[] = '#76eec6';   // aquamarine2
-            elseif  ($q < 0.75) $barcolors[] = '#6eddb8';   // between a2 and a3
-            else                $barcolors[] = '#66cdaa';   // aquamarine3 (darkest)
+            if      ($q < 0.25) $barcolors[] = '#66cdaa';   // aquamarine3 (lightest)
+            elseif  ($q < 0.50) $barcolors[] = '#458b74';   // aquamarine4
+            elseif  ($q < 0.75) $barcolors[] = '#36705d';   // darker teal
+            else                $barcolors[] = '#285445';   // darkest teal (dearest)
         }
 
         // Left axis: price (bars). Right axis (Y2): consumption kWh (curve).
@@ -203,7 +202,7 @@ do {
         $graph->yaxis->SetTitleMargin(28);
         $graph->yaxis->SetTitleSide(SIDE_LEFT);
 
-        $graph->y2axis->SetColor('white');
+        $graph->y2axis->SetColor('#458b74');
         $graph->y2axis->SetFont(FF_VERDANA, FS_BOLD, 8);
         // NOTE: the 'kWh' label is NOT the Y2 axis title (its margin direction
         // is confusing). It is drawn as a free Text at an explicit position
@@ -219,7 +218,7 @@ do {
         // Consumption curve in front of the bars (SetY2OrderBack(false) above).
         // With 96 points, drop the per-point markers for a clean smooth line.
         $lplot = new LinePlot($consume);
-        $lplot->SetColor('white');
+        $lplot->SetColor('#458b74');
         $lplot->SetWeight(2);
         $graph->AddY2($lplot);
 
@@ -230,7 +229,7 @@ do {
         $kwhLabelX = 388;
         $tk = new Text('kWh', $kwhLabelX, 110);
         $tk->SetFont(FF_VERDANA, FS_BOLD, 8);
-        $tk->SetColor('white');
+        $tk->SetColor('#458b74');
         $tk->SetAngle(90);
         $tk->Align('center', 'center');
         $graph->AddText($tk);
