@@ -34,73 +34,79 @@ $database       = getConfig('DBNAME');
 $serverHostName = getConfig('DBIP');
 
 define('PULSES_PER_KWH', 1000.0);  // El pulse counter constant (see header)
-define('HOURS_BACK', 24);
+define('BUCKET_SEC', 900);                 // 15-minute buckets
+define('NBUCKETS', (24 * 3600) / BUCKET_SEC);  // 96 buckets over 24h
 
 /**
- * Build 24 hourly buckets covering [now-24h, now). Returns:
- *   [ labels[24], priceAvg[24], consumeKwh[24] ]
- * priceAvg  = mean of Pris samples whose timestamp falls in the hour (0 if none).
- * consumeKwh= (max(El counter) - min(El counter)) / PULSES_PER_KWH in the hour
- *             (0 if fewer than 2 samples, i.e. no measurable delta).
+ * Build NBUCKETS 15-minute buckets covering exactly [now-24h, now). Returns:
+ *   [ labels[NBUCKETS], priceAvg[NBUCKETS], consumeKwh[NBUCKETS] ]
+ * priceAvg  = mean of Pris samples whose timestamp falls in the bucket (0 if none).
+ * consumeKwh= (max(El counter) - min(El counter)) / PULSES_PER_KWH in the bucket
+ *             (0 if fewer than 2 samples). Finer buckets => a smoother curve.
+ * Labels are the 'HH' hour only at buckets that start on a 2-hour boundary,
+ * blank elsewhere (so SetTextLabelInterval can show every 2nd hour).
  */
 function getLast24h($username, $password, $database, $serverHostName)
 {
     $labels   = [];
-    $priceAvg = array_fill(0, HOURS_BACK, 0.0);
-    $consume  = array_fill(0, HOURS_BACK, 0.0);
+    $priceAvg = array_fill(0, NBUCKETS, 0.0);
+    $consume  = array_fill(0, NBUCKETS, 0.0);
 
-    // Buckets anchored to NOW: the window is exactly [now-24h, now). Bucket i
-    // covers [now-(24-i)h, now-(23-i)h); the LAST bucket ends exactly at now,
-    // the FIRST begins exactly 24h ago. (Anchoring to the top of the current
-    // hour instead would drop the earliest hour and misalign the axis.)
-    $now        = time();
-    $hourStart0 = $now - HOURS_BACK * 3600;      // start = now - 24h
+    // Window anchored to NOW: exactly [now-24h, now). Bucket i spans
+    // [start0 + i*BUCKET_SEC, start0 + (i+1)*BUCKET_SEC); the last ends at now.
+    $now    = time();
+    $start0 = $now - NBUCKETS * BUCKET_SEC;    // = now - 24h
 
-    for ($i = 0; $i < HOURS_BACK; $i++) {
-        $labels[$i] = date('H', $hourStart0 + $i * 3600);  // label = bucket start hour
+    for ($i = 0; $i < NBUCKETS; $i++) {
+        $labels[$i] = date('H', $start0 + $i * BUCKET_SEC);  // hour label per bucket
     }
 
     $priceId = getSensorId('Pris', $username, $password, $database, $serverHostName);
     $elId    = getSensorId('El',   $username, $password, $database, $serverHostName);
 
-    $fromTs = $hourStart0;
-    $toTs   = $now;
-    $fdate  = date('Y-m-d', $fromTs);
-    $tdate  = date('Y-m-d', $toTs);
+    $fdate = date('Y-m-d', $start0);
+    $tdate = date('Y-m-d', $now);
 
-    // --- Prices: average per hour bucket -------------------------------------
+    // --- Prices: average per bucket ------------------------------------------
     if ($priceId !== null && $priceId !== '') {
         list($py, $pt) = getDataFromDb($username, $password, $database,
                                        $fdate . " 00:00:00", $tdate . " 23:59:59",
                                        $priceId, $serverHostName);
-        $sum = array_fill(0, HOURS_BACK, 0.0);
-        $cnt = array_fill(0, HOURS_BACK, 0);
+        $sum = array_fill(0, NBUCKETS, 0.0);
+        $cnt = array_fill(0, NBUCKETS, 0);
         for ($k = 0; $k < count($py); $k++) {
-            $b = (int) floor(($pt[$k] - $hourStart0) / 3600);
-            if ($b < 0 || $b >= HOURS_BACK) continue;
+            $b = (int) floor(($pt[$k] - $start0) / BUCKET_SEC);
+            if ($b < 0 || $b >= NBUCKETS) continue;
             $sum[$b] += (float) $py[$k];
             $cnt[$b]++;
         }
-        for ($b = 0; $b < HOURS_BACK; $b++) {
+        for ($b = 0; $b < NBUCKETS; $b++) {
             if ($cnt[$b] > 0) $priceAvg[$b] = $sum[$b] / $cnt[$b];
+        }
+        // Prices change slowly (hourly/15-min steps) and some buckets may have
+        // no sample; carry the last known price forward so bars are continuous.
+        $last = 0.0;
+        for ($b = 0; $b < NBUCKETS; $b++) {
+            if ($priceAvg[$b] > 0) $last = $priceAvg[$b];
+            elseif ($last > 0)     $priceAvg[$b] = $last;
         }
     }
 
-    // --- Consumption: counter delta per hour bucket --------------------------
+    // --- Consumption: counter delta per bucket -------------------------------
     if ($elId !== null && $elId !== '') {
         list($ey, $et) = getDataFromDb($username, $password, $database,
                                        $fdate . " 00:00:00", $tdate . " 23:59:59",
                                        $elId, $serverHostName);
-        $minC = array_fill(0, HOURS_BACK, null);
-        $maxC = array_fill(0, HOURS_BACK, null);
+        $minC = array_fill(0, NBUCKETS, null);
+        $maxC = array_fill(0, NBUCKETS, null);
         for ($k = 0; $k < count($ey); $k++) {
-            $b = (int) floor(($et[$k] - $hourStart0) / 3600);
-            if ($b < 0 || $b >= HOURS_BACK) continue;
+            $b = (int) floor(($et[$k] - $start0) / BUCKET_SEC);
+            if ($b < 0 || $b >= NBUCKETS) continue;
             $v = (float) $ey[$k];
             if ($minC[$b] === null || $v < $minC[$b]) $minC[$b] = $v;
             if ($maxC[$b] === null || $v > $maxC[$b]) $maxC[$b] = $v;
         }
-        for ($b = 0; $b < HOURS_BACK; $b++) {
+        for ($b = 0; $b < NBUCKETS; $b++) {
             if ($minC[$b] !== null && $maxC[$b] !== null && $maxC[$b] >= $minC[$b]) {
                 $consume[$b] = ($maxC[$b] - $minC[$b]) / PULSES_PER_KWH;
             }
@@ -170,11 +176,17 @@ do {
         $graph->xaxis->SetColor('black:1.5', 'gray');
         $graph->xaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->xaxis->SetTickLabels($labels);
-        // A tick every 2 hours, and a label on EVERY tick. NOTE: these two
-        // settings COMPOUND (label shows every tick_step*label_step-th point),
-        // so label_step must be 1 to get a label every 2nd hour — not 2 (which
-        // would yield every 4th).
-        $graph->xaxis->SetTextTickInterval(2);
+        // 96 fifteen-minute buckets. Tick every 8 buckets (= 2 hours), with the
+        // first tick on the earliest bucket that starts on a 2-hour boundary
+        // (:00 of an even hour), and a label on every tick. Compute that start
+        // offset from the window start.
+        $start0 = time() - NBUCKETS * BUCKET_SEC;
+        $tickStart = 0;
+        for ($i = 0; $i < NBUCKETS; $i++) {
+            $ts = $start0 + $i * BUCKET_SEC;
+            if ((int) date('i', $ts) === 0 && ((int) date('G', $ts)) % 2 === 0) { $tickStart = $i; break; }
+        }
+        $graph->xaxis->SetTextTickInterval(8, $tickStart);
         $graph->xaxis->SetTextLabelInterval(1);
 
         $graph->yaxis->SetColor('gray');
@@ -193,18 +205,16 @@ do {
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
-        $bplot->SetColor('black@0.6');
+        // 96 thin bars: a lighter/no outline keeps them from looking muddy.
+        $bplot->SetColor('black@0.85');
         $bplot->SetWidth(1.0);
         $graph->Add($bplot);
 
-        // Consumption curve above the bars, on the secondary axis.
+        // Consumption curve in front of the bars (SetY2OrderBack(false) above).
+        // With 96 points, drop the per-point markers for a clean smooth line.
         $lplot = new LinePlot($consume);
         $lplot->SetColor('lightblue');
         $lplot->SetWeight(2);
-        $lplot->mark->SetType(MARK_FILLEDCIRCLE);
-        $lplot->mark->SetColor('lightblue');
-        $lplot->mark->SetFillColor('lightblue');
-        $lplot->mark->SetSize(2);
         $graph->AddY2($lplot);
     }
 
