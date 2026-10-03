@@ -132,7 +132,7 @@ do {
     $graph->SetColor('gray:0.43');
     $graph->SetBackgroundGradient('black:1.1', 'black:1.1', GRAD_HOR, BGRAD_MARGIN);
     // Extra right margin for the secondary (consumption) axis + its 'kWh' title.
-    $graph->SetMargin(40, 52, 10, 25);
+    $graph->SetMargin(40, 40, 10, 25);
 
     $havePrice = (count(array_filter($prices, fn($p) => $p > 0)) > 0);
 
@@ -204,8 +204,9 @@ do {
         $graph->y2axis->title->Set('kWh');
         $graph->y2axis->title->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->y2axis->title->SetColor('white');
-        // Push the 'kWh' title further right, clear of the axis tick labels.
-        $graph->y2axis->SetTitleMargin(26);
+        // Push the 'kWh' title right of the tick numbers, but keep it inside
+        // the 40px right margin so it is not clipped at the image edge.
+        $graph->y2axis->SetTitleMargin(18);
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
