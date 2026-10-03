@@ -101,10 +101,12 @@ do {
         $graph->xaxis->SetColor('black:1.5', 'gray');
         $graph->xaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->xaxis->SetTickLabels($labels);
-        // Thin the vertical grid: draw a tick + gridline every 4th bar (~hourly,
-        // since bars are 15-min), and label those ticks.
-        $graph->xaxis->SetTextTickInterval(4);
-        $graph->xaxis->SetTextLabelInterval(4);
+        // Label every 2nd hour (bars are 15-min, so 8 bars = 2 hours). A tick
+        // every 8 bars and a label on every tick. NOTE: tick/label intervals
+        // COMPOUND, so label_step must be 1 (not 2) to get every 2nd hour —
+        // matches homeAuto_elprice_consume_graph.php.
+        $graph->xaxis->SetTextTickInterval(8);
+        $graph->xaxis->SetTextLabelInterval(1);
 
         $graph->yaxis->SetColor('gray');
         $graph->yaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
