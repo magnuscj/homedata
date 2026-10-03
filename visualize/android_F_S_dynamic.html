@@ -22,14 +22,15 @@
     	</div>
 
     	<div style="position: absolute; left: 405px; top: 222px;">
-         <img id="p6" src='picture//homeAuto_pedo_Bar.png' align ="top" style="cursor: pointer;" title="Click to switch pedometer / electricity price"/>
+         <img id="p6" src='picture//homeAuto_pedo_Bar.png' align ="top" style="cursor: pointer;" title="Click to switch pedometer / electricity price / price+consumption"/>
     	</div>
 
 <script>
-// p6 toggles between the pedometer bar graph and the electricity price graph.
-// The chosen view is remembered (localStorage) so it survives the periodic
-// auto-refresh and full page reloads.
-const p6Sources = ['picture/homeAuto_pedo_Bar.png', 'picture/homeAuto_elprice_graph.png'];
+// p6 toggles between the pedometer bar graph, the forward electricity price
+// graph, and the last-24h price + consumption graph. The chosen view is
+// remembered (localStorage) so it survives the periodic auto-refresh and full
+// page reloads.
+const p6Sources = ['picture/homeAuto_pedo_Bar.png', 'picture/homeAuto_elprice_graph.png', 'picture/homeAuto_elprice_consume_graph.png'];
 let p6Index = parseInt(localStorage.getItem('p6Index') || '0', 10);
 if (isNaN(p6Index) || p6Index < 0 || p6Index >= p6Sources.length) p6Index = 0;
 
