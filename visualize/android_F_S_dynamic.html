@@ -35,10 +35,33 @@ let p6Index = parseInt(localStorage.getItem('p6Index') || '0', 10);
 if (isNaN(p6Index) || p6Index < 0 || p6Index >= p6Sources.length) p6Index = 0;
 
 const p6 = document.getElementById('p6');
-p6.addEventListener('click', () => {
+
+function cycleP6() {
   p6Index = (p6Index + 1) % p6Sources.length;
   localStorage.setItem('p6Index', String(p6Index));
   refresh();
+}
+
+// Mouse / normal activation.
+p6.addEventListener('click', cycleP6);
+
+// Touch screens: a tap normally also fires a synthetic 'click', which would
+// cycle twice. Handle touchend ourselves, ignore swipes/scrolls (only fire if
+// the finger barely moved), and preventDefault() to suppress the follow-up
+// synthetic click so one tap = one cycle.
+let touchStartX = 0, touchStartY = 0;
+p6.addEventListener('touchstart', (e) => {
+  const t = e.changedTouches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+}, { passive: true });
+p6.addEventListener('touchend', (e) => {
+  const t = e.changedTouches[0];
+  const moved = Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY);
+  if (moved < 10) {        // a tap, not a swipe/scroll
+    e.preventDefault();    // stop the synthetic click that follows
+    cycleP6();
+  }
 });
 
 const imgs = [
