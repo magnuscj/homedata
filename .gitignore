@@ -14,3 +14,6 @@ tests/cpp/test_stablehash
 tests/cpp/test_decode_xml
 tests/**/__pycache__/
 .pytest_cache/
+
+# generated pod deploy manifests (build_pod.sh / build_elprice.sh output)
+container/**/*.gen.yaml
