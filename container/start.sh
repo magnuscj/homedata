@@ -89,7 +89,9 @@ if [[ $? -ne 0 ]]; then
 fi
 ./createSensorConfig.sh
 service cron start
-./start_eds.sh
+# Keep the eds collector alive via a supervisor loop (waits for mysqld, respawns
+# ./eds if it ever exits) instead of a single unsupervised background launch.
+./supervise_eds.sh &
 python3 /homedata/edssensors/eds_web.py &
 cd ../scripts/
 python3 hueTemps.py

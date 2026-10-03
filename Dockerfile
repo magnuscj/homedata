@@ -115,6 +115,7 @@ RUN chmod +x homedata/edssensors/restore.sh
 
 RUN chown www-data:www-data /homedata/edssensors/start_eds.sh
 RUN chmod +x /homedata/edssensors/start_eds.sh
+RUN chmod +x /homedata/edssensors/supervise_eds.sh
 # Ge användaren www-data rätt att köra start_eds.sh som root utan lösenord
 RUN echo "www-data ALL=(ALL) NOPASSWD: /homedata/edssensors/start_eds.sh" >> /etc/sudoers
 
