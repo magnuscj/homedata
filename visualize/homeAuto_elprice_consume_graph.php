@@ -153,24 +153,22 @@ do {
             else                $barcolors[] = 'red';
         }
 
-        // Left axis: price. Right axis (Y2): consumption kWh.
-        // Keep the consumption curve in the TOP THIRD of the plot (above the
-        // price bars) regardless of its dynamic range: offset the Y2 range so
-        // consumption=0 maps to ~2/3 height and the max maps to the top. With
-        // range [-2*maxC, maxC], value v sits at (v+2*maxC)/(3*maxC) of height,
-        // i.e. 0 -> 0.667, maxC -> 1.0 — the whole curve rides above the bars.
+        // Left axis: price (bars). Right axis (Y2): consumption kWh (curve).
+        // The curve is drawn AFTER the bars (AddY2 below) so it renders IN FRONT
+        // of them. Scale Y2 to the data with a little headroom so the curve uses
+        // the chart height and stays readable where it overlaps the bars.
         $graph->SetScale('textlin', 0, ceil($max * 10) / 10);
         $maxC = max($consume);
         if ($maxC <= 0) $maxC = 1;
-        $graph->SetY2Scale('lin', -2 * $maxC, $maxC);
+        $graph->SetY2Scale('lin', 0, $maxC * 1.15);
 
         $graph->xgrid->Show(true);
         $graph->xaxis->SetColor('black:1.5', 'gray');
         $graph->xaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->xaxis->SetTickLabels($labels);
-        // Hourly bars already; thin tick labels to every 4th hour for legibility.
-        $graph->xaxis->SetTextTickInterval(4);
-        $graph->xaxis->SetTextLabelInterval(4);
+        // Label/tick every 2nd hour for readability (24 hourly bars).
+        $graph->xaxis->SetTextTickInterval(2);
+        $graph->xaxis->SetTextLabelInterval(2);
 
         $graph->yaxis->SetColor('gray');
         $graph->yaxis->SetFont(FF_VERDANA, FS_BOLD, 8);
@@ -185,11 +183,6 @@ do {
         $graph->y2axis->title->Set('kWh');
         $graph->y2axis->title->SetFont(FF_VERDANA, FS_BOLD, 8);
         $graph->y2axis->title->SetColor('lightblue');
-        // The Y2 scale is intentionally offset (negative floor) to push the
-        // consumption curve into the top third, so its numeric ticks are not
-        // meaningful — hide them and keep just the 'kWh' title + the curve shape.
-        $graph->y2axis->HideLabels();
-        $graph->y2axis->HideTicks();
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
