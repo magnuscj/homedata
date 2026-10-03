@@ -126,19 +126,24 @@ do {
 
     list($labels, $prices, $consume) = getLast24h($username, $password, $database, $serverHostName);
 
-    // Same size/theme as homeAuto_elprice_graph.php.
-    $graph = new Graph(395, 219);
+    // Width 410 (vs 395 for the other graphs) to give the right (Y2) side room
+    // for the 'kWh' title to sit to the RIGHT of the tick numbers. The right
+    // margin grows by the same amount as the width, so the PLOT position is
+    // unchanged (right edge stays at 410-55 = 355, same as 395-40).
+    $graph = new Graph(410, 219);
     $graph->ClearTheme();
     $graph->SetColor('gray:0.43');
     $graph->SetBackgroundGradient('black:1.1', 'black:1.1', GRAD_HOR, BGRAD_MARGIN);
     // Extra right margin for the secondary (consumption) axis + its 'kWh' title.
-    $graph->SetMargin(40, 40, 10, 25);
+    // Right margin = 55 (= 40 + the 15px added to the width) keeps the plot's
+    // right edge at x=355, unchanged from the 395-wide layout.
+    $graph->SetMargin(40, 55, 10, 25);
 
     $havePrice = (count(array_filter($prices, fn($p) => $p > 0)) > 0);
 
     if (!$havePrice) {
         $graph->SetScale('textlin', 0, 1);
-        $t = new Text("Ingen prisdata", 197, 100);
+        $t = new Text("Ingen prisdata", 205, 100);
         $t->SetFont(FF_ARIAL, FS_BOLD, 10);
         $t->SetColor('gray:1.2');
         $t->Align('center', 'center');
@@ -206,7 +211,7 @@ do {
         $graph->y2axis->title->SetColor('white');
         // Push the 'kWh' title right of the tick numbers, but keep it inside
         // the 40px right margin so it is not clipped at the image edge.
-        $graph->y2axis->SetTitleMargin(18);
+        $graph->y2axis->SetTitleMargin(2);
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
@@ -223,7 +228,7 @@ do {
         $graph->AddY2($lplot);
     }
 
-    $t2 = new Text(date("Y-m-d H:i"), 353, 209);
+    $t2 = new Text(date("Y-m-d H:i"), 368, 209);
     $t2->SetFont(FF_ARIAL, FS_NORMAL, 8);
     $t2->SetColor('gray:0.63');
     $t2->Align('right', 'top');
