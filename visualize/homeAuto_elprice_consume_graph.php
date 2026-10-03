@@ -149,14 +149,16 @@ do {
         $range = $max - $min;
         if ($range <= 0) $range = 1;
 
-        // Four equal price bands across [min, max].
+        // Four equal price bands across [min, max], as a GRAYSCALE ramp:
+        // light gray = cheapest quarter ... dark gray = dearest quarter.
+        // jpgraph 'gray:<intensity>' — higher intensity = lighter.
         $barcolors = [];
         foreach ($prices as $p) {
             $q = ($p - $min) / $range;
-            if      ($q < 0.25) $barcolors[] = 'green';
-            elseif  ($q < 0.50) $barcolors[] = 'yellow';
-            elseif  ($q < 0.75) $barcolors[] = 'orange';
-            else                $barcolors[] = 'red';
+            if      ($q < 0.25) $barcolors[] = 'gray:1.5';   // lightest
+            elseif  ($q < 0.50) $barcolors[] = 'gray:1.1';
+            elseif  ($q < 0.75) $barcolors[] = 'gray:0.75';
+            else                $barcolors[] = 'gray:0.45';  // darkest
         }
 
         // Left axis: price (bars). Right axis (Y2): consumption kWh (curve).
