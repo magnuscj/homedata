@@ -81,18 +81,21 @@ do {
         $min = min($prices);
         $max = max($prices);
         $range = $max - $min;
-        // Guard against a flat curve (all bars would otherwise be green).
+        // Guard against a flat curve (avoids divide-by-zero in the band calc).
         if ($range <= 0) $range = 1;
 
-        // Four equal price bands across [min, max]: green (lowest quarter),
-        // then yellow, orange, red (highest quarter).
+        // Four equal price bands across [min, max], as a DARK aquamarine/teal
+        // ramp from aquamarine3 (lightest = cheapest) down to a deep teal
+        // (darkest = dearest) — same scheme as homeAuto_elprice_consume_graph.php.
+        // RGB from jpgraph_colors.php: aquamarine3 #66cdaa, aquamarine4 #458b74;
+        // bands 3-4 continue the same hue darker.
         $barcolors = [];
         foreach ($prices as $p) {
             $q = ($p - $min) / $range;         // 0..1 within the current range
-            if ($q < 0.25)      $barcolors[] = 'green';
-            elseif ($q < 0.50)  $barcolors[] = 'yellow';
-            elseif ($q < 0.75)  $barcolors[] = 'orange';
-            else                $barcolors[] = 'red';
+            if      ($q < 0.25) $barcolors[] = '#66cdaa';   // aquamarine3 (lightest)
+            elseif  ($q < 0.50) $barcolors[] = '#458b74';   // aquamarine4
+            elseif  ($q < 0.75) $barcolors[] = '#36705d';   // darker teal
+            else                $barcolors[] = '#285445';   // darkest teal (dearest)
         }
 
         $graph->SetScale('textlin', 0, ceil($max * 10) / 10);
@@ -118,7 +121,7 @@ do {
 
         $bplot = new BarPlot($prices);
         $bplot->SetFillColor($barcolors);
-        $bplot->SetColor('black@0.6');
+        $bplot->SetColor('black@0.85');
         $bplot->SetWidth(1.0);
         $graph->Add($bplot);
     }
