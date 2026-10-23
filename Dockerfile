@@ -32,7 +32,15 @@ curl \
 iproute2 \
 jq \
 openssh-server \
-python3-pip
+python3-pip \
+&& apt-get -y update \
+&& apt-get -y install --only-upgrade \
+php8.3 \
+php8.3-cli \
+php8.3-common \
+php8.3-mysql \
+php8.3-mbstring \
+php8.3-gd
 
 RUN pip install --break-system-packages mysql-connector-python requests
 
