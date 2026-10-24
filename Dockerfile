@@ -135,6 +135,6 @@ RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 RUN cd homedata/edssensors; make 
 
-WORKDIR homedata/edssensors
+WORKDIR /homedata/edssensors
 RUN chmod +x start.sh
 ENTRYPOINT ["/bin/bash","./start.sh"]

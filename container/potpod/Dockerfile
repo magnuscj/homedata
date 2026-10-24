@@ -51,6 +51,6 @@ RUN mkdir /mnt/ramdisk
 RUN cd /var/www/html;ln -s /mnt/ramdisk/details.xml details.xml
 
 
-WORKDIR homedata/container/potpod
+WORKDIR /homedata/container/potpod
 
 #ENTRYPOINT ["/bin/bash","./start.sh"]
