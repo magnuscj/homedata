@@ -17,6 +17,10 @@ fi
 cp eds.yaml eds_deploy.yaml
 sed -i "s/REPLACE/$TAG/g" eds_deploy.yaml
 
+# Ensure the eds ServiceAccount can list Services (needed by the in-pod service
+# discovery that generates ips.txt). Idempotent; no-op if already present.
+kubectl apply -f eds-rbac.yaml
+
 kubectl get deployments | grep -q eds-deployment && DEP="true" || DEP="false"
 
 if [[ "$DEP" == "true" ]]

@@ -1,6 +1,10 @@
 echo $1
 docker image build --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) -t magnuscj/eds:$1 .;docker push magnuscj/eds:$1
 
+# Ensure the eds ServiceAccount can list Services (needed by the in-pod service
+# discovery that generates ips.txt at boot). Idempotent; no-op if unchanged.
+kubectl apply -f eds-rbac.yaml
+
 kubectl get deployments | grep -q eds-deployment  && DEP="true" || DEP="false"
 
 if [[ "$DEP" == "true" ]]
