@@ -1,10 +1,11 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 LABEL org.containers.image.title="Pot humidity monitor" \
       org.containers.image.description="Monitors the humidity" \
       org.containers.image.authors="Magnus"
 
 ENV TZ=Europe/Stockholm
+ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt -y update && apt-get -y install \

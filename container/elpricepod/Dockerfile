@@ -1,10 +1,11 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 LABEL org.containers.image.title="EDS electricity price manager" \
       org.containers.image.description="Fetches the current electricity spot price (elprisetjustnu.se), keeps a CSV history and serves the current value as details.xml" \
       org.containers.image.authors="Magnus"
 
 ENV TZ=Europe/Stockholm
+ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # No mysql here: this pod stores to CSV/XML, not the DB.
