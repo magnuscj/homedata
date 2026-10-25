@@ -1,0 +1,17 @@
+# logrotate rule for the eds edge proxy access/error logs.
+# Install to /etc/logrotate.d/eds-proxy (see proxy/install.sh).
+#
+# copytruncate is used so we do NOT need to signal nginx (the file is written by
+# the container's nginx as root); the file is truncated in place, keeping the
+# same inode the running nginx holds open.
+
+/home/magnus/eds-logs/eds_access.log /home/magnus/eds-logs/eds_error.log {
+    daily
+    rotate 14
+    maxsize 50M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}
