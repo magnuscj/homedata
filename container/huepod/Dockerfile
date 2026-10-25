@@ -1,10 +1,11 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 LABEL org.containers.image.title="EDS data manager" \
       org.containers.image.description="Collects, stores and vizualise data from Embedded data systems" \
       org.containers.image.authors="Magnus"
 
 ENV TZ=Europe/Stockholm
+ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt -y update && apt-get -y install \
@@ -15,12 +16,7 @@ libcurl4-gnutls-dev \
 mysql-server \
 libmysqlclient-dev \
 iputils-ping \
-php7.4 \
-php7.4-cli \
-php7.4-common \
-php7.4-mysql \
-php7.4-mbstring \
-php7.4-gd \
+python3-requests \
 vim \
 cron \
 curl \
