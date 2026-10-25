@@ -525,29 +525,3 @@ because every pod's ENTRYPOINT is `start.sh`, a foreground service loop (sshd -D
 can also leave a stray container holding the image (blocks `docker rmi ...:tag`);
 `docker rm -f <id>` it first. Prefer deploying to the sandbox cluster + `kubectl
 exec` for verification over `docker run`.
-
-### CORRECTION (2026-10-25): external public access port changed 8181 -> 8090 (router)
-Supersedes the 2026-09-29 "EXTERNAL public access" section above for the PORT
-only. User changed the ROUTER WAN NAT rule to forward to holken2 LAN
-`192.168.50.171:8090` (previously `:8181`). The public URL
-`http://81.234.147.6:8090/android_F_S_dynamic.html` is unchanged externally
-(was already :8090 on the WAN side) but now lands on holken2 :8090.
-- CONFIRMED 2026-10-25: public URL -> 200; `0.0.0.0:8090` is LISTENing on
-  holken2 and serves the dashboard (local curl -> 200). The old
-  `kubectl port-forward --address 192.168.50.171 ... 8181:80` (PID 147057,
-  since Oct 23) is STILL running and still answers on :8181, but the router no
-  longer targets it — so the 8181 forwarder is now OUT of the external path and
-  effectively redundant (safe to retire when convenient).
-- OPEN ITEM: the process bound to `0.0.0.0:8090` was NOT identified from this
-  assistant's shell (`sudo ss -tlnp` needs an interactive tty over non-login
-  ssh). Note it binds `0.0.0.0` (not `--address 192.168.50.171`) with backlog
-  511 — i.e. NOT the documented kubectl forwarder pattern (those use
-  --address + backlog 4096). Likely a reverse proxy (nginx/caddy/apache/socat)
-  or a different forwarder the user started. IDENTIFY + document the exact
-  mechanism before relying on the FRAGILE/zombie failure-mode recipe above,
-  which is specific to `kubectl port-forward`. If :8090 is a kubectl forwarder,
-  the same half-dead-after-rollout failure mode and keep-alive-loop hardening
-  notes apply; if it is a real reverse proxy in front of the NodePort/service,
-  it is likely more robust and the old 8181 fragility notes do NOT apply.
-- Diagnosis recipe from the 2026-09-29 section still applies with 8181 -> 8090
-  substituted for the LAN-port checks.
