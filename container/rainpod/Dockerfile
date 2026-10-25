@@ -21,7 +21,8 @@ cron \
 curl \
 iproute2 \
 jq \
-openssh-server
+openssh-server \
+apache2
 
 #SSH
 #RUN apt update && apt install  openssh-server sudo -y

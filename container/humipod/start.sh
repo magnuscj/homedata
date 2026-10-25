@@ -3,5 +3,12 @@ service ssh start
 service ssh status
 service apache2 start
 service cron start
-python3 humi.py
+
+# Supervise the collector: respawn if it ever exits so the container stays up.
+while true; do
+    echo "start.sh: launching humi.py"
+    python3 humi.py
+    echo "start.sh: humi.py exited (rc=$?); respawning in 5s"
+    sleep 5
+done
 

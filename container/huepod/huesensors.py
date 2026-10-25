@@ -76,14 +76,24 @@ def create_details():
 def main():
     while 1:
         details = create_details()
+        if details is None:
+            # Transient fetch/parse failure (already logged in create_details).
+            # Keep the loop alive and leave the last-good details.xml in place
+            # rather than overwriting it with nothing.
+            logger.warning("No details produced this cycle; keeping previous output.")
+            sleep(60)
+            continue
         try:
             with open(OUTPUT_FILE, 'w') as file:
                 file.write(details)
         except Exception as e:
             logger.error(f"Error updating template file: {e}")
-            with open('details.xml', 'w') as file:
-                file.write(details)
-        
+            try:
+                with open('details.xml', 'w') as file:
+                    file.write(details)
+            except Exception as e2:
+                logger.error(f"Fallback write failed: {e2}")
+
         print(details)
         sleep(60)
 

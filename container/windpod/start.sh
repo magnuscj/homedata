@@ -3,5 +3,12 @@ service ssh start
 service ssh status
 service apache2 start
 service cron start
-python3 wind.py
+
+# Supervise the collector: respawn if it ever exits so the container stays up.
+while true; do
+    echo "start.sh: launching wind.py"
+    python3 wind.py
+    echo "start.sh: wind.py exited (rc=$?); respawning in 5s"
+    sleep 5
+done
 
