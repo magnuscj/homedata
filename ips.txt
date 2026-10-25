@@ -1,10 +1,11 @@
-192.168.50.230
-192.168.50.79
-10.96.79.110
-10.96.7.106
-10.96.45.60
-10.96.134.213
-10.96.221.219
-10.96.97.124
-
-
+# DEPRECATED — this file no longer drives the eds collector poll list.
+#
+# The poll list (/usr/storage/ips/ips.txt in the pod) is now GENERATED at boot
+# by edssensors/generate_ips.sh from:
+#   (1) live Kubernetes Service discovery (edssensors/discover_services.sh), and
+#   (2) edssensors/static-services.txt (physical LAN devices).
+#
+# This committed file is intentionally EMPTY of IPs: it used to hold per-cluster
+# Service ClusterIPs, which differ between sandbox and prod and caused a git pull
+# to clobber prod's list with sandbox values (2026-10-25). It is no longer copied
+# into the image. Edit edssensors/static-services.txt to change static targets.

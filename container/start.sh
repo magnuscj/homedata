@@ -89,6 +89,12 @@ if [[ $? -ne 0 ]]; then
 fi
 ./createSensorConfig.sh
 service cron start
+# Build the collector poll list from LIVE cluster state (discovered service
+# ClusterIPs + the static non-service devices) BEFORE launching the supervisor.
+# This supersedes the committed/baked ips.txt so sandbox and prod derive their
+# own correct ClusterIPs and can never clobber each other via git/the image.
+# If generation fails it leaves any existing ips.txt in place (see the script).
+./generate_ips.sh || echo "WARNING: generate_ips.sh failed; using existing /usr/storage/ips/ips.txt"
 # Keep the eds collector alive via a supervisor loop (waits for mysqld, respawns
 # ./eds if it ever exits) instead of a single unsupervised background launch.
 ./supervise_eds.sh &

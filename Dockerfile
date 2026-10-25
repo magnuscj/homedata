@@ -86,9 +86,16 @@ COPY visualize/*.html /var/www/html/
 RUN rm -f /var/www/html/index.html
 
 #IP configuration
-RUN mkdir -p /usr/storage/ips
-COPY ips.txt /usr/storage/ips/ips.txt
-COPY ips.txt /img/ips.txt
+# Cold-start SEED only: generate_ips.sh rewrites ips.txt from live discovery at
+# boot, so this seed is used only before the first generation runs. Seed it with
+# the STATIC non-service devices (identical in every cluster) — NOT ClusterIPs —
+# so a cold start can never poll another cluster's stale ClusterIPs. Strip
+# comments/blank lines so the seed is a clean IP-per-line list.
+RUN mkdir -p /usr/storage/ips /img
+COPY edssensors/static-services.txt /tmp/static-services.txt
+RUN grep -vE '^[[:space:]]*(#|$)' /tmp/static-services.txt > /usr/storage/ips/ips.txt \
+    && cp /usr/storage/ips/ips.txt /img/ips.txt \
+    && rm -f /tmp/static-services.txt
 COPY create_ips.php /var/www/html/
 COPY sensorcfg.php /var/www/html/
 
@@ -124,6 +131,17 @@ RUN chmod +x homedata/edssensors/restore.sh
 RUN chown www-data:www-data /homedata/edssensors/start_eds.sh
 RUN chmod +x /homedata/edssensors/start_eds.sh
 RUN chmod +x /homedata/edssensors/supervise_eds.sh
+
+# Runtime poll-list generation. These must sit next to the collector scripts so
+# generate_ips.sh's SCRIPT_DIR-relative lookups (discover_services.sh,
+# static-services.txt) resolve inside the image (WORKDIR is /homedata/edssensors).
+COPY edssensors/discover_services.sh homedata/edssensors/discover_services.sh
+COPY edssensors/generate_ips.sh      homedata/edssensors/generate_ips.sh
+COPY edssensors/static-services.txt  homedata/edssensors/static-services.txt
+RUN chmod +x /homedata/edssensors/discover_services.sh /homedata/edssensors/generate_ips.sh
+# www-data runs start_eds.sh (via create_ips.php) which triggers regeneration;
+# allow it to run generate_ips.sh as root too so it can chown the PVC file.
+RUN echo "www-data ALL=(ALL) NOPASSWD: /homedata/edssensors/generate_ips.sh" >> /etc/sudoers
 # Ge användaren www-data rätt att köra start_eds.sh som root utan lösenord
 RUN echo "www-data ALL=(ALL) NOPASSWD: /homedata/edssensors/start_eds.sh" >> /etc/sudoers
 

@@ -1,0 +1,13 @@
+# static-services.txt — poll targets that are NOT Kubernetes Services.
+#
+# generate_ips.sh appends these to the discovered Service ClusterIPs to build
+# the collector poll list (/usr/storage/ips/ips.txt). Put ONLY physical/LAN
+# devices here (anything the K8s service-discovery cannot find). These values
+# are the same in every cluster (physical LAN), so this file is safe to commit
+# and share across sandbox and prod — unlike ClusterIPs, which must never be
+# committed.
+#
+# Format: one IPv4 per line. Blank lines and lines starting with '#' are ignored.
+
+192.168.50.230
+192.168.50.79

@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result === false) {
         $message = "FEL: Kunde inte skriva till filen. Kontrollera rättigheter för " . dirname($filename);
     } else {
+        // Regenerate the authoritative poll list from live discovery + static
+        // devices (generate_ips.sh), so ips.txt reflects current ClusterIPs
+        // rather than whatever stale IPs the form happened to post. Then
+        // restart the collector so it re-reads the new list.
+        exec("sudo /homedata/edssensors/generate_ips.sh > /tmp/eds_genips.log 2>&1");
         $script_path = '/homedata/edssensors/start_eds.sh';
         exec("nohup sudo $script_path > /tmp/eds_debug.log 2>&1 &");
         $message = "Filen har uppdaterats och skriptet har startats!";
